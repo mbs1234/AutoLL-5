@@ -101,6 +101,7 @@ export function renderScreen(
   };
   const refreshExperiences = jest.fn();
   const refreshPlans = jest.fn();
+  const setPark = jest.fn();
   const clients = {
     ll: {
       rules: { prebook: false },
@@ -114,7 +115,7 @@ export function renderScreen(
       <nav.Provider>
         <ClientsContext value={clients}>
           <BookingDateContext value={{ bookingDate, setBookingDate: () => {} }}>
-            <ParkContext value={{ park: mk, setPark: () => {} }}>
+            <ParkContext value={{ park: mk, setPark }}>
               <PlansContext
                 value={{
                   plans,
@@ -176,5 +177,5 @@ export function renderScreen(
       </nav.Provider>
     </ResortContext>
   );
-  return { ...mocks, refreshExperiences, refreshPlans };
+  return { ...mocks, refreshExperiences, refreshPlans, setPark };
 }

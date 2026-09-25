@@ -117,6 +117,15 @@ function touchPoint(
  * length, so a glance answers "is it still working" without lifting the shield
  * at all -- which is the question being asked most of the time.
  */
+/** iPhone or iPad Safari, including an iPad that says it is a Mac. */
+function onIPhone(): boolean {
+  if (typeof navigator === 'undefined') return false;
+  return (
+    /iP(hone|od|ad)/.test(navigator.userAgent) ||
+    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
+  );
+}
+
 export default function PocketShield({
   onExit,
   wideTouchLearned = false,
@@ -340,7 +349,7 @@ export default function PocketShield({
               {target && (
                 <div className="mt-4">
                   <div className="text-xs font-bold tracking-widest text-gray-400 uppercase">
-                    Next drop
+                    Checking hard at
                   </div>
                   <Time
                     time={target}
@@ -349,7 +358,9 @@ export default function PocketShield({
                   {typeof secondsToTarget === 'number' &&
                     secondsToTarget > 0 && (
                       <div className="mt-1 text-lg font-bold text-green-300">
-                        in {Math.round(secondsToTarget / 60)} min
+                        {secondsToTarget < 60
+                          ? 'in under a minute'
+                          : `in ${Math.round(secondsToTarget / 60)} min`}
                       </div>
                     )}
                 </div>
@@ -390,6 +401,15 @@ export default function PocketShield({
         )}
 
         <div className="absolute inset-x-6 bottom-0 pb-7">
+          {/* A web page cannot cover Safari's own toolbar, and its back
+              button ends the run. Guided Access can, and the page cannot tell
+              whether it is on -- so this is a reminder, every time. */}
+          {onIPhone() && (
+            <p className="mt-0 mb-2 text-xs text-gray-500">
+              On iPhone, triple-click the side button for Guided Access, which
+              keeps Safari&rsquo;s toolbar out of reach.
+            </p>
+          )}
           {wideInProgress ? (
             <p className="my-0 text-sm text-gray-300">
               Keep using one fingertip and follow the moving box. {remaining}{' '}

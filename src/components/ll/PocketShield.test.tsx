@@ -11,6 +11,7 @@ import { primeAudio, resetAudioForTests } from '@/autopilot/alert';
 import { holdScreenAwake, releaseScreenAwake } from '@/autopilot/wakelock';
 import { AutopilotState } from '@/contexts/AutopilotContext';
 import TopAutopilotContext from '@/contexts/TopAutopilotContext';
+import { ParkTime } from '@/datetime';
 
 import PocketShield from './PocketShield';
 import {
@@ -694,6 +695,44 @@ describe('the pocket shield', () => {
       expect(box().dataset.position).not.toBe(before);
       tap(backdrop());
     }
+  });
+
+  // The engine's own time -- a drop, or a booking window -- under the name of
+  // what it is. "Next drop" called a booking window a drop, and "in 0 min"
+  // stood for the last thirty seconds.
+  it("names the engine's time for what it is", () => {
+    setup({
+      status: {
+        mode: 'burst',
+        consecutiveFailures: 0,
+        polls: 8,
+        target: new ParkTime(11, 30),
+        secondsToTarget: 20,
+      },
+    });
+    expect(screen.getByText('Checking hard at')).toBeInTheDocument();
+    expect(screen.getByText('in under a minute')).toBeInTheDocument();
+    expect(screen.queryByText('Next drop')).not.toBeInTheDocument();
+  });
+
+  it('reminds an iPhone about Guided Access, which a page cannot see', () => {
+    const agent = jest
+      .spyOn(navigator, 'userAgent', 'get')
+      .mockReturnValue(
+        'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15'
+      );
+    setup();
+    expect(
+      screen.getByText(/triple-click the side button/)
+    ).toBeInTheDocument();
+    agent.mockRestore();
+  });
+
+  it('says nothing about Guided Access elsewhere', () => {
+    setup();
+    expect(
+      screen.queryByText(/triple-click the side button/)
+    ).not.toBeInTheDocument();
   });
 
   // Being shielded over a dead engine is the one state where the shield is

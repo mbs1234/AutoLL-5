@@ -331,8 +331,14 @@ Five items, each with a button that opens the screen that fixes it:
 - Notifications allowed
 - Plan Check reviewed
 
+It also shows on a first run, with nothing saved, whatever the date. With a
+plan saved, a sixth line says when the last backup was, and offers **Back up**
+once it is more than a week old; with nothing saved at all, Today offers
+**Restore a backup** instead.
+
 It is a local readiness summary, not a live check of Disney — it makes no
-requests. The panel disappears the moment the booking date is today.
+requests. On the day itself its place is taken by the park-morning check in the
+status card (section 11).
 
 > The "Plan Check reviewed" tick is not saved. Reload the page and it reverts.
 
@@ -365,20 +371,35 @@ Top to bottom, Today answers the questions you actually ask in a queue.
 
 **The freshness line.** "Plans and LL availability are current as of just now."
 This is the line that tells you whether to believe the rest of the screen. If it
-is climbing, tap the refresh button in the header. If there is **no line at
-all**, neither list has ever loaded — that is not the same as fresh.
+is climbing, tap the refresh button in the header; past five minutes it turns
+amber. If there is **no line at all**, neither list has ever loaded — that is
+not the same as fresh.
 
-**Held (N)** is what you are actually holding, at every park on that date.
-**Plan (N)** is what Autopilot is still after, for the park in the header only.
-The two lists are scoped differently on purpose, which is why you can see
-"Held (2)" above "Nothing watched at Magic Kingdom on this date."
+**Before you start.** On the day itself, while Autopilot is off, the status card
+is the park morning's go/no-go: whether anything is armed at this park, whether
+dry run is on, whether the sign-in lasts past 5 PM, and the alert sound, with
+**Test sound**. Each line reads its own signal. It goes once Autopilot is on.
+
+**Held (N)** is what you are actually holding, at every park on that date. Tap a
+pass to open it. Once its window is open, a live pass counts down — "· window
+ends in 20 min", amber in the last half hour. That is a reminder, not a watch:
+nothing acts on it, and a pass tapped in minutes ago may still show until Plans
+refreshes. **Plan (N)** is what Autopilot is still after, for the park in the
+header only; tap a row to open its card in Configure. The two lists are scoped
+differently on purpose, which is why you can see "Held (2)" above "Nothing
+watched at Magic Kingdom on this date." If this date's plan was saved at
+another park, Today names it and offers **Switch to** that park — it never
+switches by itself. And while Autopilot runs with nothing armed, Plan says so in
+amber: it can only alert.
 
 **The four buttons** — Configure, Plan check, Timeline, Activity — are the
 screens Today deliberately does not try to be.
 
-**Next Lightning Lane / Next drop** are the two times that decide when anything
-can happen: when your next booking window opens, and the park's next scheduled
-drop.
+**Next Lightning Lane / Next scheduled drop** are the two times that decide when
+anything can happen: when your next booking window opens, and the park's next
+drop from the built-in table. On any other date there is no drop time, because
+Autopilot bursts for drops only on the day itself; a line says so, and that at
+the 7:00 opening NextLL or booking by hand is faster.
 
 ## 12. Turning Autopilot on
 
@@ -426,7 +447,7 @@ resets on a miss or second contact, and remembers your phone until the page is
 reloaded so re-pocketing does not make you repeat a separate setup.
 
 The guarded screen is also a status display. It shows the current checking
-pace, the next drop in large type with how long until it, the number of targets
+pace, the time it is checking hard at in large type with how long until it, the number of targets
 that can actually act, today's booking count, a line such as **Sound on · Screen
 held**, and the last thing Autopilot did. A red **No sound** or **Screen may
 sleep** means to lift the guard and check the named channel; the status follows
@@ -455,6 +476,8 @@ then:
 triple-click the side button (double-click on iOS 18 and earlier). On the
 Guided Access screen, circle the areas to disable with your finger, then tap
 **Start**. iOS remembers the regions per app, so you draw them once.
+On an iPhone the guarded screen reminds you of this every time, because a web
+page cannot tell whether Guided Access is on.
 
 **What to circle:**
 
@@ -501,17 +524,19 @@ The bold coloured line above the status is **history** — the last thing
 Autopilot actually did, with a time. It survives switching Autopilot off,
 because the day's log is saved. Only the Status block is live.
 
-> Two things labelled "Next drop" on this screen are not the same. Inside the
-> Status block it is whatever moment the poller is chasing — which can be a
-> booking window or a drop the app has learned by observation. Lower down it is
-> the built-in table only. In the screenshot they read 10:33 AM and 11:47 AM;
-> that is not a bug.
+> **Checking hard at**, in the Status block, is whatever moment the poller is
+> chasing — a drop or a booking window, including a drop the app has learned by
+> observation. **Next scheduled drop**, lower down, is the built-in table only.
+> They can differ; that is not a bug. (The screenshot, taken before they were
+> named apart, shows both as "Next drop".)
 
 **How to tell it is working.** Freshness line recent → button red → Status not
 "Off" or "Stopped" → check counter rising. If all four look healthy and nothing
 is booking, look for the red refusal box, then the amber "failed checks in a
 row" line, then the yellow dry-run banner, then the "n armed" count in Plan. A
-running Autopilot with **0 armed** will never book anything.
+running Autopilot with **0 armed** will never book anything. The line under the
+latest event sums it up: "Nothing booked yet. Most often, the offered time was
+outside the window (12×)."
 
 ### Dry run
 

@@ -46,11 +46,26 @@ their place:
 |---|---|---|---|
 | 1 | Words | Typos and wrong limits; sentences that point somewhere become buttons that go there; Disney's eligibility codes in plain words; dates in words; NextLL's time bounds say what they do; the iPhone alert line; a Plan Check button on its own line; menu rows tappable edge to edge | in review (#10) |
 | 2 | Recovery | Errors that stay, with their time, until dismissed; lists that say when they have not loaded instead of that they are empty; the booking screen telling a dropped connection from a sold-out ride; confirmation for Cancel, Log Out and turning Autopilot off; a stopped run that says how to restart, in red on every tab; a note on Today when a sign-in expiry stopped Autopilot; Plans buttons wherever an outcome is in doubt | in review |
-| 3 | Today | Tappable passes and plan rows; how long a held pass has left; a park-morning preflight; the plan's own park named when the header shows another | planned |
+| 3 | Today | Tappable passes and plan rows; how long a held pass has left (roadmap item 3, the screen half); a park-morning check in the status card (item 13); the plan's own park named when the header shows another (item 14); no drop time for a date the engine never bursts for, and its two drop times named apart (item 8's honesty half); a line saying why nothing has booked; the readiness list on a first run, with a backup row; a Guided Access reminder in Pocket mode on iPhone | in review |
 | 4 | Reach | 44 px tap targets; the park, date and party chip as a control; refreshes that do not cover the screen | planned |
 | 5 | Setup | One "What should Autopilot do?" choice per attraction; one meaning per star | planned |
 | 6 | NextLL | Who holds each reservation; a warning before leaving a running search; the modify mode shown wherever it applies | planned |
 | 7 | Names | One name for each thing, across every screen | planned |
+
+## Decided along the way
+
+Two of the roadmap's open questions came up in slice 3 and were settled the
+smaller way. Either can be undone without touching anything else.
+
+- **Item 3, which passes count down.** Today's Held list is left as it is,
+  spent passes included, and the countdown is suppressed per row on
+  `isHeldMP(booking, parkDate())`. The warning threshold is
+  `LAPSE_WARNING_MINUTES` in `Today.tsx`: a choice about walking time, not a
+  Disney fact, and unverified.
+- **Item 8, which "Next drop" survives.** Both, under names that say what they
+  are: **Checking hard at** is the engine's own target, shown only near it, and
+  **Next scheduled drop** is the built-in table. On a date other than today
+  there is no drop time at all.
 
 ## Not here, and why
 
@@ -58,7 +73,8 @@ their place:
 poller restarts only when `enabled` changes); naming the ride the Tier 1 hold is
 waiting for; keeping "Why nothing was booked" counts across a reload; Pocket
 mode for a NextLL search; a chime before a held pass lapses (`alert.ts` is
-frozen for the trip).
+frozen for the trip). The sign-in's real end time on the readiness list, which
+needs the auth store to expose it.
 
 **After the rehearsal's booking morning:** the booking-morning screen. The
 roadmap holds it until that morning has shown what is hard about it, and that
