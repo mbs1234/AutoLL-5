@@ -62,15 +62,24 @@ park. Each slice keeps all of them.
 |---|---|---|---|
 | 1 | Foundation | palette, fonts, header, tab bar, park chip, default buttons | merged (#1) |
 | 2 | Today | a status card, the switch beside Pocket it, four tiles, held passes as tickets, the plan with rank badges | merged (#2) |
-| 3 | Pocket mode | the next drop at full size, the checks and the latest event, laid out in the gaps of the target's ring | this branch |
-| 4 | NextLL | the ride, what is held against the goal, what the search has done | |
-| 5 | Tip board | next booking and next drop up top, return times as chips | |
+| 3 | Pocket mode | the next drop at full size, the checks and the latest event, laid out in the gaps of the target's ring | merged (#3) |
+| 4 | NextLL | the search as a card with the held time at full size; Done green, Stop looking red; collapsible sections as cards | merged (#4) |
+| 5 | Tip board | Book and Drop as cards, quiet section labels, the attractions as a card, return times as chips in the park's colour | merged (#5) |
 
 **One deliberate departure from the mockups.** They put Today's main actions in
 a bar along the bottom. The switch stays in the page instead: a bar there sits
 directly above the tabs, where a thumb reaching for a tab would find Stop. The
 full-width switch keeps its place under the status card, with Pocket it beside
 it while Autopilot runs.
+
+**Left out on purpose.** The tip board mockup's Tier 1 / Other / Starred
+switch would be a new filter, not a new look, so it is not part of these
+slices. The mockups' single tappable park, date and party chip likewise: the
+header keeps its separate controls until that is built as behaviour.
+
+**Not yet redrawn** beyond what the foundation gave them: the Times guide, the
+Plans list, Configure, Plan Check, Activity, Timeline, the booking screens and
+Settings. They already have the palette, type, header, tab bar and buttons.
 
 **The user guide's screenshots** still show the old look. They are retaken once
 the slices have landed, together, rather than screen by screen.
