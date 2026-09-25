@@ -416,8 +416,9 @@ resets on a miss or second contact, and remembers your phone until the page is
 reloaded so re-pocketing does not make you repeat a separate setup.
 
 The guarded screen is also a status display. It shows the current checking
-pace, the number of targets that can actually act, today's booking count, and a
-line such as **Sound on · Screen held**. A red **No sound** or **Screen may
+pace, the next drop in large type with how long until it, the number of targets
+that can actually act, today's booking count, a line such as **Sound on · Screen
+held**, and the last thing Autopilot did. A red **No sound** or **Screen may
 sleep** means to lift the guard and check the named channel; the status follows
 the browser directly rather than waiting for the next poll. If Autopilot stops
 or the 4am rollover turns it off, the guard changes to a red warning. Lift it
