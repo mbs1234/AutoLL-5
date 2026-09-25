@@ -5,6 +5,7 @@ import {
   audioStatus,
   subscribeAudioStatus,
 } from '@/autopilot/alert';
+import { AutopilotEvent, latestActivity } from '@/autopilot/events';
 import { MODE_TEXT } from '@/autopilot/status';
 import {
   ScreenAwakeStatus,
@@ -12,7 +13,9 @@ import {
   subscribeScreenAwakeStatus,
 } from '@/autopilot/wakelock';
 import { targetActs } from '@/autopilot/watchlist';
+import { Time } from '@/components/Time';
 import TopAutopilotContext from '@/contexts/TopAutopilotContext';
+import { LockIcon } from '@/icons/LineIcons';
 
 import {
   BOX_POSITIONS,
@@ -40,6 +43,13 @@ const SOUND_TEXT: Record<AudioStatus, string> = {
   armed: 'Sound on',
   idle: 'No sound',
   unsupported: 'Sound unavailable',
+};
+
+/** The latest event, on the dark shield: the same levels as LatestEvent. */
+const LATEST_CLASS: Record<AutopilotEvent['level'], string> = {
+  info: 'text-gray-100',
+  warn: 'text-amber-300',
+  error: 'text-red-300',
 };
 
 const SCREEN_TEXT: Record<ScreenAwakeStatus, string> = {
@@ -270,12 +280,22 @@ export default function PocketShield({
     resetWide();
   };
 
+  const target = autopilot?.status.target;
+  const secondsToTarget = autopilot?.status.secondsToTarget;
+  const latest = autopilot
+    ? latestActivity({
+        bookingLog: autopilot.bookingLog,
+        lastSkip: autopilot.lastSkip,
+        lastHit: autopilot.lastHit,
+      })
+    : undefined;
+
   return (
     <div
       ref={shield}
       className={`fixed inset-0 z-50 touch-none select-none overscroll-none ${
-        alarm ? 'bg-red-950' : 'bg-black'
-      } text-white`}
+        alarm ? 'bg-red-950' : 'bg-gray-950'
+      } text-gray-50`}
       style={{ touchAction: 'none', overscrollBehavior: 'none' }}
       onTouchStart={event => handleTouch('start', false, event)}
       onTouchMove={event => handleTouch('move', false, event)}
@@ -284,57 +304,109 @@ export default function PocketShield({
       onClick={missByClick}
       data-testid="pocket-shield"
     >
-      <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center px-6 text-center">
-        {alarm ? (
-          <>
-            <div className="text-4xl font-bold text-red-300">
-              {stopped ? 'Stopped' : 'Off'}
+      {/* Everything drawn here ignores the glass: the backdrop and the box are
+          the only two things a touch can reach, which is what the counting
+          above relies on. The blocks sit in the gaps of the ring the box moves
+          around -- above its middle row and below it -- so the box rarely
+          lands on the numbers. */}
+      <div className="pointer-events-none absolute inset-0 text-center">
+        <div className="absolute inset-x-0 top-0 flex items-center justify-center gap-2 pt-7 text-xs font-bold tracking-widest text-gray-400 uppercase">
+          <LockIcon className="size-3.5" />
+          Pocket mode
+        </div>
+
+        <div className="absolute inset-x-6 top-[37%] -translate-y-1/2">
+          {alarm ? (
+            <>
+              <div className="font-display text-5xl font-bold text-red-300">
+                {stopped ? 'Stopped' : 'Off'}
+              </div>
+              <p className="mx-auto mt-3 mb-0 max-w-xs text-base text-red-100">
+                {stopped
+                  ? 'Autopilot stopped after repeated errors and is no longer checking.'
+                  : 'Autopilot is off and is no longer checking.'}{' '}
+                Lift the shield and start it again.
+              </p>
+            </>
+          ) : (
+            <>
+              <span className="inline-flex min-h-9 items-center gap-2 rounded-full bg-green-950 px-3.5 text-base font-bold text-green-300">
+                <span
+                  aria-hidden
+                  className="size-2.5 shrink-0 rounded-full bg-current"
+                />
+                {MODE_TEXT[mode]}
+              </span>
+              {target && (
+                <div className="mt-4">
+                  <div className="text-xs font-bold tracking-widest text-gray-400 uppercase">
+                    Next drop
+                  </div>
+                  <Time
+                    time={target}
+                    className="block font-display text-[5.5rem] leading-none font-bold tracking-tight [&_span_span]:text-2xl [&_span_span]:text-gray-400"
+                  />
+                  {typeof secondsToTarget === 'number' &&
+                    secondsToTarget > 0 && (
+                      <div className="mt-1 text-lg font-bold text-green-300">
+                        in {Math.round(secondsToTarget / 60)} min
+                      </div>
+                    )}
+                </div>
+              )}
+            </>
+          )}
+        </div>
+
+        {!alarm && (
+          <div className="absolute inset-x-6 top-[63%] -translate-y-1/2">
+            <div className="flex flex-wrap justify-center gap-2 text-sm font-semibold">
+              <span className="rounded-full border border-white/15 px-3 py-1.5 text-gray-100">
+                {armed} armed
+                {autopilot?.dryRun ? ' · Dry run' : ''}
+              </span>
+              <span className="rounded-full border border-white/15 px-3 py-1.5 text-gray-100">
+                {autopilot?.bookedCount ?? 0} booked today
+              </span>
+              <span
+                className={`rounded-full border border-white/15 px-3 py-1.5 ${
+                  alertChannelsHealthy
+                    ? 'text-gray-400'
+                    : 'font-semibold text-red-300'
+                }`}
+                data-testid="pocket-health"
+              >
+                {SOUND_TEXT[soundStatus]} · {SCREEN_TEXT[awakeStatus]}
+              </span>
             </div>
-            <p className="mt-3 max-w-xs text-base text-red-100">
-              {stopped
-                ? 'Autopilot stopped after repeated errors and is no longer checking.'
-                : 'Autopilot is off and is no longer checking.'}{' '}
-              Lift the shield and start it again.
+            {latest && (
+              <p
+                className={`mx-auto mt-4 mb-0 max-w-xs text-base font-semibold ${LATEST_CLASS[latest.level]}`}
+              >
+                {latest.text}
+              </p>
+            )}
+          </div>
+        )}
+
+        <div className="absolute inset-x-6 bottom-0 pb-7">
+          {wideInProgress ? (
+            <p className="my-0 text-sm text-gray-300">
+              Keep using one fingertip and follow the moving box. {remaining}{' '}
+              more {remaining === 1 ? 'tap' : 'taps'} to unlock.
             </p>
-          </>
-        ) : (
-          <>
-            <div className="text-4xl font-bold">{MODE_TEXT[mode]}</div>
-            <div className="mt-3 text-lg text-gray-300">
-              {armed} armed
-              {autopilot?.dryRun ? ' · Dry run' : ''}
-            </div>
-            <div className="mt-1 text-lg text-gray-300">
-              {autopilot?.bookedCount ?? 0} booked today
-            </div>
-            <div
-              className={`mt-3 text-sm ${
-                alertChannelsHealthy
-                  ? 'text-gray-400'
-                  : 'font-semibold text-red-300'
-              }`}
-              data-testid="pocket-health"
-            >
-              {SOUND_TEXT[soundStatus]} · {SCREEN_TEXT[awakeStatus]}
-            </div>
-          </>
-        )}
-        {wideInProgress ? (
-          <p className="mt-10 text-sm text-gray-300">
-            Keep using one fingertip and follow the moving box. {remaining} more{' '}
-            {remaining === 1 ? 'tap' : 'taps'} to unlock.
-          </p>
-        ) : (
-          <p className="mt-10 text-sm text-gray-400">
-            Screen guarded. Tap the box {remaining} more{' '}
-            {remaining === 1 ? 'time' : 'times'} to unlock.
-          </p>
-        )}
+          ) : (
+            <p className="my-0 text-sm text-gray-400">
+              Screen guarded. Tap the box {remaining} more{' '}
+              {remaining === 1 ? 'time' : 'times'} to unlock.
+            </p>
+          )}
+        </div>
       </div>
 
       <button
         type="button"
-        className="absolute h-16 w-16 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white/70 bg-white/10 text-lg font-semibold transition-[left,top] duration-200"
+        className="absolute h-16 w-16 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-gray-300/80 bg-white/10 font-display text-2xl font-bold transition-[left,top] duration-200"
         style={{ left: `${box.x * 100}%`, top: `${box.y * 100}%` }}
         // Two positions can share an x or a y -- the target moves diagonally
         // between them -- so the index is the only honest way to assert that it
