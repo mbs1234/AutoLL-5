@@ -23,6 +23,7 @@ import StarIcon from '@/icons/StarIcon';
 import kvdb from '@/kvdb';
 import { STARRED_KEY } from '@/storageNamespace';
 
+import ContextStrip from '../../ContextStrip';
 import NotLoaded from '../../NotLoaded';
 import RebookingHeader from '../../RebookingHeader';
 import { HomeTabProps } from '../Home';
@@ -78,7 +79,6 @@ export default function MultiPassList({ ref }: HomeTabProps) {
       buttons={
         <>
           {ll.rules.prebook && <BookingDateSelect />}
-          {sortSelect()}
           <ParkSelect />
           <AutopilotButton />
           <RefreshButton name="Experiences" onClick={refreshExperiences} />
@@ -86,6 +86,7 @@ export default function MultiPassList({ ref }: HomeTabProps) {
       }
       subhead={
         <>
+          <ContextStrip interactive />
           <RebookingHeader />
           {bookingDate === today && (
             <TimeBanner bookTime={ll.nextBookTime} dropTime={dropTime} />
@@ -94,6 +95,11 @@ export default function MultiPassList({ ref }: HomeTabProps) {
       }
       ref={ref}
     >
+      {experiences.length > 0 && (
+        <div className="mt-3 flex items-center justify-end gap-2 text-sm text-gray-600">
+          Sort by {sortSelect()}
+        </div>
+      )}
       {experiences.length > 0 ? (
         <Experiences experiences={experiences} park={park} sorter={sorter} />
       ) : lastUpdated === undefined ? (
@@ -200,7 +206,7 @@ const Experiences = memo(function Experiences({
                 {exp.name}
               </h3>
               {exp.tier !== undefined && (
-                <span className="text-xs font-semibold text-gray-400">
+                <span className="text-xs font-semibold text-gray-600">
                   T{exp.tier}
                 </span>
               )}
@@ -361,6 +367,15 @@ const Experiences = memo(function Experiences({
               sym={<CheckmarkIcon themed />}
               def={BOOKED}
               onInfo={showBookedDesc}
+            />
+            <Symbol
+              sym={
+                <span
+                  aria-hidden
+                  className="inline-block h-4 w-1 rounded-sm bg-green-500 align-middle"
+                />
+              }
+              def="Sooner than a pass you hold in its tier"
             />
           </Legend>
           {!isBookingToday && (

@@ -354,7 +354,7 @@ export default function Today({ ref }: HomeTabProps) {
           />
         </>
       }
-      subhead={<ContextStrip />}
+      subhead={<ContextStrip interactive />}
       ref={ref}
     >
       {freshness !== undefined && (

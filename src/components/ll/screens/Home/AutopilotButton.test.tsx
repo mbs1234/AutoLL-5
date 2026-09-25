@@ -56,24 +56,44 @@ describe('AutopilotButton', () => {
     expect(button.className).not.toMatch(/green|yellow|red/);
   });
 
-  it('says it is running, counts what it watches, and goes green', () => {
+  it('says it is running, counts what is armed, and goes green', () => {
     const { button } = setup({
       enabled: true,
       status: idle,
-      targetsHere: [{ experienceId: 'a' }, { experienceId: 'b' }],
+      targetsHere: [
+        { experienceId: 'a', autoBook: true },
+        { experienceId: 'b', autoModify: true },
+        { experienceId: 'c' },
+      ],
     });
-    expect(button).toHaveAttribute('title', 'Autopilot on, watching 2');
+    expect(button).toHaveAttribute('title', 'Autopilot on, 2 armed');
     expect(button).toHaveTextContent('2');
     expect(button).toHaveClass('bg-green-700');
   });
 
   it('is yellow for a dry run and red once stopped', () => {
-    const rehearsing = setup({ enabled: true, status: idle, dryRun: true });
+    const rehearsing = setup({
+      enabled: true,
+      status: idle,
+      dryRun: true,
+      targetsHere: [{ experienceId: 'a', autoBook: true }],
+    });
     expect(rehearsing.button).toHaveClass('bg-yellow-600');
     expect(rehearsing.button).toHaveAttribute(
       'title',
-      'Autopilot on (dry run), watching 0'
+      'Autopilot on (dry run), 1 armed'
     );
+  });
+
+  // It showed no count at zero, the one count that means it can only alert.
+  it('shows 0, in amber, when nothing is armed', () => {
+    const { button } = setup({
+      enabled: true,
+      status: idle,
+      targetsHere: [{ experienceId: 'a' }],
+    });
+    expect(button).toHaveTextContent('0');
+    expect(button).toHaveClass('bg-amber-600');
   });
 
   it('asks for attention once the poller has stopped', () => {

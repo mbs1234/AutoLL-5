@@ -415,7 +415,7 @@ export function NextLL({
             <input
               type="time"
               aria-label="Earliest acceptable return time"
-              className="rounded-lg border border-gray-300 bg-white px-2 py-1"
+              className="min-h-11 rounded-lg border border-gray-300 bg-white px-2 py-1"
               value={after}
               onChange={e => setAfter(e.target.value)}
             />
@@ -430,7 +430,7 @@ export function NextLL({
             <input
               type="time"
               aria-label="Latest acceptable return time"
-              className="rounded-lg border border-gray-300 bg-white px-2 py-1"
+              className="min-h-11 rounded-lg border border-gray-300 bg-white px-2 py-1"
               value={before}
               onChange={e => setBefore(e.target.value)}
             />

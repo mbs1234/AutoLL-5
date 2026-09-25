@@ -210,6 +210,26 @@ describe('MultiPassList', () => {
     expect(row).toBeInTheDocument();
   });
 
+  // The green bar was the one cue on the list with no key, and the tier
+  // badge was about 2.7:1 against white.
+  it('keys the green bar, and draws the tier badge readably', async () => {
+    setTime('09:00');
+    renderList();
+    await loading();
+    see('Sooner than a pass you hold in its tier');
+    expect(screen.getAllByText('T1')[0]).toHaveClass('text-gray-600');
+  });
+
+  // Five header controls squeezed the title to one letter at 360 px. Sort is
+  // in the page now, and the park, day and party chip is under the title.
+  it('sorts from the page, and carries the park, day and party chip', async () => {
+    setTime('09:00');
+    renderList();
+    await loading();
+    expect(screen.getByText(/^Sort by/)).toBeVisible();
+    expect(screen.getByTitle('Park, day and party')).toBeVisible();
+  });
+
   // A failed load left a blank page, which says nothing at all.
   it('says the tip board has not loaded, and tries again', async () => {
     setTime('09:00');

@@ -121,7 +121,10 @@ you whether you are signed in, a `Last backup:` line, and the build name.
 
 The header of the Today tab carries a **date** control and a **park** control.
 Everything below them — the watch list, the plan, the timeline, the checks — is
-scoped to that one park on that one day.
+scoped to that one park on that one day. The chip under the title — "Magic
+Kingdom · Today · Party of 3" — does the same on Today, the LL tab and Times: tap
+it for the park, the day and the party together. In the calendar, a day with a
+plan saved for it or a pass held carries a dot.
 
 This is the single most important idea in the app. A plan you build for Tuesday
 at Magic Kingdom is inert on Thursday at Epcot. That is deliberate: on Tuesday,
@@ -615,7 +618,7 @@ button to start booking.
 The banner under the header reads `BOOK:` and `DROP:` — the next moment you may
 book, and the park's next drop.
 
-**Sorting.** The second header control offers Priority (the app's own ranking),
+**Sorting.** **Sort by**, at the top of the list, offers Priority (the app's own ranking),
 Nearby (closest first, today only), Standby, Soonest, and A to Z. Whatever you
 choose, attractions with no availability sink to the bottom, and sorting never
 crosses a tier boundary.
@@ -624,12 +627,12 @@ crosses a tier boundary.
 return time. ⬇ means an upcoming drop (solid = the next one, faded = a later
 one). ✓ means you already hold a pass. A **green bar** down the left edge means
 this attraction is available earlier than a pass you already hold in that
-tier — the one cue with no legend entry.
+tier; the legend at the foot of the list keys all four.
 
-The clock button between the park picker and refresh is the **Autopilot status
-light**: green running, yellow dry run, red stopped, plain off, with the number
-of attractions being watched. Tapping it opens Today; it is navigation only, so
-a mis-tap can never change what gets booked.
+The dot between the park picker and refresh is the **Autopilot status light**:
+green running, amber running with nothing armed, yellow dry run, red stopped, a
+hollow dot off, with the number armed beside it while it runs. Tapping it opens
+Today; it is navigation only, so a mis-tap can never change what gets booked.
 
 > Sold-out attractions still appear, reading "none". A ride Disney has re-themed
 > under a new internal ID vanishes from this list silently — the warning for that
@@ -698,8 +701,8 @@ A read-only park guide: standby waits, show and character times, and Individual
 Lightning Lane prices, grouped by land. Names in bold and in the land's colour
 are the ones the data file flags as popular.
 
-Symbols: `–` no posted wait, `❌` showing but standby not open, `VQ` virtual
-queue only.
+Symbols: `–` no posted wait, `Down` temporarily down, `VQ` virtual queue
+only.
 
 This tab is also the **only** way to request a DAS return time: a **DAS** button
 appears in the header if Disney reports at least one registered party on your
@@ -876,7 +879,7 @@ by an expired session — signing back in remounts the app with Autopilot off, s
 there it is one tap, and Today says when it stopped.)
 
 Nothing notifies you that it stopped. You find out by looking at Today, by the
-footer strip on other tabs (it turns red), or by noticing the header clock has
+footer strip on other tabs (it turns red), or by noticing the header status light has
 turned red — or
 by your phone starting to sleep normally again, because the wake lock is
 released.

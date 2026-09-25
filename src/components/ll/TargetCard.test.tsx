@@ -81,6 +81,15 @@ describe('TargetCard', () => {
     expect(line.queryByRole('button')).not.toBeInTheDocument();
   });
 
+  // Its arrow sat still while the other fold-outs turned theirs.
+  it('turns its arrow when it opens', () => {
+    const { summary } = setup();
+    expect(summary.closest('details')).toHaveClass('group');
+    expect(summary.querySelector('[aria-hidden]')).toHaveClass(
+      'group-open:rotate-90'
+    );
+  });
+
   it('says watch only, and says paused ahead of the mode', () => {
     const { summary, unmount } = setup();
     expect(within(summary).getByText(/Watch only/)).toBeInTheDocument();

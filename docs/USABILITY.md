@@ -47,7 +47,7 @@ their place:
 | 1 | Words | Typos and wrong limits; sentences that point somewhere become buttons that go there; Disney's eligibility codes in plain words; dates in words; NextLL's time bounds say what they do; the iPhone alert line; a Plan Check button on its own line; menu rows tappable edge to edge | in review (#10) |
 | 2 | Recovery | Errors that stay, with their time, until dismissed; lists that say when they have not loaded instead of that they are empty; the booking screen telling a dropped connection from a sold-out ride; confirmation for Cancel, Log Out and turning Autopilot off; a stopped run that says how to restart, in red on every tab; a note on Today when a sign-in expiry stopped Autopilot; Plans buttons wherever an outcome is in doubt | in review |
 | 3 | Today | Tappable passes and plan rows; how long a held pass has left (roadmap item 3, the screen half); a park-morning check in the status card (item 13); the plan's own park named when the header shows another (item 14); no drop time for a date the engine never bursts for, and its two drop times named apart (item 8's honesty half); a line saying why nothing has booked; the readiness list on a first run, with a backup row; a Guided Access reminder in Pocket mode on iPhone | in review |
-| 4 | Reach | 44 px tap targets; the park, date and party chip as a control; refreshes that do not cover the screen | planned |
+| 4 | Reach | 44 px tap areas on every small button (the chip keeps its size) and 44 px time and rank boxes; the park, day and party chip as a control on Today, LL and Times; Sort out of the LL header, which squeezed the title to one letter; the Autopilot light as a dot and the armed count, amber at none; planned days marked in the calendar; the green bar in the legend, a readable tier badge, a turning Configure arrow, a red Replace on Restore, and Down in words on the Times tab | in review |
 | 5 | Setup | One "What should Autopilot do?" choice per attraction; one meaning per star | planned |
 | 6 | NextLL | Who holds each reservation; a warning before leaving a running search; the modify mode shown wherever it applies | planned |
 | 7 | Names | One name for each thing, across every screen | planned |
@@ -74,7 +74,8 @@ poller restarts only when `enabled` changes); naming the ride the Tier 1 hold is
 waiting for; keeping "Why nothing was booked" counts across a reload; Pocket
 mode for a NextLL search; a chime before a held pass lapses (`alert.ts` is
 frozen for the trip). The sign-in's real end time on the readiness list, which
-needs the auth store to expose it.
+needs the auth store to expose it. Refreshes that do not cover the screen: the spinner
+that blocks every refresh is the providers', not a screen's.
 
 **After the rehearsal's booking morning:** the booking-morning screen. The
 roadmap holds it until that morning has shown what is hard about it, and that
