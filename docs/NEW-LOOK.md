@@ -61,8 +61,8 @@ park. Each slice keeps all of them.
 | | slice | what changes | state |
 |---|---|---|---|
 | 1 | Foundation | palette, fonts, header, tab bar, park chip, default buttons | merged (#1) |
-| 2 | Today | a status card, the switch beside Pocket it, four tiles, held passes as tickets, the plan with rank badges | this branch |
-| 3 | Pocket mode | the next drop at full size, sound and screen state, the moving target restyled | |
+| 2 | Today | a status card, the switch beside Pocket it, four tiles, held passes as tickets, the plan with rank badges | merged (#2) |
+| 3 | Pocket mode | the next drop at full size, the checks and the latest event, laid out in the gaps of the target's ring | this branch |
 | 4 | NextLL | the ride, what is held against the goal, what the search has done | |
 | 5 | Tip board | next booking and next drop up top, return times as chips | |
 
