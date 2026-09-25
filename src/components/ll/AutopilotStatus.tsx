@@ -129,8 +129,8 @@ export default function AutopilotStatus({
       {status.mode === 'stopped' && (
         <p className="mt-3 mb-0 font-semibold text-red-700">
           Stopped after {status.consecutiveFailures} failed checks
-          {status.lastError ? `: ${status.lastError}` : ''}. Turn it back on to
-          retry.
+          {status.lastError ? `: ${status.lastError}` : ''}. To retry, tap Turn
+          off autopilot, then Turn on autopilot.
         </p>
       )}
     </div>

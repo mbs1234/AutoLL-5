@@ -8,6 +8,7 @@ import { leaseKey, quarantine } from '@/autopilot/lease';
 import { savePendingSearch } from '@/autopilot/nextll';
 import { planReview } from '@/autopilot/plancheck';
 import { holdScreenAwake, releaseScreenAwake } from '@/autopilot/wakelock';
+import { SIGN_IN_STOP_KEY } from '@/components/ll/signInStop';
 import TabsContext from '@/contexts/TabContext';
 import { ParkTime, parkDate } from '@/datetime';
 import { PARTY_IDS_KEY } from '@/hooks/useSavedParty';
@@ -41,12 +42,39 @@ describe('Today', () => {
     expect(setEnabled).toHaveBeenCalledWith(true);
   });
 
-  it('offers to turn off when on', () => {
+  // A second tap while it runs: the button sits beside Pocket it.
+  it('turns off on a second tap while running', () => {
     const { setEnabled } = setup({
       enabled: true,
       status: { ...OFF, mode: 'idle', polls: 3 },
     });
-    screen.getByText('Turn off autopilot').click();
+    act(() => screen.getByText('Turn off autopilot').click());
+    expect(setEnabled).not.toHaveBeenCalled();
+    act(() => screen.getByText('Tap again to turn off').click());
+    expect(setEnabled).toHaveBeenCalledWith(false);
+  });
+
+  // The file's clock is already fake (setTime), so the timers only advance.
+  it('lets the second tap lapse after a few seconds', () => {
+    const { setEnabled } = setup({
+      enabled: true,
+      status: { ...OFF, mode: 'idle', polls: 3 },
+    });
+    act(() => screen.getByText('Turn off autopilot').click());
+    act(() => {
+      jest.advanceTimersByTime(3000);
+    });
+    expect(screen.getByText('Turn off autopilot')).toBeVisible();
+    act(() => screen.getByText('Turn off autopilot').click());
+    expect(setEnabled).not.toHaveBeenCalled();
+  });
+
+  it('turns a stopped run off in one tap', () => {
+    const { setEnabled } = setup({
+      enabled: true,
+      status: { ...OFF, mode: 'stopped', consecutiveFailures: 8, polls: 20 },
+    });
+    act(() => screen.getByText('Turn off autopilot').click());
     expect(setEnabled).toHaveBeenCalledWith(false);
   });
 
@@ -68,6 +96,47 @@ describe('Today', () => {
     });
     expect(screen.getByText(/Stopped after 8 failed checks/)).toBeVisible();
     expect(screen.getByText(/Request failed/)).toBeVisible();
+  });
+
+  // The sign-in screen replaces the app, so a run stops with it and comes
+  // back simply off, with nothing to say it had been running.
+  it('says when a sign-in expiry stopped Autopilot', () => {
+    kvdb.set(SIGN_IN_STOP_KEY, Date.now() - 60_000);
+    setup();
+    expect(
+      screen.getByText(
+        /Autopilot stopped at .* when your Disney sign-in expired/
+      )
+    ).toBeVisible();
+    act(() => screen.getByRole('button', { name: 'Dismiss' }).click());
+    expect(
+      screen.queryByText(/when your Disney sign-in expired/)
+    ).not.toBeInTheDocument();
+    expect(kvdb.get(SIGN_IN_STOP_KEY)).toBeUndefined();
+  });
+
+  it('lets that go once Autopilot is on again', () => {
+    kvdb.set(SIGN_IN_STOP_KEY, Date.now() - 60_000);
+    setup({ enabled: true, status: { ...OFF, mode: 'idle', polls: 1 } });
+    expect(
+      screen.queryByText(/when your Disney sign-in expired/)
+    ).not.toBeInTheDocument();
+    expect(kvdb.get(SIGN_IN_STOP_KEY)).toBeUndefined();
+  });
+
+  // It said "turn it back on", beside a button that said Turn off: a stopped
+  // run is still switched on, so a retry is off and then on.
+  it('names the two taps a retry takes', () => {
+    setup({
+      enabled: true,
+      status: { mode: 'stopped', consecutiveFailures: 8, polls: 20 },
+    });
+    expect(
+      screen.getByText(
+        /To retry, tap Turn off autopilot, then Turn on autopilot/
+      )
+    ).toBeVisible();
+    expect(screen.getByText('Turn off autopilot')).toBeVisible();
   });
 
   it('warns when notifications are blocked', () => {
@@ -325,6 +394,19 @@ describe('Today', () => {
   ])('says nothing about freshness when %s', (_case, updates) => {
     setup(updates);
     expect(screen.queryByText(/current as of/)).not.toBeInTheDocument();
+  });
+
+  // Before Plans had loaded it said "Held (0)" and "No Multi Pass
+  // reservations yet today" -- a fact about the day it did not know.
+  it('says Plans have not loaded rather than that nothing is held', () => {
+    const { refreshPlans } = setup({ plansLoaded: false });
+    expect(screen.getByText('Plans have not loaded yet.')).toBeVisible();
+    expect(
+      screen.queryByText(/No Multi Pass reservations/)
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText('Held (0)')).not.toBeInTheDocument();
+    act(() => screen.getByRole('button', { name: 'Try again' }).click());
+    expect(refreshPlans).toHaveBeenCalled();
   });
 
   it('lists what is held on the date, with its return window', () => {

@@ -24,7 +24,9 @@ import { Time } from '@/components/Time';
 import AutopilotStatus from '@/components/ll/AutopilotStatus';
 import ContextStrip from '@/components/ll/ContextStrip';
 import LatestEvent from '@/components/ll/LatestEvent';
+import NotLoaded from '@/components/ll/NotLoaded';
 import TargetWindow from '@/components/ll/TargetWindow';
+import { clearSignInStop, signInStopAt } from '@/components/ll/signInStop';
 import AutopilotContext from '@/contexts/AutopilotContext';
 import BookingDateContext from '@/contexts/BookingDateContext';
 import ClientsContext from '@/contexts/ClientsContext';
@@ -34,7 +36,7 @@ import ParkContext from '@/contexts/ParkContext';
 import PlansContext from '@/contexts/PlansContext';
 import PocketShieldContext from '@/contexts/PocketShieldContext';
 import TabsContext from '@/contexts/TabContext';
-import { parkDate, upcomingTimes } from '@/datetime';
+import { DateTime, formatTime, parkDate, upcomingTimes } from '@/datetime';
 import { PARTY_IDS_KEY } from '@/hooks/useSavedParty';
 import {
   CheckCircleIcon,
@@ -94,6 +96,31 @@ export default function Today({ ref }: HomeTabProps) {
     refusals,
     passkeyStatus,
   } = use(AutopilotContext);
+  // Turning off takes a second tap while it runs: the button sits beside
+  // Pocket it, the tap made most, and turning back on resets drop detection,
+  // skip counts and the refusal state. Turning on stays one tap -- it is the
+  // tap that arms the alert sound -- and a stopped run turns off in one.
+  const [confirmingOff, setConfirmingOff] = useState(false);
+  useEffect(() => {
+    if (!confirmingOff) return;
+    const timeoutId = self.setTimeout(() => setConfirmingOff(false), 3000);
+    return () => clearTimeout(timeoutId);
+  }, [confirmingOff]);
+  function toggleAutopilot() {
+    if (!enabled) return setEnabled(true);
+    if (confirmingOff || status.mode === 'stopped') {
+      setConfirmingOff(false);
+      return setEnabled(false);
+    }
+    setConfirmingOff(true);
+  }
+  // Set when a Disney sign-in expired under a running engine; see signInStop.
+  const [signInStop, setSignInStop] = useState(() => signInStopAt());
+  useEffect(() => {
+    if (!enabled || signInStop === undefined) return;
+    clearSignInStop();
+    setSignInStop(undefined);
+  }, [enabled, signInStop]);
   const {
     experiences,
     refreshExperiences,
@@ -101,7 +128,12 @@ export default function Today({ ref }: HomeTabProps) {
     lastUpdated: experiencesUpdated,
     loaderElem,
   } = use(ExperiencesContext);
-  const { plans, refreshPlans, lastUpdated: plansUpdated } = use(PlansContext);
+  const {
+    plans,
+    refreshPlans,
+    lastUpdated: plansUpdated,
+    plansLoaded,
+  } = use(PlansContext);
   const { park } = use(ParkContext);
   const { bookingDate } = use(BookingDateContext);
   const { ll } = use(ClientsContext);
@@ -324,6 +356,35 @@ export default function Today({ ref }: HomeTabProps) {
         <LatestEvent event={activity} />
       </section>
 
+      {signInStop !== undefined && !enabled && (
+        <div
+          role="status"
+          className="mt-3 rounded-2xl bg-red-100 p-3.5 text-sm text-red-900"
+        >
+          <p className="my-0 font-semibold">
+            Autopilot stopped at {formatTime(DateTime.from(signInStop).time)}{' '}
+            when your Disney sign-in expired.
+          </p>
+          {/* Never switched back on for you: turning it on is the tap that
+              arms the alert sound. */}
+          <p className="mt-1 mb-0">
+            It is off now, and nothing ran while you were signed out. Turn it on
+            again when you are ready.
+          </p>
+          <div className="mt-2">
+            <Button
+              type="small"
+              onClick={() => {
+                clearSignInStop();
+                setSignInStop(undefined);
+              }}
+            >
+              Dismiss
+            </Button>
+          </div>
+        </div>
+      )}
+
       {/* Act. The switch stays up here, in the page, rather than in a bar
           along the bottom as the mockups drew it: a bar there sits directly
           above the tabs, where a thumb reaching for a tab would find Stop.
@@ -346,11 +407,21 @@ export default function Today({ ref }: HomeTabProps) {
         <Button
           type="full"
           className={enabled ? 'w-auto! shrink-0' : ''}
-          onClick={() => setEnabled(!enabled)}
-          color={enabled ? 'bg-white text-red-700' : 'bg-green-700 text-white'}
+          onClick={toggleAutopilot}
+          color={
+            !enabled
+              ? 'bg-green-700 text-white'
+              : confirmingOff
+                ? 'bg-red-700 text-white'
+                : 'bg-white text-red-700'
+          }
           border={enabled ? 'border border-red-300' : undefined}
         >
-          {enabled ? 'Turn off autopilot' : 'Turn on autopilot'}
+          {!enabled
+            ? 'Turn on autopilot'
+            : confirmingOff
+              ? 'Tap again to turn off'
+              : 'Turn off autopilot'}
         </Button>
       </div>
 
@@ -542,8 +613,12 @@ export default function Today({ ref }: HomeTabProps) {
       )}
 
       <section aria-label="Held">
-        <h3 className="mt-5 mb-2 font-bold">Held ({held.length})</h3>
-        {held.length === 0 ? (
+        <h3 className="mt-5 mb-2 font-bold">
+          {plansLoaded || held.length > 0 ? `Held (${held.length})` : 'Held'}
+        </h3>
+        {held.length === 0 && !plansLoaded ? (
+          <NotLoaded what="Plans" onRefresh={refreshPlans} />
+        ) : held.length === 0 ? (
           <p className="my-0 text-sm text-gray-600">
             No Multi Pass reservations {isToday ? 'yet today' : 'on this date'}.
           </p>

@@ -764,6 +764,14 @@
           </tbody>
         </table>
       </div>
+      <p>
+        If the session expires while Autopilot is running, the sign-in screen
+        replaces the app and Autopilot stops with it. After you sign in again,
+        Today says so — “Autopilot stopped at 2:14 PM when your Disney sign-in
+        expired” — and that it is off. Turn it on yourself; it never comes back
+        on by itself, because turning it on is the tap that arms the alert
+        sound.
+      </p>
       <div class="call safe">
         <span class="call-label">Worth acting on</span>
         <p>
@@ -795,7 +803,7 @@
       <p>
         The same menu carries <span class="ui">Backup and Restore</span> (see
         <em>It cannot protect its own storage</em>, below),
-        <span class="ui">Log Out</span>, a
+        <span class="ui">Log Out</span> (it asks first), a
         <strong>Session-only login</strong> switch for a borrowed phone (the
         token then lives only as long as the tab), a
         <span class="ui">Session:</span> line telling you whether you are signed
@@ -1623,11 +1631,12 @@
         chosen guests, or the whole reservation when you remove everyone.
       </p>
       <div class="call stop">
-        <span class="call-label">Cancelling has no confirmation step</span>
+        <span class="call-label">Cancelling asks first</span>
         <p>
-          The bottom button on Cancel Guests fires the request immediately. If
-          Disney refuses it, the screen stays where it is with the error, and
-          the party is unchanged. If Disney does not answer at all, it says so —
+          The red button on Cancel Guests opens a check that names the ride, the
+          time and the guests, and only <span class="ui">Yes, cancel</span>
+          sends it. If Disney refuses it, the screen stays where it is with the
+          error, and the party is unchanged. If Disney does not answer at all, it says so —
           the cancel may or may not have gone through — and points to Plans.
           Booking and modifying by hand do the same: a request with no answer is
           never shown as a plain failure beside a live button.
@@ -1887,8 +1896,9 @@
         </table>
       </div>
       <p>
-        The banner clears itself after three seconds and is stored nowhere. Miss
-        it and the only way to see it again is to repeat the action.
+        An error banner stays, with the time it happened, until you dismiss it
+        with <span class="ui">×</span> or the screen tries again. It is stored
+        nowhere else, so read it before you dismiss it.
       </p>
     </section>
 
@@ -1942,15 +1952,20 @@
       </p>
       <p>
         The switch still reads <span class="ui">Turn off autopilot</span>, so
-        restarting is <strong>two taps</strong>: off, then on. The exception is a
-        stop caused by an expired session — signing back in remounts the app with
-        Autopilot off, so there it is one tap.
+        restarting is <strong>two taps</strong>: off, then on, and the screen
+        says so. Once it has stopped, Turn off takes one tap; while it is
+        running it takes two, the second within three seconds
+        (<span class="ui">Tap again to turn off</span>), because it sits beside
+        Pocket it. The exception is a stop caused by an expired session —
+        signing back in remounts the app with Autopilot off, so there it is one
+        tap, and Today says when it stopped.
       </p>
       <div class="call stop">
         <span class="call-label">Nothing tells you</span>
         <p>
           No notification fires when it stops. You find out by looking at Today,
-          by the footer strip on other tabs, by noticing the header clock has
+          by the footer strip on other tabs (it turns red), by noticing the
+          header clock has
           turned red — or by your phone starting to sleep normally again, because
           the wake lock is released.
         </p>

@@ -1,6 +1,7 @@
 import '@testing-library/jest-dom';
 import { fireEvent, render, screen } from '@testing-library/react';
 
+import { syncedParkTime } from '@/autopilot/schedule';
 import { AutopilotState } from '@/contexts/AutopilotContext';
 import TabsContext from '@/contexts/TabContext';
 import TopAutopilotContext from '@/contexts/TopAutopilotContext';
@@ -41,7 +42,7 @@ const state: AutopilotState = {
   dropSummaries: [],
 };
 
-function setup(active = 'LL') {
+function setup(active = 'LL', overrides: Partial<AutopilotState> = {}) {
   const changeTab = jest.fn();
   render(
     <TabsContext
@@ -52,7 +53,7 @@ function setup(active = 'LL') {
         scrollPos: { get: () => 0, set: () => {} },
       }}
     >
-      <TopAutopilotContext value={state}>
+      <TopAutopilotContext value={{ ...state, ...overrides }}>
         <AutopilotStatusRow />
       </TopAutopilotContext>
     </TabsContext>
@@ -67,6 +68,31 @@ describe('AutopilotStatusRow', () => {
     expect(row).toHaveTextContent('Checking often · 1 armed');
     fireEvent.click(row);
     expect(changeTab).toHaveBeenCalledWith('Today');
+  });
+
+  // It stayed green when the run had stopped, so from every tab but Today a
+  // dead run looked like a live one.
+  it('turns red, in words as well as colour, once stopped', () => {
+    setup('LL', {
+      status: { mode: 'stopped', consecutiveFailures: 8, polls: 40 },
+    });
+    const row = screen.getByRole('button', { name: /Autopilot:/ });
+    expect(row).toHaveTextContent('Stopped after repeated errors');
+    expect(row).toHaveClass('text-red-700');
+    expect(row.querySelector('[aria-hidden]')).toHaveClass('bg-red-700');
+  });
+
+  it('says when Disney is refusing its calls', () => {
+    const since = syncedParkTime().add({ minutes: -5 });
+    setup('LL', { refusals: { book: { count: 5, since } } });
+    const row = screen.getByRole('button', { name: /Autopilot:/ });
+    expect(row).toHaveTextContent('Disney refusing');
+    expect(row.querySelector('[aria-hidden]')).toHaveClass('bg-amber-600');
+  });
+
+  it('marks nothing armed, since then it can only alert', () => {
+    setup('LL', { targetsHere: [{ experienceId: 'ride' }] });
+    expect(screen.getByText('0 armed')).toHaveClass('text-amber-800');
   });
 
   it('stays out of Today, where the full controls are already shown', () => {

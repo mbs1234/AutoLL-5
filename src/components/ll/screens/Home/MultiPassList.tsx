@@ -23,6 +23,7 @@ import StarIcon from '@/icons/StarIcon';
 import kvdb from '@/kvdb';
 import { STARRED_KEY } from '@/storageNamespace';
 
+import NotLoaded from '../../NotLoaded';
 import RebookingHeader from '../../RebookingHeader';
 import { HomeTabProps } from '../Home';
 import RefreshButton from '../RefreshButton';
@@ -54,7 +55,7 @@ export default function MultiPassList({ ref }: HomeTabProps) {
   useSavedParty();
   const { ll } = use(ClientsContext);
   const { park } = use(ParkContext);
-  const { experiences, refreshExperiences, loaderElem } =
+  const { experiences, refreshExperiences, loaderElem, lastUpdated } =
     use(ExperiencesContext);
   const { bookingDate } = use(BookingDateContext);
   const { sortType, sorter, sortSelect } = useSort();
@@ -93,7 +94,15 @@ export default function MultiPassList({ ref }: HomeTabProps) {
       }
       ref={ref}
     >
-      <Experiences experiences={experiences} park={park} sorter={sorter} />
+      {experiences.length > 0 ? (
+        <Experiences experiences={experiences} park={park} sorter={sorter} />
+      ) : lastUpdated === undefined ? (
+        <NotLoaded what="Lightning Lanes" onRefresh={refreshExperiences} />
+      ) : (
+        <p role="status" className="my-3 text-center text-sm text-gray-600">
+          Disney lists no Lightning Lanes at {park.name} for this day.
+        </p>
+      )}
       {loaderElem}
     </Tab>
   );

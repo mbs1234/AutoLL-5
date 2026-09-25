@@ -1,4 +1,4 @@
-import { AUTH_PERSISTENCE_KEY } from '@/api/auth';
+import { AUTH_PERSISTENCE_KEY, authStore } from '@/api/auth';
 import { APP_NAME, BUILD_REV } from '@/appIdentity';
 import { recordBackup } from '@/autopilot/backup';
 import kvdb from '@/kvdb';
@@ -65,6 +65,34 @@ describe('SettingsButton', () => {
     ).toBe(null);
     expect(screen.getByText('Party Selection')).toBeInTheDocument();
     expect(screen.getByText('Log Out')).toBeInTheDocument();
+  });
+
+  // One tap used to sign out on the spot, stopping Autopilot with it.
+  it('asks before logging out', () => {
+    jest.useFakeTimers();
+    const deleteData = jest
+      .spyOn(authStore, 'deleteData')
+      .mockImplementation(() => {});
+    render(<SettingsButton />);
+    fireEvent.click(screen.getByTitle('Settings Menu'));
+    fireEvent.click(screen.getByText('Log Out'));
+    act(() => jest.runAllTimers());
+    expect(screen.getByRole('alertdialog')).toHaveTextContent(
+      'Log out of Disney?'
+    );
+    expect(deleteData).not.toHaveBeenCalled();
+
+    fireEvent.click(screen.getByText('Stay signed in'));
+    expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument();
+    expect(deleteData).not.toHaveBeenCalled();
+
+    fireEvent.click(screen.getByTitle('Settings Menu'));
+    fireEvent.click(screen.getByText('Log Out'));
+    act(() => jest.runAllTimers());
+    fireEvent.click(screen.getByText('Log out'));
+    expect(deleteData).toHaveBeenCalledTimes(1);
+    deleteData.mockRestore();
+    jest.useRealTimers();
   });
 
   it('offers session-only login as a privacy option', () => {

@@ -272,6 +272,36 @@ describe('BookExperience', () => {
     );
     await renderComponent();
     see('No Reservations Available');
+    // The first offer's 410 is mapped to no message at all. An empty mapping
+    // used to fall through to "Network request failed (410 ...)".
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+
+  // A dropped connection used to read as "No Reservations Available": a
+  // fact about the ride, when it was one about the request.
+  it('says Disney could not be reached, not that nothing is available', async () => {
+    ll.offer.mockRejectedValueOnce(
+      new RequestError({ ok: false, status: 0, data: {} })
+    );
+    await renderComponent();
+    see('Could not reach Disney');
+    see.no('No Reservations Available');
+    click('Try again');
+    await loading();
+    see('Book Lightning Lane');
+  });
+
+  // The party failing to load left a blank screen, and Refresh only ever
+  // refreshed an offer, so it did nothing.
+  it('offers to load the party again when it failed to load', async () => {
+    ll.guests.mockRejectedValueOnce(
+      new RequestError({ ok: false, status: 0, data: {} })
+    );
+    await renderComponent();
+    see('Guests have not loaded yet.');
+    click('Refresh Party');
+    await loading();
+    see(mickey.name);
   });
 
   it('shows "No Eligible Guests" on OfferError with no eligible guests', async () => {

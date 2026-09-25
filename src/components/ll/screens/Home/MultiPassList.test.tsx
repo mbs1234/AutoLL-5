@@ -209,4 +209,25 @@ describe('MultiPassList', () => {
     expect(ll.experiences).toHaveBeenCalledTimes(2);
     expect(row).toBeInTheDocument();
   });
+
+  // A failed load left a blank page, which says nothing at all.
+  it('says the tip board has not loaded, and tries again', async () => {
+    setTime('09:00');
+    ll.experiences.mockRejectedValueOnce(new Error('offline'));
+    renderList();
+    await loading();
+    see('Lightning Lanes have not loaded yet.');
+    click('Try again');
+    await loading();
+    see(sm.name);
+  });
+
+  it('says so when Disney lists nothing for the park and day', async () => {
+    setTime('09:00');
+    ll.experiences.mockResolvedValueOnce([]);
+    renderList();
+    await loading();
+    see(`Disney lists no Lightning Lanes at ${mk.name} for this day.`);
+    see.no('Lightning Lanes have not loaded yet.');
+  });
 });

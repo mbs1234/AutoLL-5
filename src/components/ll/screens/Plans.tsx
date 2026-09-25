@@ -11,10 +11,11 @@ import { parkDate } from '@/datetime';
 import { ScreenProps } from '../../Screen';
 import BookingListing from '../BookingListing';
 import NoPlans from '../NoPlans';
+import NotLoaded from '../NotLoaded';
 import RefreshButton from './RefreshButton';
 
 export default function Plans(props: Partial<ScreenProps>) {
-  const { plans, refreshPlans, loaderElem } = use(PlansContext);
+  const { plans, refreshPlans, loaderElem, plansLoaded } = use(PlansContext);
 
   return (
     <Tab
@@ -23,7 +24,11 @@ export default function Plans(props: Partial<ScreenProps>) {
       theme={DEFAULT_THEME}
       {...props}
     >
-      <PlansList plans={plans} />
+      {plans.length === 0 && !plansLoaded ? (
+        <NotLoaded what="Plans" onRefresh={refreshPlans} />
+      ) : (
+        <PlansList plans={plans} />
+      )}
       {loaderElem}
     </Tab>
   );
