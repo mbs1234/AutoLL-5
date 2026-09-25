@@ -45,7 +45,7 @@ function BoundInput({
     <input
       type="time"
       aria-label={label}
-      className="rounded-sm border border-gray-300 px-1 py-0.5"
+      className="min-h-11 rounded-sm border border-gray-300 px-1 py-0.5"
       value={cleared ? '' : value}
       onChange={e => {
         const next = e.target.value;
@@ -94,7 +94,7 @@ function RankInput({
       min={1}
       step={1}
       aria-label={label}
-      className="w-16 rounded-sm border border-gray-300 px-1 py-0.5"
+      className="min-h-11 w-16 rounded-sm border border-gray-300 px-1 py-0.5"
       value={draft ?? value ?? ''}
       onChange={e => {
         const next = e.target.value;
@@ -172,11 +172,14 @@ export default function TargetCard({
   return (
     <details
       ref={cardRef}
-      className="rounded-md border border-gray-300 bg-white"
+      className="group rounded-md border border-gray-300 bg-white"
       open={defaultOpen || undefined}
     >
       <summary className="flex cursor-pointer list-none items-center gap-2 px-3 py-2 [&::-webkit-details-marker]:hidden">
-        <span aria-hidden className="text-gray-500">
+        <span
+          aria-hidden
+          className="text-gray-500 transition-transform group-open:rotate-90"
+        >
           &#9656;
         </span>
         <span className="min-w-0 flex-1">

@@ -1,8 +1,11 @@
 import { use, useMemo } from 'react';
 
+import { isLLMP } from '@/api/itinerary';
 import MenuButton, { MenuProps } from '@/components/MenuButton';
 import BookingDateContext from '@/contexts/BookingDateContext';
+import PlansContext from '@/contexts/PlansContext';
 import ThemeContext from '@/contexts/ThemeContext';
+import TopAutopilotContext from '@/contexts/TopAutopilotContext';
 import { DateFormat, modifyDate, parkDate, toDate } from '@/datetime';
 import useUpdateParkFromPlans from '@/hooks/useUpdateParkFromPlans';
 import { NUM_BOOKING_DAYS } from '@/providers/BookingDateProvider';
@@ -14,6 +17,28 @@ export default function BookingDateSelect(props: { className?: string }) {
   const updateParkFromPlans = useUpdateParkFromPlans();
   const { guard, dialog } = useScopeGuard();
   const today = parkDate();
+  // Days that already have something on them -- a plan saved for the date, or
+  // a Multi Pass held -- marked in the calendar, so building a trip day by day
+  // does not mean opening each one to find out.
+  const targets = use(TopAutopilotContext)?.targets;
+  const { plans } = use(PlansContext);
+  const marked = useMemo(() => {
+    const dates = new Set<string>();
+    for (const target of targets ?? []) {
+      if (target.date) dates.add(target.date);
+    }
+    for (const booking of plans) {
+      if (isLLMP(booking)) dates.add(parkDate(booking.start));
+    }
+    return dates;
+  }, [targets, plans]);
+  const Calendar = useMemo(
+    () =>
+      function MarkedCalendar<K extends string, V>(props: MenuProps<K, V>) {
+        return <CalendarMenu {...props} marked={marked} />;
+      },
+    [marked]
+  );
 
   const options = useMemo(() => {
     return new Map(
@@ -41,16 +66,18 @@ export default function BookingDateSelect(props: { className?: string }) {
             updateParkFromPlans(date);
           });
         }}
-        menuType={CalendarMenu}
+        menuType={Calendar}
       />
       {dialog}
     </>
   );
 }
 
-function CalendarMenu<K extends string, V>(props: MenuProps<K, V>) {
+function CalendarMenu<K extends string, V>(
+  props: MenuProps<K, V> & { marked?: Set<string> }
+) {
   const { bg } = use(ThemeContext);
-  const { options, selected } = props;
+  const { options, selected, marked } = props;
   const dates = [...options.keys()];
   const bookStart = toDate(dates[0] as K);
   const calStart = modifyDate(bookStart, -bookStart.getDay());
@@ -104,6 +131,13 @@ function CalendarMenu<K extends string, V>(props: MenuProps<K, V>) {
                         />
                         <time dateTime={date}>{opt.text}</time>
                       </span>
+                      <span
+                        aria-hidden
+                        className={`mx-auto block size-1.5 rounded-full ${marked?.has(date) ? 'bg-white' : 'bg-transparent'}`}
+                      />
+                      {marked?.has(date) && (
+                        <span className="sr-only"> (has a plan or pass)</span>
+                      )}
                     </label>
                   </td>
                 ) : (

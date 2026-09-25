@@ -4,7 +4,11 @@ import NavContext, { NavError } from '@/contexts/NavContext';
 
 const TYPES = {
   normal: 'min-h-10 px-3 py-1.5 rounded-xl font-semibold',
-  small: 'min-h-8 px-3 py-1 rounded-full text-[13px] font-semibold',
+  // 32 px to see, 44 px to tap: the after-element reaches 7 px above and
+  // below the padding box -- 6 px past the 1 px border -- into the gap around
+  // the chip. Test sound, Take it, Undo and every action chip are this size.
+  small:
+    'relative min-h-8 px-3 py-1 rounded-full text-[13px] font-semibold after:absolute after:inset-x-0 after:-inset-y-[7px]',
   full: 'w-full min-h-13 px-4 py-3 rounded-2xl text-[17px] font-bold',
 };
 

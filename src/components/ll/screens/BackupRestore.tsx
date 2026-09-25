@@ -191,14 +191,16 @@ export default function BackupRestore({
             {describeSummary(summarize(picked.backup.data))}
           </p>
           <div className="mt-3 flex gap-2">
-            <Button className="flex-1" onClick={restore} disabled={running}>
-              Replace this phone’s plan
-            </Button>
             <Button
               className="flex-1"
-              color="bg-white text-gray-800"
-              onClick={() => setPicked(undefined)}
+              color="bg-red-700 text-white"
+              border="border border-transparent"
+              onClick={restore}
+              disabled={running}
             >
+              Replace this phone’s plan
+            </Button>
+            <Button className="flex-1" onClick={() => setPicked(undefined)}>
               Cancel
             </Button>
           </div>

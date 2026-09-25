@@ -202,7 +202,7 @@ export default function TimeSearch({ booking }: { booking: LLMP }) {
             <input
               type="time"
               aria-label="Target return time"
-              className="rounded-sm border border-gray-300 px-1 py-0.5"
+              className="min-h-11 rounded-sm border border-gray-300 px-1 py-0.5"
               value={targetText}
               onChange={e => setTargetText(e.target.value)}
             />

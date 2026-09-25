@@ -6,12 +6,11 @@ import {
   hs,
   liveData,
   ll,
-  mk,
   renderResort,
 } from '@/__fixtures__/ll';
 import kvdb from '@/kvdb';
 import { HOME_TAB_KEY } from '@/storageNamespace';
-import { click, loading, revisitTab, see, setTime } from '@/testing';
+import { click, loading, revisitTab, screen, see, setTime } from '@/testing';
 
 import Merlock from '../Merlock';
 import Home from './Home';
@@ -42,7 +41,9 @@ describe('Home', () => {
     click('Times');
     expect(kvdb.get(HOME_TAB_KEY)).toBe('Times');
 
-    click(mk.name);
+    // The park picker by its title: the chip under the title names the park
+    // too, and opens the park, day and party together.
+    click(screen.getByTitle('Park'));
     click(hs.name, 'radio');
     await loading();
     see(hs.name);

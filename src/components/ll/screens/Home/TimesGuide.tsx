@@ -7,6 +7,7 @@ import LandLine from '@/components/LandLine';
 import Screen from '@/components/Screen';
 import Tab from '@/components/Tab';
 import { Time } from '@/components/Time';
+import ContextStrip from '@/components/ll/ContextStrip';
 import DasPartiesContext from '@/contexts/DasPartiesContext';
 import ExperiencesContext from '@/contexts/ExperiencesContext';
 import NavContext from '@/contexts/NavContext';
@@ -41,6 +42,7 @@ export default function TimesGuide({ ref }: HomeTabProps) {
           <RefreshButton name="Times" onClick={refreshExperiences} />
         </>
       }
+      subhead={<ContextStrip interactive />}
       ref={ref}
     >
       <Experiences experiences={experiences} />
@@ -113,7 +115,10 @@ const Experiences = memo(function Experiences({
         <>
           <Legend title="Symbols">
             <Symbol sym="–" def="No posted wait/show time" />
-            <Symbol sym="❌" def="Temporarily down" />
+            <Symbol
+              sym={<span className="text-xs text-red-700">Down</span>}
+              def="Temporarily down"
+            />
             <Symbol sym="VQ" def="Virtual queue" />
           </Legend>
           <p className="text-sm text-center">
@@ -173,7 +178,12 @@ function ExperienceList({
                   exp.standby.unavailableReason === 'NOT_STANDBY_ENABLED' ? (
                   'VQ'
                 ) : (
-                  '❌'
+                  <span
+                    className="text-xs font-semibold text-red-700"
+                    title="Temporarily down"
+                  >
+                    Down
+                  </span>
                 )}
               </td>
               <td className="w-full px-1 pl-2 py-0.5 group-first:pt-1 group-last:pb-1 bg-white/90">

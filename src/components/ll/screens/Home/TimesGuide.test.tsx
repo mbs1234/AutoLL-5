@@ -26,7 +26,7 @@ function expectTimes(def: { [key: string]: { [key: string]: Experience[] } }) {
                 ? formatTime(exp.showTimes[0])
                 : exp.standby.available
                   ? '–'
-                  : '❌')
+                  : 'Down')
           ),
           exp.name +
             (exp.individual?.available

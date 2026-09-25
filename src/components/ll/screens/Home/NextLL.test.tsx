@@ -246,6 +246,16 @@ describe('NextLL', () => {
     );
   });
 
+  it('gives its time boxes a 44 px height to tap', () => {
+    setup();
+    expect(screen.getByLabelText('Latest acceptable return time')).toHaveClass(
+      'min-h-11'
+    );
+    expect(
+      screen.getByLabelText('Earliest acceptable return time')
+    ).toHaveClass('min-h-11');
+  });
+
   it('does nothing without an attraction chosen', () => {
     const { setEnabled, replaceTargets } = setup();
     fireEvent.click(screen.getByText('Find it'));

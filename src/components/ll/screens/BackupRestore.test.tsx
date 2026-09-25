@@ -225,6 +225,11 @@ describe('BackupRestore, restoring', () => {
     expect(screen.getByText('my backup.json')).toBeInTheDocument();
     expect(screen.getByText(/build abc1234$/)).toBeInTheDocument();
     expect(loadWatchList()).toHaveLength(2);
+    // The step that overwrites the plan looks like one; Cancel is the quiet
+    // way out. They were drawn alike.
+    expect(
+      screen.getByRole('button', { name: 'Replace this phone’s plan' })
+    ).toHaveClass('bg-red-700');
   });
 
   it('replaces the plan, then holds the screen until a reload', async () => {
