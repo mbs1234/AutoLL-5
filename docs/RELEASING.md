@@ -77,8 +77,11 @@ if the deploy job ever fails with zero steps, this is why.
 
 `package.json` carries AutoLL-3's version, because every sync brings AutoLL-3's
 `package.json` with it, and this build's releases are tagged `autoll5-v` plus
-that version. How releases of the new look itself are numbered is decided with
-the first of them.
+that version. A release is cut after each sync, so the tags say where this build
+stands: `autoll5-v1.4.2`, the first, is AutoLL-3 1.4.2 in step by merge, with the
+five new-look slices merged by then. The new look does not number itself; the
+tag says which AutoLL-3 this build matches, and the release notes say what of the
+new look it carries.
 
 ## Two policy differences from AutoLL-3, both on purpose
 
