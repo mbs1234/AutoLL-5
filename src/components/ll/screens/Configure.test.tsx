@@ -6,6 +6,7 @@ import { ParkTime } from '@/datetime';
 import Configure from './Configure';
 import {
   BZ,
+  DB,
   llExperience,
   nonLLExperience,
   renderScreen,
@@ -63,6 +64,54 @@ describe('Configure watch list', () => {
     scrolled.mockRestore();
   });
 
+  // A second removal used to wipe the first one's undo.
+  it('keeps an undo for every removal in the moment', () => {
+    const { addTarget } = setup({ watched: [BZ, DB] });
+    fireEvent.click(screen.getByTitle(`Stop watching ${NAME}`));
+    fireEvent.click(
+      screen.getByTitle(`Stop watching ${wdw.experience(DB).name}`)
+    );
+    const strip = screen.getByRole('status');
+    expect(within(strip).getAllByRole('button', { name: 'Undo' })).toHaveLength(
+      2
+    );
+    fireEvent.click(within(strip).getAllByRole('button', { name: 'Undo' })[0]!);
+    expect(addTarget).toHaveBeenCalledWith({ experienceId: BZ });
+  });
+
+  // The star there meant Remove, and nothing brought a removal back.
+  it('removes a missing ride with a word, and offers to undo it', () => {
+    const { addTarget } = setup({
+      experiences: [llExperience(DB)],
+      targets: [{ experienceId: BZ, name: 'Gone Ride' }],
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Remove' }));
+    expect(screen.getByRole('status')).toHaveTextContent(
+      'Stopped watching Gone Ride.'
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }));
+    expect(addTarget).toHaveBeenCalledWith({
+      experienceId: BZ,
+      name: 'Gone Ride',
+    });
+  });
+
+  // The whole row adds, not only a star at its head.
+  it('adds a ride from anywhere on its row', () => {
+    setup();
+    expect(screen.getByTitle(`Watch ${NAME}`)).toHaveTextContent(NAME);
+  });
+
+  // It opened at the top of a long screen rather than at the setting.
+  it('opens at the safeguards for a setting', () => {
+    const scrolled = jest.spyOn(Element.prototype, 'scrollIntoView');
+    renderScreen(<Configure focus={{ kind: 'setting' }} />);
+    expect(scrolled.mock.contexts).toContain(
+      screen.getByTitle('Rehearse without booking').parentElement
+    );
+    scrolled.mockRestore();
+  });
+
   it('adds a target', () => {
     const { addTarget } = setup();
     fireEvent.click(screen.getByTitle(`Watch ${NAME}`));
@@ -113,25 +162,41 @@ describe('Configure watch list', () => {
   });
 });
 
+const choice = (label: string) =>
+  screen.getByRole('radio', { name: `${label} for ${NAME}` });
+
 describe('Configure auto-book', () => {
   it('shows auto-book as off by default', () => {
     setup({ watched: [BZ] });
-    expect(screen.getByTitle(`Auto-book ${NAME}`)).toHaveTextContent(
-      'Auto-book off'
-    );
+    expect(choice('Auto-book')).not.toBeChecked();
+    expect(choice('Watch only')).toBeChecked();
   });
 
   it('toggles auto-book for one attraction', () => {
-    const { toggleAutoBook } = setup({ watched: [BZ] });
-    screen.getByTitle(`Auto-book ${NAME}`).click();
+    const { toggleAutoBook, toggleAutoModify, toggleBookThenMove } = setup({
+      watched: [BZ],
+    });
+    fireEvent.click(choice('Auto-book'));
     expect(toggleAutoBook).toHaveBeenCalledWith(BZ);
+    expect(toggleAutoModify).not.toHaveBeenCalled();
+    expect(toggleBookThenMove).not.toHaveBeenCalled();
   });
 
   it('reflects auto-book already on', () => {
     setup({ watched: [BZ], targets: [{ experienceId: BZ, autoBook: true }] });
-    expect(screen.getByTitle(`Stop auto-booking ${NAME}`)).toHaveTextContent(
-      'Auto-book on'
-    );
+    expect(choice('Auto-book')).toBeChecked();
+  });
+
+  // Three overlapping chips became one choice; changing it flips exactly the
+  // flags that differ.
+  it('moves from one choice to another in one tap', () => {
+    const { toggleAutoBook, toggleBookThenMove } = setup({
+      watched: [BZ],
+      targets: [{ experienceId: BZ, autoBook: true }],
+    });
+    fireEvent.click(choice('Book then move'));
+    expect(toggleAutoBook).toHaveBeenCalledWith(BZ);
+    expect(toggleBookThenMove).toHaveBeenCalledWith(BZ);
   });
 
   // Booking spends a real entitlement, so the consequences are spelled out
@@ -157,14 +222,12 @@ describe('Configure auto-book', () => {
 describe('Configure auto-move', () => {
   it('shows auto-move as off by default', () => {
     setup({ watched: [BZ] });
-    expect(screen.getByTitle(`Auto-move ${NAME}`)).toHaveTextContent(
-      'Auto-move off'
-    );
+    expect(choice('Auto-move')).not.toBeChecked();
   });
 
   it('toggles auto-move independently of auto-book', () => {
     const { toggleAutoModify, toggleAutoBook } = setup({ watched: [BZ] });
-    screen.getByTitle(`Auto-move ${NAME}`).click();
+    fireEvent.click(choice('Auto-move'));
     expect(toggleAutoModify).toHaveBeenCalledWith(BZ);
     expect(toggleAutoBook).not.toHaveBeenCalled();
   });
@@ -174,9 +237,7 @@ describe('Configure auto-move', () => {
       watched: [BZ],
       targets: [{ experienceId: BZ, autoModify: true }],
     });
-    expect(screen.getByTitle(`Stop auto-moving ${NAME}`)).toHaveTextContent(
-      'Auto-move on'
-    );
+    expect(choice('Auto-move')).toBeChecked();
   });
 
   // Moving a reservation you already hold can leave the day worse, so the
@@ -211,14 +272,12 @@ describe('Configure auto-move', () => {
 describe('Configure book-then-move and pause', () => {
   it('shows book-then-move as off by default', () => {
     setup({ watched: [BZ] });
-    expect(screen.getByTitle(`Book then move ${NAME}`)).toHaveTextContent(
-      'Book then move off'
-    );
+    expect(choice('Book then move')).not.toBeChecked();
   });
 
   it('toggles book-then-move', () => {
     const { toggleBookThenMove } = setup({ watched: [BZ] });
-    screen.getByTitle(`Book then move ${NAME}`).click();
+    fireEvent.click(choice('Book then move'));
     expect(toggleBookThenMove).toHaveBeenCalledWith(BZ);
   });
 

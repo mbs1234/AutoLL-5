@@ -149,26 +149,38 @@ anything: the screen is inert until you turn Autopilot on from Today.
 
 ### Adding an attraction
 
-Scroll to **Lightning Lane attractions** at the bottom and tap the ☆ beside a
-name. It moves up into **Watching (N)** and its card opens so you can set it up.
-The **Filter attractions** box narrows both lists.
+Scroll to **Lightning Lane attractions** at the bottom and tap a name — each
+row reads **+** and the ride. It moves up into **Watching (N)** and its card
+opens, in view, so you can set it up. The **Filter attractions** box narrows both
+lists.
 
-A newly added target starts with **every action off** — it only watches and
-alerts. That is on purpose: alerting and booking are separate decisions.
+A newly added target starts as **Watch only** — it only alerts. That is on
+purpose: alerting and booking are separate decisions. The card says so until you
+choose.
 
-### The five actions
+### What Autopilot does for it
 
 ![A target card unfolded](user-guide/configure-card.png)
 
-Tap a card to unfold it. Five chips:
+Tap a card to unfold it. **What should Autopilot do?** is one choice of five,
+each with a line saying what it will do:
+
+| Choice | What it does |
+|---|---|
+| **Watch only** | Alerts when it comes up; books nothing |
+| **Auto-book** | Books it without asking, the moment a return time inside its window is offered |
+| **Auto-move** | For a pass you already hold, moves it earlier when a better time appears — but only for a gain of **30 minutes or more**, and never later |
+| **Auto-book and move** | Both: books inside the window, then keeps moving it earlier |
+| **Book then move** | Takes the first time offered **even outside your window**, so you hold something, then works to move it in |
+
+Three chips under it combine with any choice:
 
 | Chip | What it does |
 |---|---|
-| **Auto-book** | Books it without asking, the moment a return time inside its window is offered |
-| **Auto-move** | For a pass you already hold, moves it earlier when a better time appears — but only for a gain of **30 minutes or more**, and never later |
-| **Book then move** | Takes the first time offered **even outside your window**, so you hold something, then works to move it in |
-| **Swap in** | When all three slots are full, gives up your lowest-ranked held pass to take this one |
+| **Swap in** | When all three slots are full, gives up the held pass the app ranks lowest to take this one. While it is on, the card says which pass that would be now |
 | **Pause** | Keeps it watched and alerting while nothing is booked or moved for it |
+
+(The screenshot shows the earlier chips.)
 
 Things worth knowing:
 
@@ -180,10 +192,10 @@ Things worth knowing:
   single request, so you can never end up holding neither.
 - **Book then move and Swap in each imply booking**, so an attraction can be
   booked with Auto-book off.
-- **Pausing keeps everything you armed.** The chips stay on, they just do not
+- **Pausing keeps everything you armed.** The choice stays, it just does not
   fire. Resuming brings the plan back exactly as it was.
 
-There is a sixth chip, **Passkey**, on non-Tier-1 attractions only — see
+There is a third chip, **Passkey**, on non-Tier-1 attractions only — see
 [The passkey](#the-passkey) below.
 
 ### Return-time window
@@ -214,8 +226,9 @@ gives up.
 
 Inside the card, at the bottom. Removal is inside the card on purpose, so a
 mis-tap on the list cannot lose a window and a rank. An **Undo** strip appears
-for **8 seconds** and remembers only the most recent removal — remove a second
-attraction and the first one's undo is gone.
+for **8 seconds** with an Undo for every attraction removed in that time. A saved
+target that is not on today's list has a **Remove** of its own, with the same
+Undo.
 
 ### The three safeguards
 
