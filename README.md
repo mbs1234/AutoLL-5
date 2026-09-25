@@ -9,8 +9,8 @@ two-second window when a scheduled drop lands.
 Underneath, it is AutoLL-3: the same booking engine, talking to Disney the same
 way, kept in step with it by merge. What changes here is what you see and touch.
 The screens are redrawn here one at a time, so each can be tried on a phone
-before any of it goes near a park day. Until the first of them lands, it is
-AutoLL-3 1.4.1 under another name.
+before any of it goes near a park day. [docs/NEW-LOOK.md](docs/NEW-LOOK.md) says
+what has changed so far and the rules every change keeps.
 
 It is unofficial, experimental software. It is not affiliated with or endorsed
 by Disney, it can stop working the day Disney changes an endpoint, and it comes

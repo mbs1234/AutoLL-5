@@ -1,12 +1,32 @@
 import { use } from 'react';
 
 import NavContext, { NavError } from '@/contexts/NavContext';
-import ThemeContext from '@/contexts/ThemeContext';
 
 const TYPES = {
-  normal: 'py-0.75',
-  small: 'py-1.25 text-xs uppercase tracking-wide',
-  full: 'w-full py-2.75',
+  normal: 'min-h-10 px-3 py-1.5 rounded-xl font-semibold',
+  small: 'min-h-8 px-3 py-1 rounded-full text-[13px] font-semibold',
+  full: 'w-full min-h-13 px-4 py-3 rounded-2xl text-[17px] font-bold',
+};
+
+/**
+ * What a button looks like when its caller does not say.
+ *
+ * Quiet by default: white with a hairline, so the colours left on a screen are
+ * the ones that mean something -- green for go, red for stop, the park's own
+ * colour for where you are. The one exception is the full-width button, which
+ * is a screen's main action and is drawn in ink. A caller that passes `color`
+ * or `border` replaces these outright, exactly as before.
+ */
+const COLORS = {
+  normal: 'bg-white text-ink',
+  small: 'bg-white text-ink',
+  full: 'bg-ink text-white',
+};
+
+const BORDERS = {
+  normal: 'border border-gray-300',
+  small: 'border border-gray-300',
+  full: 'border border-transparent',
 };
 
 export default function Button<P>(
@@ -20,7 +40,8 @@ export default function Button<P>(
 ) {
   const { goBack } = use(NavContext);
   const { type, back, onClick, className, color, border, ...attrs } = props;
-  const cls = `${TYPES[type || 'normal']} ${className || ''} ${color ?? `${use(ThemeContext).bg} text-white`} ${border ?? 'border border-black/20 rounded-lg'}`;
+  const kind = type || 'normal';
+  const cls = `${TYPES[kind]} ${className || ''} ${color ?? COLORS[kind]} ${border ?? BORDERS[kind]}`;
   return (
     <button
       onClick={async event => {
@@ -34,7 +55,7 @@ export default function Button<P>(
         }
         if (onClick) await onClick();
       }}
-      className={`${cls} inline-flex items-center justify-center min-w-9 px-1.75 font-semibold disabled:opacity-50`}
+      className={`${cls} inline-flex items-center justify-center min-w-9 disabled:opacity-50`}
       {...attrs}
     />
   );

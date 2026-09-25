@@ -86,7 +86,7 @@ separate hand-made copy.
 | `.github/workflows/upstream-drift.yml` | this build's own |
 | `.github/dependabot.yml` | absent here on purpose. Dependencies arrive from AutoLL-3 with every merge, and a Dependabot pull request here would put this build's lockfile out of step with AutoLL-3's. If a sync reports a conflict on it, keep it deleted |
 | the docs, **in part** | `README.md`, `FORK.md`, `SECURITY.md`, `docs/RELEASING.md` and this file are this build's own. The user guide, the roadmap and `FUTURE.md` take AutoLL-3's content with this build's name, and are *ported* where a redrawn screen changes what they describe |
-| the new look | whatever the redesign has changed so far — the reason this build exists |
+| the new look | whatever the redesign has changed so far — the reason this build exists. [NEW-LOOK.md](NEW-LOOK.md) lists it slice by slice |
 
 Everything else should be identical to AutoLL-3's. When it is not, one of them
 is wrong.

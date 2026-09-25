@@ -49,6 +49,17 @@ function renderComponent(booking: Booking, isNew = false) {
   );
 }
 
+/**
+ * The park colour a screen is drawn in. The header used to be filled with it;
+ * now it reaches the page as the accent variable `Screen` sets, so that is
+ * where "which park themes this screen" is read.
+ */
+function accentOf(element: HTMLElement): string | undefined {
+  return element
+    .closest<HTMLElement>('[style*="--accent"]')
+    ?.style.getPropertyValue('--accent');
+}
+
 describe('BookingDetails', () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -102,9 +113,7 @@ describe('BookingDetails', () => {
 
   it('shows Multiple Experiences LL details', async () => {
     const { container } = renderComponent(multiExp);
-    expect(see('Your Lightning Lane').parentNode?.parentNode).toHaveClass(
-      DEFAULT_THEME.bg
-    );
+    expect(accentOf(see('Your Lightning Lane'))).toBe(DEFAULT_THEME.color);
     see('Multiple Experiences');
     see.time(multiExp.start.time);
     see('Park Close');
@@ -144,9 +153,7 @@ describe('BookingDetails', () => {
       choices: multiExp.choices?.filter(exp => exp.park === booking.park),
     });
     see('Multiple Experiences');
-    expect(see('Your Lightning Lane').parentNode?.parentNode).toHaveClass(
-      mk.theme.bg
-    );
+    expect(accentOf(see('Your Lightning Lane'))).toBe(mk.theme.color);
   });
 
   it('shows all-day experience redemption details', async () => {

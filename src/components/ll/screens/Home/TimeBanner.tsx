@@ -1,7 +1,4 @@
-import { use } from 'react';
-
 import { Time } from '@/components/Time';
-import ThemeContext from '@/contexts/ThemeContext';
 import { DateTime, ParkTime } from '@/datetime';
 
 export default function TimeBanner({
@@ -12,7 +9,7 @@ export default function TimeBanner({
   dropTime?: ParkTime;
 }) {
   return bookTime || dropTime ? (
-    <div className={`flex justify-center gap-x-10 ${use(ThemeContext).bg}`}>
+    <div className="flex justify-center gap-x-8 rounded-xl border border-gray-300 bg-white py-1.5 font-semibold text-ink">
       <LabeledTime label="Book" time={bookTime} />
       <LabeledTime label="Drop" time={dropTime} />
     </div>

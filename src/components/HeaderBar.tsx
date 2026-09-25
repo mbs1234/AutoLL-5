@@ -1,6 +1,5 @@
-import { Children, Fragment, isValidElement, use } from 'react';
+import { Children, Fragment, isValidElement } from 'react';
 
-import ThemeContext from '@/contexts/ThemeContext';
 import useScreenState from '@/hooks/useScreenState';
 import BackIcon from '@/icons/BackIcon';
 
@@ -16,7 +15,6 @@ export default function HeaderBar({
   subhead?: React.ReactNode;
 }) {
   const { isFirstScreen } = useScreenState();
-  const theme = use(ThemeContext);
 
   function changeButtonColors(node: React.ReactNode): React.ReactNode {
     if (!isValidElement(node) || typeof node.type === 'string') return node;
@@ -26,28 +24,34 @@ export default function HeaderBar({
     ) : (
       <n.type
         {...n.props}
-        color={`bg-white/90 ${theme.text}`}
-        className={`min-h-9 ${n.props.className || ''}`}
+        color="bg-white text-ink"
+        // Tighter than a button in the page: the LL tab carries five of these
+        // beside its title, and they have to fit on one row at 390 px.
+        className={`px-1.5! ${n.props.className ?? ''}`}
       />
     );
   }
 
   return (
-    <div className={`px-3 ext-lg text-white ${theme.bg}`}>
-      <div className="flex flex-wrap justify-end gap-x-2 gap-y-1 min-h-9 py-2">
+    <div className="px-3 pt-2 pb-2 bg-paper text-ink">
+      <div className="flex flex-wrap items-center justify-end gap-x-1.5 gap-y-1 min-h-11">
         {!isFirstScreen && (
-          <Button back border="" className="-my-2 -ml-3" title="Go Back">
+          <Button
+            back
+            border=""
+            color="bg-transparent text-ink"
+            className="-ml-2"
+            title="Go Back"
+          >
             <BackIcon />
           </Button>
         )}
-        <h1 className="flex-1 self-center py-1 text-xl font-semibold overflow-hidden whitespace-nowrap">
+        <h1 className="flex-1 self-center py-1 font-display text-[26px] leading-tight font-bold tracking-[-0.02em] overflow-hidden text-ellipsis whitespace-nowrap">
           {title}
         </h1>
         {changeButtonColors(buttons)}
       </div>
-      <div
-        className={`empty:hidden flex flex-col gap-y-1 pb-1 ${theme.bg} text-white text-sm font-semibold uppercase text-center`}
-      >
+      <div className="empty:hidden flex flex-col gap-y-1.5 pt-1.5 text-sm font-bold text-accent">
         {subhead}
       </div>
     </div>

@@ -1,22 +1,23 @@
 import { use } from 'react';
 
 import TabsContext, { TabDef } from '@/contexts/TabContext';
-import ThemeContext from '@/contexts/ThemeContext';
 
 export default function TabButton<N extends string>({ name, icon }: TabDef<N>) {
   const { active, changeTab } = use(TabsContext);
   if (!changeTab) return null;
-  const theme = use(ThemeContext);
   const isActive = active?.name === name;
-  const iconStyles = isActive
-    ? `border-black/20 bg-white/90 ${theme.text}`
-    : `border-transparent ${theme.bg} text-white`;
   return (
-    <button className="px-2.5 py-2" onClick={() => changeTab(name)}>
-      <div className={`min-w-12 rounded-full py-1.25 border ${iconStyles}`}>
+    <button
+      className={`px-1.5 pt-1.5 pb-2 ${isActive ? 'text-accent font-bold' : 'text-gray-600 font-semibold'}`}
+      aria-current={isActive ? 'page' : undefined}
+      onClick={() => changeTab(name)}
+    >
+      <div
+        className={`flex min-w-14 justify-center rounded-full py-1 ${isActive ? 'bg-accent/12' : ''}`}
+      >
         {icon}
       </div>
-      <div className="mt-0.5 text-sm">{name}</div>
+      <div className="mt-1 text-xs">{name}</div>
     </button>
   );
 }
