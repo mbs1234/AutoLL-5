@@ -25,7 +25,7 @@ export default function ContextStrip() {
     bookingDate === parkDate() ? 'Today' : formatDate(bookingDate, 'short');
 
   return (
-    <div className="self-start inline-flex flex-wrap items-center gap-x-1.5 min-h-9 rounded-full bg-accent/12 px-3.5 py-1 text-sm font-bold text-accent">
+    <div className="self-start inline-flex flex-wrap items-center gap-x-1.5 min-h-9 rounded-[18px] bg-accent/12 px-3.5 py-1 text-sm font-bold text-accent">
       <span>{park.name}</span>
       {DOT}
       <time dateTime={bookingDate}>{day}</time>

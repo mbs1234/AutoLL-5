@@ -36,6 +36,16 @@ import PocketShieldContext from '@/contexts/PocketShieldContext';
 import TabsContext from '@/contexts/TabContext';
 import { parkDate, upcomingTimes } from '@/datetime';
 import { PARTY_IDS_KEY } from '@/hooks/useSavedParty';
+import {
+  CheckCircleIcon,
+  LinesIcon,
+  LockIcon,
+  PauseIcon,
+  PulseIcon,
+  SlidersIcon,
+  SoundIcon,
+  SunIcon,
+} from '@/icons/LineIcons';
 import kvdb from '@/kvdb';
 import { loadSavedPartyIds } from '@/savedParty';
 import { PLAN_CHECK_REVIEW_KEY } from '@/storageNamespace';
@@ -243,66 +253,148 @@ export default function Today({ ref }: HomeTabProps) {
       subhead={<ContextStrip />}
       ref={ref}
     >
-      <div className="mt-3">
-        {freshness !== undefined && (
-          <p className="mb-2 text-xs text-gray-600">
-            Plans and LL availability are current as of{' '}
-            {freshness === 0 ? 'just now' : `${freshness} min ago`}.
-          </p>
-        )}
-        <Button
-          type="full"
-          onClick={() => setEnabled(!enabled)}
-          color={enabled ? 'bg-red-700 text-white' : undefined}
-        >
-          {enabled ? 'Turn off autopilot' : 'Turn on autopilot'}
-        </Button>
-        {/* Its own full-width row rather than a chip among the navigation
-            buttons below. Those four all go somewhere and come back; this one
-            changes what the screen will accept, which is a different kind of
-            action and reads as one at this size. Offered only while the engine
-            is running, because that is the only time the wake lock holds the
-            screen on and the glass stays live in a pocket. */}
-        {enabled && (
-          <div className="mt-2">
-            <Button
-              type="full"
-              color="bg-black text-white"
-              onClick={() => setShielded(true)}
-            >
-              Pocket it
-            </Button>
+      {freshness !== undefined && (
+        <p className="mt-3 mb-0 text-xs text-gray-600">
+          Plans and LL availability are current as of{' '}
+          {freshness === 0 ? 'just now' : `${freshness} min ago`}.
+        </p>
+      )}
+
+      {/* Glance: is it running, when is the next drop, can it be heard, is the
+          screen held, and what did it last do. */}
+      <section
+        aria-label="Autopilot status"
+        className="mt-3 rounded-[20px] border border-gray-300 bg-white p-4"
+      >
+        <AutopilotStatus status={status} refusals={refusals ?? NO_REFUSALS} />
+        {/* On iOS Safari the chime is not one channel of three, it is the only
+            one: `Notification` is undefined outside an installed web app and
+            vibration is unimplemented. A context that never unlocked, or that
+            iOS interrupted, is silent and announces nothing -- so the state is
+            shown, and there is a way to hear it on purpose rather than by
+            waiting for a real find and wondering. */}
+        {(soundStatus !== 'unsupported' ||
+          (enabled && awakeStatus !== 'unsupported')) && (
+          <div className="mt-3 flex flex-col gap-2 border-t border-gray-200 pt-3">
+            {soundStatus !== 'unsupported' && (
+              <div className="flex items-center justify-between gap-3">
+                <span className="flex min-w-0 items-center gap-2">
+                  <SoundIcon className="size-4 text-gray-500" />
+                  <span
+                    className={`text-sm ${
+                      soundStatus === 'armed' || !enabled
+                        ? 'text-gray-600'
+                        : 'font-semibold text-red-700'
+                    }`}
+                  >
+                    {soundStatus === 'armed'
+                      ? 'Alert sound is armed.'
+                      : enabled
+                        ? 'Alert sound is not armed, so alerts would be silent.'
+                        : 'Test alert sound before starting Autopilot.'}
+                  </span>
+                </span>
+                <Button
+                  type="small"
+                  className="shrink-0 whitespace-nowrap"
+                  onClick={checkSound}
+                >
+                  Test sound
+                </Button>
+              </div>
+            )}
+            {enabled && awakeStatus !== 'unsupported' && (
+              <div className="flex items-center gap-2">
+                <SunIcon className="size-4 text-gray-500" />
+                <p
+                  className={`my-0 text-sm ${
+                    awakeStatus === 'held'
+                      ? 'text-gray-600'
+                      : 'font-semibold text-red-700'
+                  }`}
+                >
+                  {awakeStatus === 'held'
+                    ? 'Screen is being kept awake.'
+                    : 'Screen may sleep, which can slow or pause checks.'}
+                </p>
+              </div>
+            )}
           </div>
         )}
         <LatestEvent event={activity} />
-        <AutopilotStatus status={status} refusals={refusals ?? NO_REFUSALS} />
+      </section>
+
+      {/* Act. The switch stays up here, in the page, rather than in a bar
+          along the bottom as the mockups drew it: a bar there sits directly
+          above the tabs, where a thumb reaching for a tab would find Stop.
+          Pocket it comes first because, once running, it is the tap you make
+          most. It is offered only while the engine runs, because that is the
+          only time the wake lock holds the screen on and the glass stays live
+          in a pocket. */}
+      <div className="mt-3 flex gap-2">
+        {enabled && (
+          <Button
+            type="full"
+            className="flex-1"
+            color="bg-ink text-white"
+            onClick={() => setShielded(true)}
+          >
+            <LockIcon className="mr-2 size-4.5" />
+            Pocket it
+          </Button>
+        )}
+        <Button
+          type="full"
+          className={enabled ? 'w-auto! shrink-0' : ''}
+          onClick={() => setEnabled(!enabled)}
+          color={enabled ? 'bg-white text-red-700' : 'bg-green-700 text-white'}
+          border={enabled ? 'border border-red-300' : undefined}
+        >
+          {enabled ? 'Turn off autopilot' : 'Turn on autopilot'}
+        </Button>
       </div>
 
-      <div className="mt-3 flex flex-wrap gap-2">
-        <Button type="small" onClick={() => goTo(<Configure />)}>
+      <div className="mt-3 grid grid-cols-4 gap-2">
+        <Button
+          className="h-18 flex-col gap-1.5 px-1! text-xs"
+          onClick={() => goTo(<Configure />)}
+        >
+          <SlidersIcon />
           Configure
         </Button>
-        <Button type="small" onClick={openPlanCheck}>
+        <Button
+          className="h-18 flex-col gap-1.5 px-1! text-xs"
+          onClick={openPlanCheck}
+        >
+          <CheckCircleIcon />
           Plan check
         </Button>
-        <Button type="small" onClick={() => goTo(<Timeline />)}>
+        <Button
+          className="h-18 flex-col gap-1.5 px-1! text-xs"
+          onClick={() => goTo(<Timeline />)}
+        >
+          <LinesIcon />
           Timeline
         </Button>
-        <Button type="small" onClick={() => goTo(<Activity />)}>
+        <Button
+          className="h-18 flex-col gap-1.5 px-1! text-xs"
+          onClick={() => goTo(<Activity />)}
+        >
+          <PulseIcon />
           Activity
         </Button>
       </div>
 
       {doubts.length > 0 && (
         <section
-          className="mt-3 rounded-sm bg-red-100 p-2 text-sm text-red-900"
+          className="mt-3 rounded-2xl bg-red-100 p-3.5 text-sm text-red-900"
           role="alert"
         >
-          <p className="font-semibold">
+          <p className="my-0 font-semibold">
             {doubts.length} unresolved Lightning Lane change
             {doubts.length === 1 ? ' needs' : 's need'} review.
           </p>
-          <p className="mt-1">
+          <p className="mt-1 mb-0">
             Autopilot has stopped automatically booking, moving, or swapping the
             affected attractions until Disney Plans confirms what happened or
             you resolve the protection.
@@ -319,17 +411,17 @@ export default function Today({ ref }: HomeTabProps) {
 
       {!isToday && (
         <section
-          className="mt-4 rounded-sm bg-gray-100 p-3"
+          className="mt-3 rounded-2xl border border-gray-300 bg-white p-4"
           aria-label="Pre-trip checklist"
         >
-          <h3>Before your trip</h3>
-          <ul className="mt-2 space-y-2 text-sm">
+          <h3 className="mt-0 font-bold">Before your trip</h3>
+          <ul className="mt-2 divide-y divide-gray-200 text-sm">
             {readiness.map(item => (
               <li
                 key={item.subject}
-                className="flex items-center justify-between gap-2"
+                className="flex min-h-11 items-center justify-between gap-2 py-1.5"
               >
-                <span>
+                <span className={item.done ? '' : 'font-semibold'}>
                   {item.done ? '✓' : '○'} {item.text}
                 </span>
                 {(!item.done || item.subject === 'plan-check') && (
@@ -361,7 +453,7 @@ export default function Today({ ref }: HomeTabProps) {
       )}
 
       {dryRun && (
-        <p className="mt-3 rounded-sm bg-yellow-100 p-2 text-sm font-semibold text-yellow-900">
+        <p className="mt-3 mb-0 rounded-2xl bg-yellow-100 p-3.5 text-sm font-semibold text-yellow-900">
           Dry run is on. Autopilot will watch, alert, and run every check, and
           the activity log will show what it <em>would</em> have booked, moved,
           or swapped &mdash; but nothing will actually be booked. Turn it off in
@@ -369,67 +461,28 @@ export default function Today({ ref }: HomeTabProps) {
         </p>
       )}
       {notifications === 'denied' && (
-        <p className="mt-3 text-sm font-semibold text-red-700">
+        <p className="mt-3 mb-0 text-sm font-semibold text-red-700">
           Notifications are blocked, so alerts will only chime. Enable them for
           this site in your browser settings.
         </p>
       )}
       {notifications === 'unsupported' && (
-        <p className="mt-3 text-sm text-gray-600">
+        <p className="mt-3 mb-0 text-sm text-gray-600">
           This browser has no notification support, so alerts will chime and
           vibrate only. On iOS, notifications require adding this page to your
           Home Screen.
         </p>
       )}
-      {/* On iOS Safari the chime is not one channel of three, it is the only
-          one: `Notification` is undefined outside an installed web app and
-          vibration is unimplemented. A context that never unlocked, or that
-          iOS interrupted, is silent and announces nothing -- so the state is
-          shown, and there is a way to hear it on purpose rather than by
-          waiting for a real find and wondering. */}
-      {soundStatus !== 'unsupported' && (
-        <div className="mt-3 flex items-center justify-between gap-3">
-          <span
-            className={`text-sm ${
-              soundStatus === 'armed' || !enabled
-                ? 'text-gray-600'
-                : 'font-semibold text-red-700'
-            }`}
-          >
-            {soundStatus === 'armed'
-              ? 'Alert sound is armed.'
-              : enabled
-                ? 'Alert sound is not armed, so alerts would be silent.'
-                : 'Test alert sound before starting Autopilot.'}
-          </span>
-          <Button type="small" onClick={checkSound}>
-            Test sound
-          </Button>
-        </div>
-      )}
-      {enabled && awakeStatus !== 'unsupported' && (
-        <p
-          className={`mt-3 text-sm ${
-            awakeStatus === 'held'
-              ? 'text-gray-600'
-              : 'font-semibold text-red-700'
-          }`}
-        >
-          {awakeStatus === 'held'
-            ? 'Screen is being kept awake.'
-            : 'Screen may sleep, which can slow or pause checks.'}
-        </p>
-      )}
       {unknown > 0 && (
-        <p className="mt-3 text-sm font-semibold text-red-700">
+        <p className="mt-3 mb-0 text-sm font-semibold text-red-700">
           Disney is listing {unknown} attraction{unknown === 1 ? '' : 's'} this
           build does not recognise. Configure names{' '}
           {unknown === 1 ? 'it' : 'them'}.
         </p>
       )}
       {pending && (
-        <div className="mt-3 rounded-sm border border-gray-300 p-2 text-sm">
-          <p>
+        <div className="mt-3 rounded-2xl border border-gray-300 bg-white p-3.5 text-sm">
+          <p className="my-0">
             Still looking for <b>{pendingName}</b>? That search stopped when you
             left the NextLL tab.
           </p>
@@ -444,89 +497,156 @@ export default function Today({ ref }: HomeTabProps) {
       )}
 
       {(ll.nextBookTime || nextDrop) && (
-        <p className="mt-3 text-sm">
+        <div className="mt-4 flex gap-2">
           {ll.nextBookTime && (
-            <>
-              <span className="font-semibold">Next Lightning Lane:</span>{' '}
-              <Time time={ll.nextBookTime} />
-            </>
+            <p className="my-0 flex-1 rounded-2xl border border-gray-300 bg-white px-3.5 py-2.5">
+              <span className="block text-xs font-bold tracking-wide text-gray-600 uppercase">
+                Next Lightning Lane:
+              </span>{' '}
+              <Time
+                time={ll.nextBookTime}
+                className="font-display text-2xl leading-tight font-bold [&_span_span]:text-sm"
+              />
+            </p>
           )}
-          {ll.nextBookTime && nextDrop && ' · '}
           {nextDrop && (
-            <>
-              <span className="font-semibold">Next drop:</span>{' '}
-              <Time time={nextDrop} />
-            </>
+            <p className="my-0 flex-1 rounded-2xl border border-gray-300 bg-white px-3.5 py-2.5">
+              <span className="block text-xs font-bold tracking-wide text-gray-600 uppercase">
+                Next drop:
+              </span>{' '}
+              <Time
+                time={nextDrop}
+                className="font-display text-2xl leading-tight font-bold [&_span_span]:text-sm"
+              />
+            </p>
           )}
-        </p>
+        </div>
       )}
 
-      <h3>Held ({held.length})</h3>
-      {held.length === 0 ? (
-        <p className="text-sm text-gray-600">
-          No Multi Pass reservations {isToday ? 'yet today' : 'on this date'}.
-        </p>
-      ) : (
-        <ul className="text-sm">
-          {held.map(lane => (
-            <li key={lane.id} className="py-1">
-              <span className="font-semibold">{lane.name}</span>
-              {/* A pass carried over from an earlier park day comes back with
-                  a date and no time; dereferencing `.time` there would throw
-                  and take the provider above down with the screen. */}
-              {lane.start?.time && lane.end?.time ? (
-                <>
-                  {' '}
-                  &mdash; <Time time={lane.start.time} /> to{' '}
-                  <Time time={lane.end.time} />
-                </>
-              ) : (
-                <span className="text-gray-600"> &mdash; no return time</span>
-              )}
-            </li>
-          ))}
-        </ul>
-      )}
-
-      <h3>Plan ({targetsHere.length})</h3>
-      {targetsHere.length === 0 ? (
-        <p className="text-sm text-gray-600">
-          Nothing watched at {park.name} on this date. Configure is where a plan
-          starts.
-        </p>
-      ) : (
-        <>
-          <p className="text-xs text-gray-600">
-            {armed} armed
-            {paused > 0 ? `, ${paused} paused` : ''}
+      <section aria-label="Held">
+        <h3 className="mt-5 mb-2 font-bold">Held ({held.length})</h3>
+        {held.length === 0 ? (
+          <p className="my-0 text-sm text-gray-600">
+            No Multi Pass reservations {isToday ? 'yet today' : 'on this date'}.
           </p>
-          <ul className="text-sm">
-            {plan.map(target => (
-              <li key={target.experienceId} className="py-1">
-                <span className="font-semibold">{nameOf(target)}</span>
-                <span className="text-gray-600">
-                  {' '}
-                  · {target.paused ? 'Paused · ' : ''}
-                  {describeMode(target)}
-                  {(target.after || target.before) && (
-                    <>
-                      {' '}
-                      ·{' '}
-                      <TargetWindow
-                        after={target.after}
-                        before={target.before}
-                      />
-                    </>
+        ) : (
+          <ul className="flex flex-col gap-2">
+            {held.map(lane => (
+              <li
+                key={lane.id}
+                className="flex overflow-hidden rounded-2xl border border-gray-300 bg-white"
+              >
+                {/* A ticket: the ride on the left, its return time on the
+                    stub. The em dash stays in the text for a screen reader,
+                    where the stub's edge is not there to separate them. */}
+                <span className="flex min-w-0 flex-1 flex-col justify-center px-3.5 py-3">
+                  <span className="text-base leading-snug font-bold">
+                    {lane.name}
+                  </span>
+                  {lane.guests.length > 0 && (
+                    <span className="mt-0.5 text-[13px] text-gray-600">
+                      {lane.guests.map(guest => guest.name).join(', ')}
+                    </span>
                   )}
-                  {typeof target.rank === 'number' && ` · Rank ${target.rank}`}
                 </span>
+                {/* A pass carried over from an earlier park day comes back with
+                    a date and no time; dereferencing `.time` there would throw
+                    and take the provider above down with the screen. */}
+                {lane.start?.time && lane.end?.time ? (
+                  <span className="flex min-w-27 flex-col items-end justify-center border-l border-dashed border-gray-400 px-3.5 py-2.5">
+                    <span className="sr-only"> &mdash; </span>
+                    <Time
+                      time={lane.start.time}
+                      className="font-display text-2xl leading-tight font-bold [&_span_span]:text-sm"
+                    />
+                    <span className="text-xs text-gray-600">
+                      {' '}
+                      to <Time time={lane.end.time} />
+                    </span>
+                  </span>
+                ) : (
+                  <span className="flex items-center border-l border-dashed border-gray-400 px-3.5 text-sm text-gray-600">
+                    {' '}
+                    &mdash; no return time
+                  </span>
+                )}
               </li>
             ))}
           </ul>
-        </>
-      )}
+        )}
+      </section>
+
+      <section aria-label="Plan">
+        <h3 className="mt-5 mb-0 font-bold">Plan ({targetsHere.length})</h3>
+        {targetsHere.length === 0 ? (
+          <p className="mt-2 mb-0 text-sm text-gray-600">
+            Nothing watched at {park.name} on this date. Configure is where a
+            plan starts.
+          </p>
+        ) : (
+          <>
+            <p className="mt-0.5 mb-2 text-xs text-gray-600">
+              {armed} armed
+              {paused > 0 ? `, ${paused} paused` : ''}
+            </p>
+            <ul className="divide-y divide-gray-200 overflow-hidden rounded-2xl border border-gray-300 bg-white">
+              {plan.map(target => (
+                <li
+                  key={target.experienceId}
+                  className="flex items-center gap-3 px-3.5 py-3"
+                >
+                  {/* The rank as a badge, or a pause mark. The words stay
+                      below for anything reading the text rather than the
+                      badge. */}
+                  <span
+                    aria-hidden
+                    className={`flex size-7 shrink-0 items-center justify-center rounded-full text-sm font-extrabold ${
+                      target.paused
+                        ? 'bg-gray-100 text-gray-500'
+                        : 'bg-accent/12 text-accent'
+                    }`}
+                  >
+                    {target.paused ? (
+                      <PauseIcon className="size-3.5" />
+                    ) : typeof target.rank === 'number' ? (
+                      target.rank
+                    ) : (
+                      '·'
+                    )}
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span
+                      className={`block text-[15px] font-bold ${target.paused ? 'text-gray-600' : ''}`}
+                    >
+                      {nameOf(target)}
+                    </span>
+                    <span className="block text-[13px] text-gray-600">
+                      <span className="sr-only"> · </span>
+                      {target.paused ? 'Paused · ' : ''}
+                      {describeMode(target)}
+                      {(target.after || target.before) && (
+                        <>
+                          {' '}
+                          ·{' '}
+                          <TargetWindow
+                            after={target.after}
+                            before={target.before}
+                          />
+                        </>
+                      )}
+                      {typeof target.rank === 'number' && (
+                        <span className="sr-only"> · Rank {target.rank}</span>
+                      )}
+                    </span>
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
+      </section>
       {passkeyStatus !== 'off' && (
-        <p className="mt-2 text-sm">
+        <p className="mt-3 mb-0 text-sm">
           <span className="font-semibold">Passkey:</span>{' '}
           {passkeyStatus === 'unlocked'
             ? 'Disney confirmed the Tier 1 hold is unlocked for the selected party.'
