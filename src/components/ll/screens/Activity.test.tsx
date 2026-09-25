@@ -11,8 +11,10 @@ import {
 } from '@/autopilot/lease';
 import { ParkTime, parkDate } from '@/datetime';
 import kvdb from '@/kvdb';
+import { nav } from '@/testing';
 
 import Activity from './Activity';
+import Home from './Home';
 import { BZ, renderScreen } from './screenTestSetup';
 
 const setup = (options = {}) => renderScreen(<Activity />, options);
@@ -180,6 +182,35 @@ describe('Activity diagnostics', () => {
       expect(
         screen.queryByText(/unresolved Lightning Lane change/)
       ).not.toBeInTheDocument()
+    );
+  });
+
+  // It said to check Plans and offered no way there. Fresh Plans are what
+  // clear a protection on their own, so asking for them comes first.
+  it('offers fresh Plans, and a way to them, beside a protection', async () => {
+    await quarantine(leaseKey(BZ, parkDate()), {
+      id: 'move-plans',
+      kind: 'modify',
+      to: '11:00:00',
+    });
+    const { refreshPlans } = setup();
+    const panel = screen
+      .getByText(/1 unresolved Lightning Lane change/)
+      .closest('section')!;
+    fireEvent.click(
+      within(panel).getByRole('button', { name: 'Refresh Plans' })
+    );
+    expect(refreshPlans).toHaveBeenCalled();
+    nav.goBack.mockClear();
+    fireEvent.click(within(panel).getByRole('button', { name: 'Open Plans' }));
+    expect(nav.goBack).toHaveBeenCalledWith({
+      screen: Home,
+      props: { tabName: 'Plans' },
+    });
+    fireEvent.click(screen.getByText('I checked Disney — resolve this'));
+    fireEvent.click(screen.getByText('Clear this protection'));
+    await waitFor(() =>
+      expect(quarantinedAt(leaseKey(BZ, parkDate()))).toBeUndefined()
     );
   });
 

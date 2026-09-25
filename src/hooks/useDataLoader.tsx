@@ -64,8 +64,13 @@ export default function useDataLoader(): {
               const detail = [status || 'no response', endpoint]
                 .filter(Boolean)
                 .join(' ');
+              // An empty message maps a status to nothing shown, which is
+              // what a caller means by it; it used to fall through to the
+              // generic text, as though nothing mapped it.
               setFlashArgs(
-                msgs[status] ? msgs[status] : `${msgs.request} (${detail})`,
+                msgs[status] !== undefined
+                  ? msgs[status]
+                  : `${msgs.request} (${detail})`,
                 'error'
               );
             } else {

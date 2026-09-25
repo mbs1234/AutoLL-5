@@ -3,6 +3,7 @@ import { use, useCallback, useEffect, useState } from 'react';
 import { isLLMP } from '@/api/itinerary';
 import { Guest, LLMP, Offer, OfferError, OfferExperience } from '@/api/ll';
 import { outcomeIsUnknown } from '@/autopilot/autobook';
+import Button from '@/components/Button';
 import FloatingButton from '@/components/FloatingButton';
 import LandLine from '@/components/LandLine';
 import Screen from '@/components/Screen';
@@ -23,6 +24,7 @@ import { ping } from '@/ping';
 
 import BookingDate from '../BookingDate';
 import ExistingBookings from '../ExistingBookings';
+import NotLoaded from '../NotLoaded';
 import RebookingHeader from '../RebookingHeader';
 import UnansweredNotice from '../UnansweredNotice';
 import YourDayButton from '../YourDayButton';
@@ -51,6 +53,10 @@ export default function BookExperience({
   const [offer, setOffer] = useState<Offer | null | undefined>();
   const { loadData, loaderElem } = useDataLoader();
   const [unanswered, setUnanswered] = useState(false);
+  // No offer because the request failed, rather than because Disney had no
+  // slots. The two used to share "No Reservations Available", so a dropped
+  // connection read as a sold-out ride.
+  const [offerFailed, setOfferFailed] = useState(false);
 
   useEffect(() => {
     if (!isActiveScreen) return;
@@ -172,6 +178,7 @@ export default function BookExperience({
 
       loadData(
         async () => {
+          setOfferFailed(false);
           try {
             const newOffer = await ll.offer(
               experience,
@@ -197,6 +204,11 @@ export default function BookExperience({
           } catch (error) {
             setOffer(offer => offer ?? null);
             if (error instanceof OfferError) return updateParty(error);
+            // 410 is Disney saying no slots; anything else is not an answer
+            // about availability at all.
+            const status = (error as { response?: { status?: number } })
+              ?.response?.status;
+            if (status !== 410) setOfferFailed(true);
             throw error;
           }
         },
@@ -222,15 +234,17 @@ export default function BookExperience({
       buttons={
         <>
           <YourDayButton />
+          {/* With no party yet -- it failed to load -- there is no offer to
+              refresh, and this used to do nothing. */}
           <RefreshButton
             onClick={() => {
-              if (noEligible) {
+              if (!party || noEligible) {
                 loadParty();
               } else {
                 refreshOffer();
               }
             }}
-            name={noEligible ? 'Party' : 'Offer'}
+            name={!party || noEligible ? 'Party' : 'Offer'}
           />
         </>
       }
@@ -308,6 +322,17 @@ export default function BookExperience({
             <NoEligibleGuests />
           ) : !party || offer === undefined ? (
             <div />
+          ) : offer === null && offerFailed ? (
+            <div role="status" className="mt-4">
+              <h3>Could not reach Disney</h3>
+              <p>
+                The request for an offer did not get an answer, so this says
+                nothing about whether a Lightning Lane is available.
+              </p>
+              <Button type="small" onClick={() => refreshOffer()}>
+                Try again
+              </Button>
+            </div>
           ) : offer === null ? (
             <NoReservationsAvailable />
           ) : (
@@ -327,7 +352,9 @@ export default function BookExperience({
         </PartyContext>
       ) : !plansLoaded ? (
         <Spinner />
-      ) : null}
+      ) : (
+        <NotLoaded what="Guests" onRefresh={loadParty} />
+      )}
       {loaderElem}
     </Screen>
   );

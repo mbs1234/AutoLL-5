@@ -4,6 +4,7 @@ import {
   click,
   loading,
   render,
+  screen,
   see,
   waitForElementToBeRemoved,
 } from '@/testing';
@@ -95,21 +96,31 @@ async function clickFlash(button: string, flashMessage: string) {
   await waitForElementToBeRemoved(see(flashMessage), { timeout: 4000 });
 }
 
+/** An error stays until it is dismissed, so dismiss it. */
+async function clickError(button: string, errorMessage: string) {
+  click(button);
+  see.no('loaded');
+  await loading();
+  expect(screen.getByRole('alert')).toHaveTextContent(errorMessage);
+  click(screen.getByRole('button', { name: 'Dismiss' }));
+  expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+}
+
 describe('useDataLoader()', () => {
   it('is accepted after Accept button clicked', async () => {
     render(<Test />);
 
-    await clickFlash('Weird?', 'Weird!');
+    await clickError('Weird?', 'Weird!');
 
-    await clickFlash('404', 'Page not found');
+    await clickError('404', 'Page not found');
 
     // The button is labelled 500 but throws the 404 error with no message map,
     // so this is the unmapped-status path: the status is named rather than
     // hidden behind a word that says "network".
-    await clickFlash('500', 'Network request failed (404)');
+    await clickError('500', 'Network request failed (404)');
 
     expect(console.error).toHaveBeenCalledTimes(0);
-    await clickFlash('Fail', 'Unknown error occurred');
+    await clickError('Fail', 'Unknown error occurred');
     expect(console.error).toHaveBeenCalledTimes(1);
 
     await clickFlash('Load', 'Success!');

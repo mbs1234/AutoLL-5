@@ -1,5 +1,6 @@
 import { AuthData, ReauthNeeded, authStore } from '@/api/auth';
 import { APP_NAME, PAGES_BASE } from '@/appIdentity';
+import { markRunning } from '@/autopilot/running';
 import { DISCLAIMER_ACCEPTED_KEY } from '@/hooks/useDisclaimer';
 import { NEWS_VERSION_KEY } from '@/hooks/useNews';
 import kvdb from '@/kvdb';
@@ -8,6 +9,7 @@ import { act, click, render, screen, see, waitFor } from '@/testing';
 
 import App, { NEWS_VERSION } from './App';
 import Screen from './Screen';
+import { SIGN_IN_STOP_KEY } from './ll/signInStop';
 
 jest.mock('@/fetch');
 jest.mock('@/navigate');
@@ -89,6 +91,26 @@ describe('App', () => {
     await see.screen('LL');
     act(() => authStore.onUnauthorized());
     see('Log In');
+  });
+
+  // The sign-in screen replaces the app, so a running Autopilot stops with it
+  // and comes back off. The moment is noted for Today to report.
+  it('notes when an expiry stops a running engine', async () => {
+    kvdb.delete(SIGN_IN_STOP_KEY);
+    renderComponent();
+    await see.screen('LL');
+    const release = markRunning();
+    act(() => authStore.onUnauthorized());
+    release();
+    expect(kvdb.get(SIGN_IN_STOP_KEY)).toEqual(expect.any(Number));
+  });
+
+  it('notes nothing when no engine was running', async () => {
+    kvdb.delete(SIGN_IN_STOP_KEY);
+    renderComponent();
+    await see.screen('LL');
+    act(() => authStore.onUnauthorized());
+    expect(kvdb.get(SIGN_IN_STOP_KEY)).toBeUndefined();
   });
 
   it('sends a Disneyland page to the start page, like any other', async () => {

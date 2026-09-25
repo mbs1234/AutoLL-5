@@ -6,8 +6,12 @@ import { resolveDoubt } from '@/autopilot/lease';
 import type { QuarantinedMutation } from '@/autopilot/lease';
 import Button from '@/components/Button';
 import ExperiencesContext from '@/contexts/ExperiencesContext';
+import NavContext from '@/contexts/NavContext';
+import PlansContext from '@/contexts/PlansContext';
 import ResortContext from '@/contexts/ResortContext';
 import { ParkTime, formatDate, formatTime } from '@/datetime';
+
+import Home from './screens/Home';
 
 function shownTime(value: string | undefined): string | undefined {
   if (!value) return undefined;
@@ -44,6 +48,8 @@ export default function QuarantinePanel({
   doubts: QuarantinedMutation[];
 }) {
   const { experiences } = use(ExperiencesContext);
+  const { refreshPlans } = use(PlansContext);
+  const { goBack } = use(NavContext);
   const resort = use(ResortContext);
   const [confirming, setConfirming] = useState<string>();
   const [clearing, setClearing] = useState<string>();
@@ -95,6 +101,19 @@ export default function QuarantinePanel({
         can match the exact reservation at the requested result or you confirm
         what happened.
       </p>
+      {/* Fresh Plans are what clear a protection on their own, so asking for
+          them is the first thing to offer -- before a trip to Disney's app. */}
+      <div className="mt-2 flex flex-wrap gap-2">
+        <Button type="small" onClick={refreshPlans}>
+          Refresh Plans
+        </Button>
+        <Button
+          type="small"
+          onClick={() => goBack({ screen: Home, props: { tabName: 'Plans' } })}
+        >
+          Open Plans
+        </Button>
+      </div>
       <ul className="mt-2 space-y-2">
         {doubts.map(doubt => (
           <li className="rounded-sm bg-white/60 p-2" key={identity(doubt)}>

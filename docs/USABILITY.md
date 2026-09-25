@@ -44,8 +44,8 @@ their place:
 
 | | slice | what changes | state |
 |---|---|---|---|
-| 1 | Words | Typos and wrong limits; sentences that point somewhere become buttons that go there; Disney's eligibility codes in plain words; dates in words; NextLL's time bounds say what they do; the iPhone alert line; a Plan Check button on its own line; menu rows tappable edge to edge | in review |
-| 2 | Recovery | Errors that stay until the next success; empty screens that say when loading failed; confirmation for Cancel and Log Out; a stopped run that says how to restart | planned |
+| 1 | Words | Typos and wrong limits; sentences that point somewhere become buttons that go there; Disney's eligibility codes in plain words; dates in words; NextLL's time bounds say what they do; the iPhone alert line; a Plan Check button on its own line; menu rows tappable edge to edge | in review (#10) |
+| 2 | Recovery | Errors that stay, with their time, until dismissed; lists that say when they have not loaded instead of that they are empty; the booking screen telling a dropped connection from a sold-out ride; confirmation for Cancel, Log Out and turning Autopilot off; a stopped run that says how to restart, in red on every tab; a note on Today when a sign-in expiry stopped Autopilot; Plans buttons wherever an outcome is in doubt | in review |
 | 3 | Today | Tappable passes and plan rows; how long a held pass has left; a park-morning preflight; the plan's own park named when the header shows another | planned |
 | 4 | Reach | 44 px tap targets; the park, date and party chip as a control; refreshes that do not cover the screen | planned |
 | 5 | Setup | One "What should Autopilot do?" choice per attraction; one meaning per star | planned |

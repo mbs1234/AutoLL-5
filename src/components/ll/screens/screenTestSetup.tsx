@@ -49,6 +49,7 @@ export type ScreenSetup = Partial<AutopilotState> & {
   experiencesUpdated?: number;
   plans?: Booking[];
   plansUpdated?: number;
+  plansLoaded?: boolean;
   bookingDate?: string;
   ll?: Partial<LLClient>;
 };
@@ -67,6 +68,7 @@ export function renderScreen(
     experiencesUpdated,
     plans = [] as Booking[],
     plansUpdated,
+    plansLoaded = true,
     bookingDate = TODAY,
     ll = {},
     status = OFF,
@@ -98,6 +100,7 @@ export function renderScreen(
     requestNotifications: jest.fn(),
   };
   const refreshExperiences = jest.fn();
+  const refreshPlans = jest.fn();
   const clients = {
     ll: {
       rules: { prebook: false },
@@ -115,10 +118,10 @@ export function renderScreen(
               <PlansContext
                 value={{
                   plans,
-                  refreshPlans: () => {},
+                  refreshPlans,
                   pollPlans: async () => plans,
                   loaderElem: null,
-                  plansLoaded: true,
+                  plansLoaded,
                   lastUpdated: plansUpdated,
                 }}
               >
@@ -173,5 +176,5 @@ export function renderScreen(
       </nav.Provider>
     </ResortContext>
   );
-  return { ...mocks, refreshExperiences };
+  return { ...mocks, refreshExperiences, refreshPlans };
 }

@@ -1,8 +1,9 @@
-import { use, useMemo, useRef, useState } from 'react';
+import { use, useId, useMemo, useRef, useState } from 'react';
 
 import { authStore } from '@/api/auth';
 import { APP_NAME, BUILD_REV } from '@/appIdentity';
 import { describeLastBackup, lastBackupAt } from '@/autopilot/backup';
+import Button from '@/components/Button';
 import Overlay from '@/components/Overlay';
 import NavContext from '@/contexts/NavContext';
 // import NewsIcon from '@/icons/NewsIcon';
@@ -22,6 +23,10 @@ export default function SettingsButton() {
   const [sessionOnly, setSessionOnly] = useState(
     () => authStore.getPersistence() === 'session'
   );
+  // Log Out used to act on the one tap. It stops Autopilot and any search,
+  // and signing back in can need Disney's emailed code, so it asks first.
+  const [confirmingLogout, confirmLogout] = useState(false);
+  const logoutTitleId = useId();
   const options = useMemo(
     () => [
       {
@@ -37,7 +42,7 @@ export default function SettingsButton() {
       {
         text: 'Log Out',
         icon: <ExitIcon />,
-        action: () => authStore.deleteData(),
+        action: () => confirmLogout(true),
       },
       {
         text: `Session-only login: ${sessionOnly ? 'On' : 'Off'}`,
@@ -129,6 +134,38 @@ export default function SettingsButton() {
               {APP_NAME} · {BUILD_REV}
             </li>
           </ul>
+        </Overlay>
+      )}
+      {confirmingLogout && (
+        <Overlay>
+          <div
+            role="alertdialog"
+            aria-labelledby={logoutTitleId}
+            className="max-w-sm rounded-lg bg-white p-4 text-black"
+          >
+            <h3 id={logoutTitleId} className="mt-0 font-semibold">
+              Log out of Disney?
+            </h3>
+            <p className="mt-2 mb-0">
+              Autopilot and any search stop, and signing back in may need the
+              code Disney emails you.
+            </p>
+            <div className="mt-4 flex justify-end gap-2">
+              <Button onClick={() => confirmLogout(false)}>
+                Stay signed in
+              </Button>
+              <Button
+                color="bg-red-700 text-white"
+                border="border border-transparent"
+                onClick={() => {
+                  confirmLogout(false);
+                  authStore.deleteData();
+                }}
+              >
+                Log out
+              </Button>
+            </div>
+          </div>
         </Overlay>
       )}
     </>

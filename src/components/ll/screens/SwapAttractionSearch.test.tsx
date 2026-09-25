@@ -6,8 +6,9 @@ import { acquire, leaseKey, release } from '@/autopilot/lease';
 import useTimeSearch from '@/autopilot/useTimeSearch';
 import type { TimeSearchDeps } from '@/autopilot/useTimeSearch';
 import { DateTime, ParkTime } from '@/datetime';
-import { TODAY } from '@/testing';
+import { TODAY, nav } from '@/testing';
 
+import Home from './Home';
 import SwapAttractionSearch from './SwapAttractionSearch';
 import {
   BZ,
@@ -167,6 +168,38 @@ describe('SwapAttractionSearch', () => {
         `Replaced ${wdw.experience(BZ).name} with ${wdw.experience(DB).name} at 4:00 PM.`
       );
       expect(done).toHaveTextContent('Confirmed in Plans.');
+    });
+
+    // The pass this screen was opened on is gone by then, yet the form came
+    // back offering to replace it.
+    it('offers Done and Plans once confirmed, not the form again', () => {
+      replacing({ stop: 'goal-met', held: four });
+      expect(
+        screen.queryByText('Search for a replacement')
+      ).not.toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Done' })).toBeVisible();
+      nav.goBack.mockClear();
+      fireEvent.click(screen.getByRole('button', { name: 'Open Plans' }));
+      expect(nav.goBack).toHaveBeenCalledWith({
+        screen: Home,
+        props: { tabName: 'Plans' },
+      });
+    });
+
+    it('offers Plans when the outcome is unknown', () => {
+      replacing({ unresolved: four });
+      expect(
+        screen.getByText('The replacement outcome is unknown.')
+      ).toBeVisible();
+      expect(screen.getByRole('button', { name: 'Open Plans' })).toBeVisible();
+    });
+
+    it('offers Plans, or to keep waiting, while Plans catches up', () => {
+      const start = jest.fn();
+      replacing({ stop: 'unconfirmed', start });
+      expect(screen.getByRole('button', { name: 'Open Plans' })).toBeVisible();
+      fireEvent.click(screen.getByRole('button', { name: 'Keep waiting' }));
+      expect(start).toHaveBeenCalled();
     });
   });
 

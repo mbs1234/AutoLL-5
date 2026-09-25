@@ -1,14 +1,17 @@
-import { use, useState } from 'react';
+import { use, useId, useState } from 'react';
 
 import { DasBooking, LightningLane } from '@/api/itinerary';
 import { outcomeIsUnknown } from '@/autopilot/autobook';
+import Button from '@/components/Button';
 import FloatingButton from '@/components/FloatingButton';
 import GuestList from '@/components/GuestList';
 import LandLine from '@/components/LandLine';
+import Overlay from '@/components/Overlay';
 import Screen from '@/components/Screen';
 import ClientsContext from '@/contexts/ClientsContext';
 import NavContext from '@/contexts/NavContext';
 import PlansContext from '@/contexts/PlansContext';
+import { formatTime } from '@/datetime';
 import useDataLoader from '@/hooks/useDataLoader';
 
 import ReturnTime from '../ReturnTime';
@@ -32,6 +35,10 @@ export default function CancelGuests<B extends LightningLane | DasBooking>({
   >(new Set());
   const { loadData, loaderElem } = useDataLoader();
   const [unanswered, setUnanswered] = useState(false);
+  // A cancel cannot be taken back, and the time may be gone if it is wanted
+  // again, so the bottom button asks first and names what goes.
+  const [confirming, setConfirming] = useState(false);
+  const confirmTitleId = useId();
 
   const { name, park, guests } = booking;
   const cancelingNone = guestsToCancel.size === 0;
@@ -120,11 +127,47 @@ export default function CancelGuests<B extends LightningLane | DasBooking>({
       )}
       {unanswered && <UnansweredNotice action="cancel" />}
       <FloatingButton
+        color="bg-red-700 text-white"
         disabled={cancelingNone || unanswered}
-        onClick={cancelBooking}
+        onClick={() => setConfirming(true)}
       >
         {'Cancel ' + (cancelingAll ? 'Reservation' : 'Guests')}
       </FloatingButton>
+      {confirming && (
+        <Overlay>
+          <div
+            role="alertdialog"
+            aria-labelledby={confirmTitleId}
+            className="max-w-sm rounded-lg bg-white p-4 text-black"
+          >
+            <h3 id={confirmTitleId} className="mt-0 font-semibold">
+              {cancelingAll
+                ? `Cancel ${name}?`
+                : `Cancel ${guestsToCancel.size} of ${guests.length} guests?`}
+            </h3>
+            <p className="mt-2 mb-0">
+              {booking.start.time
+                ? `${name} at ${formatTime(booking.start.time)}, for `
+                : `${name}, for `}
+              {[...guestsToCancel].map(g => g.name).join(', ')}. This cannot be
+              undone, and the time may not come back.
+            </p>
+            <div className="mt-4 flex justify-end gap-2">
+              <Button onClick={() => setConfirming(false)}>Keep it</Button>
+              <Button
+                color="bg-red-700 text-white"
+                border="border border-transparent"
+                onClick={() => {
+                  setConfirming(false);
+                  void cancelBooking();
+                }}
+              >
+                Yes, cancel
+              </Button>
+            </div>
+          </div>
+        </Overlay>
+      )}
 
       {loaderElem}
     </Screen>

@@ -5,6 +5,7 @@ import { InvalidOrigin } from '@/api/client';
 import { LLClient } from '@/api/ll';
 import { Resort, loadResort } from '@/api/resort';
 import { PAGES_BASE } from '@/appIdentity';
+import { anyRunning } from '@/autopilot/running';
 import ClientsContext, { createClients } from '@/contexts/ClientsContext';
 import ResortContext from '@/contexts/ResortContext';
 import { DateTime } from '@/datetime';
@@ -15,11 +16,21 @@ import onVisible from '@/onVisible';
 
 import LoginForm from './LoginForm';
 import Merlock from './ll/Merlock';
+import { recordSignInStop } from './ll/signInStop';
 
 export const NEWS_VERSION = 0;
 
 /** Where anyone who ran the bookmarklet on a page it cannot use is sent. */
 const START_PAGE = `${PAGES_BASE}/start.html`;
+
+/**
+ * The sign-in screen replaces the whole app, which stops every engine. Noted
+ * while they are still mounted to ask, so Today can say afterwards that
+ * Autopilot stopped, and when, rather than simply being off.
+ */
+function noteIfStopping() {
+  if (anyRunning()) recordSignInStop();
+}
 
 function disableDoubleTapZoom() {
   document.body.addEventListener('click', () => null);
@@ -47,6 +58,7 @@ export default function App() {
   useEffect(() => {
     disableDoubleTapZoom();
     authStore.onUnauthorized = () => {
+      noteIfStopping();
       setLoginReason('expired');
       requireLogin(true);
     };
@@ -99,6 +111,7 @@ export default function App() {
         requireLogin(false);
       } catch (error) {
         if (error instanceof ReauthNeeded) setLoginReason(error.status);
+        noteIfStopping();
         requireLogin(true);
       }
     }

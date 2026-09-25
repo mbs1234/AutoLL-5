@@ -94,6 +94,12 @@ The five-o'clock refusal is the one worth acting on. Sign in again at breakfast;
 it costs a minute then and saves you discovering a dead session at 2pm in a
 queue.
 
+If the session expires while Autopilot is running, the sign-in screen replaces
+the app and Autopilot stops with it. After you sign in again, Today says so —
+"Autopilot stopped at 2:14 PM when your Disney sign-in expired" — and that it is
+off. Turn it on yourself; it never comes back on by itself, because turning it
+on is the tap that arms the alert sound.
+
 ## 3. Pick your party
 
 ![The settings menu](user-guide/settings.png)
@@ -104,7 +110,7 @@ actually want, then **Save**. After that, anyone outside your saved party is
 shown on booking screens under Ineligible Guests marked `NOT IN PARTY`.
 
 The same menu carries **Backup and Restore** (see *It cannot protect its own
-storage*, below), **Log Out**, a **Session-only login** switch for a borrowed
+storage*, below), **Log Out** (it asks first), a **Session-only login** switch for a borrowed
 phone (the token then lives only as long as the tab), a `Session:` line telling
 you whether you are signed in, a `Last backup:` line, and the build name.
 
@@ -648,8 +654,10 @@ On a Multi Pass's details screen:
 - **Cancel** — remove chosen guests, or the whole reservation when you remove
   everyone
 
-> **Cancelling has no "are you sure" step.** If Disney refuses the cancel, the
-> screen stays where it is with the error, and the party is unchanged. If Disney
+> **Cancelling asks first.** The red button opens a check that names the ride,
+> the time and the guests, and only **Yes, cancel** sends it. If Disney refuses
+> the cancel, the screen stays where it is with the error, and the party is
+> unchanged. If Disney
 > does not answer at all, it says so — the cancel may or may not have gone
 > through — and points to Plans. Booking and modifying by hand do the same: a
 > request with no answer is never shown as a plain failure beside a live button.
@@ -811,8 +819,9 @@ screen.** Everything else in this section is a variation on that one test.
 | `Too many requests just now.` | You tapped faster than 5 requests/second | Wait five seconds |
 | `Unknown error occurred` | No status at all — usually the rate limit, on screens that do not name it | Wait five seconds and retry once |
 
-The banner clears itself after three seconds and is stored nowhere. Miss it and
-the only way to see it again is to repeat the action.
+An error banner stays, with the time it happened, until you dismiss it with
+**×** or the screen tries again. It is stored nowhere else, so read it before you
+dismiss it.
 
 ## Autopilot looks healthy but never books
 
@@ -835,11 +844,15 @@ Eight checks failed in a row, so it gave up rather than spin. It is no longer
 watching, alerting or booking, and **it does not restart itself.**
 
 The switch still reads "Turn off autopilot", so restarting is **two taps**: off,
-then on. (The exception is a stop caused by an expired session — signing back in
-remounts the app with Autopilot off, so there it is one tap.)
+then on, and the screen says so. Once it has stopped, Turn off takes one tap;
+while it is running it takes two, the second within three seconds ("Tap again
+to turn off"), because it sits beside Pocket it. (The exception is a stop caused
+by an expired session — signing back in remounts the app with Autopilot off, so
+there it is one tap, and Today says when it stopped.)
 
 Nothing notifies you that it stopped. You find out by looking at Today, by the
-footer strip on other tabs, or by noticing the header clock has turned red — or
+footer strip on other tabs (it turns red), or by noticing the header clock has
+turned red — or
 by your phone starting to sleep normally again, because the wake lock is
 released.
 

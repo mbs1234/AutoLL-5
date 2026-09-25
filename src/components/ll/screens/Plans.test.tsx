@@ -10,7 +10,7 @@ setTime('09:00');
 const refreshPlans = jest.fn();
 const { Provider: NavProvider, goTo } = nav;
 
-function renderComponent(plans: Booking[]) {
+function renderComponent(plans: Booking[], plansLoaded = true) {
   render(
     <PlansContext
       value={{
@@ -18,6 +18,7 @@ function renderComponent(plans: Booking[]) {
         refreshPlans,
         pollPlans: async () => [],
         loaderElem: null,
+        plansLoaded,
       }}
     >
       <NavProvider>
@@ -78,5 +79,17 @@ describe('Plans', () => {
   it('shows "No existing plans" message', async () => {
     renderComponent([]);
     see('No existing plans');
+  });
+
+  // Before Plans had loaded, or after the request failed, it said "No
+  // existing plans" -- a fact about the trip, when it was one about the
+  // connection.
+  it('says Plans have not loaded rather than that there are none', () => {
+    renderComponent([], false);
+    see.no('No existing plans');
+    see('Plans have not loaded yet.');
+    refreshPlans.mockClear();
+    click('Try again');
+    expect(refreshPlans).toHaveBeenCalledTimes(1);
   });
 });

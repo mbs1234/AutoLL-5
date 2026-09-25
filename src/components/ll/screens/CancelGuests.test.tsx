@@ -1,6 +1,6 @@
 import { booking, ll, mickey, pluto, renderResort } from '@/__fixtures__/ll';
 import { RequestError } from '@/api/client';
-import { click, loading, nav, see } from '@/testing';
+import { click, loading, nav, screen, see } from '@/testing';
 
 import CancelGuests from './CancelGuests';
 
@@ -23,6 +23,7 @@ describe('CancelGuests', () => {
     renderComponent();
     click('Select All');
     click('Cancel Reservation');
+    click('Yes, cancel');
     expect(ll.cancelBooking).toHaveBeenLastCalledWith(guests);
     await loading();
     expect(onCancel).toHaveBeenCalledTimes(1);
@@ -33,6 +34,7 @@ describe('CancelGuests', () => {
     click(mickey.name);
     click(pluto.name);
     click('Cancel Guests');
+    click('Yes, cancel');
     expect(ll.cancelBooking).toHaveBeenLastCalledWith([guests[0], guests[2]]);
     await loading();
     expect(onCancel).toHaveBeenCalledTimes(1);
@@ -45,8 +47,24 @@ describe('CancelGuests', () => {
     );
     click('Select All');
     click('Cancel Reservation');
+    click('Yes, cancel');
     await loading();
     see('Network request failed (no response)');
+  });
+
+  // It fired on the first tap: a cancel cannot be taken back.
+  it('asks first, and names what would go', () => {
+    renderComponent();
+    click(mickey.name);
+    click('Cancel Guests');
+    expect(ll.cancelBooking).not.toHaveBeenCalledWith([guests[0]]);
+    const dialog = screen.getByRole('alertdialog');
+    expect(dialog).toHaveTextContent(`Cancel 1 of ${guests.length} guests?`);
+    expect(dialog).toHaveTextContent(`${booking.name} at`);
+    expect(dialog).toHaveTextContent(mickey.name);
+    click('Keep it');
+    expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument();
+    expect(ll.cancelBooking).not.toHaveBeenCalledWith([guests[0]]);
   });
 
   // It used to go back and redraw the party without those guests whatever
@@ -58,6 +76,7 @@ describe('CancelGuests', () => {
     );
     click('Select All');
     click('Cancel Reservation');
+    click('Yes, cancel');
     await loading();
     expect(onCancel).not.toHaveBeenCalled();
     expect(nav.goBack).not.toHaveBeenCalled();
@@ -71,6 +90,7 @@ describe('CancelGuests', () => {
     );
     click('Select All');
     click('Cancel Reservation');
+    click('Yes, cancel');
     await loading();
     see('Disney did not answer.');
     expect(see('Cancel Reservation')).toBeDisabled();

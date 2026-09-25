@@ -24,9 +24,11 @@ import Screen from '@/components/Screen';
 import { Time } from '@/components/Time';
 import ClientsContext from '@/contexts/ClientsContext';
 import ExperiencesContext from '@/contexts/ExperiencesContext';
+import NavContext from '@/contexts/NavContext';
 import PlansContext from '@/contexts/PlansContext';
 import { parkDate } from '@/datetime';
 
+import Home from './Home';
 import { NextLLTimeSearchActivity } from './NextLLActivity';
 
 const STOPPED: Record<Exclude<SearchStop, 'failed'>, string> = {
@@ -48,6 +50,8 @@ const STOPPED: Record<Exclude<SearchStop, 'failed'>, string> = {
  */
 export default function SwapAttractionSearch({ booking }: { booking: LLMP }) {
   const { ll } = use(ClientsContext);
+  const { goBack } = use(NavContext);
+  const openPlans = () => goBack({ screen: Home, props: { tabName: 'Plans' } });
   const { experiences } = use(ExperiencesContext);
   const { pollPlans } = use(PlansContext);
   // The reservation's own park day, not whatever date the app is showing. The
@@ -173,7 +177,7 @@ export default function SwapAttractionSearch({ booking }: { booking: LLMP }) {
         Currently held: <Time time={search.held ?? booking.start.time} />
       </p>
 
-      {!search.running && !search.unresolved && (
+      {!search.running && !search.unresolved && search.stop !== 'goal-met' && (
         <>
           <p className="mt-3 text-sm text-gray-600">
             Searches continuously for a replacement. {APP_NAME} will always ask
@@ -303,6 +307,9 @@ export default function SwapAttractionSearch({ booking }: { booking: LLMP }) {
               {search.lastError}
             </p>
           )}
+          <Button type="small" className="mt-2" onClick={openPlans}>
+            Open Plans
+          </Button>
         </div>
       )}
       {search.running && search.lastError && (
@@ -326,6 +333,14 @@ export default function SwapAttractionSearch({ booking }: { booking: LLMP }) {
             .
           </p>
           <p className="mt-1 text-sm">Confirmed in Plans.</p>
+          <div className="mt-2 flex gap-2">
+            <Button type="small" back>
+              Done
+            </Button>
+            <Button type="small" onClick={openPlans}>
+              Open Plans
+            </Button>
+          </div>
         </div>
       )}
       {search.stop && search.stop !== 'goal-met' && !search.unresolved && (
@@ -337,6 +352,16 @@ export default function SwapAttractionSearch({ booking }: { booking: LLMP }) {
           </p>
           {search.stop !== 'failed' && search.lastError && (
             <p className="mt-1 text-red-700">{search.lastError}</p>
+          )}
+          {search.stop === 'unconfirmed' && (
+            <div className="mt-2 flex gap-2">
+              <Button type="small" onClick={openPlans}>
+                Open Plans
+              </Button>
+              <Button type="small" onClick={search.start}>
+                Keep waiting
+              </Button>
+            </div>
           )}
         </div>
       )}
