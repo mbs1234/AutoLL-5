@@ -1,28 +1,119 @@
 @import 'tailwindcss';
 
+/*
+ * The two faces of the new look, shipped beside this stylesheet rather than
+ * fetched from Google: the bookmarklet runs on Disney's page, which should not
+ * be asked to trust a third origin, and a park's cellular signal is the wrong
+ * place to wait on one. The bookmarklet links this file from the Pages site,
+ * so these URLs resolve there too, and Pages allows any origin to use them.
+ *
+ * Latin subsets only. A glyph outside the range falls back to the system font
+ * for that character alone. Both are SIL Open Font License 1.1; the licences
+ * are beside the files.
+ */
+@font-face {
+  font-family: 'Figtree';
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url('./fonts/figtree-latin.woff2') format('woff2');
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212,
+    U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Bricolage Grotesque';
+  font-style: normal;
+  font-weight: 500 800;
+  font-stretch: 100%;
+  font-display: swap;
+  src: url('./fonts/bricolage-grotesque-latin.woff2') format('woff2');
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212,
+    U+2215, U+FEFF, U+FFFD;
+}
+
 @theme {
-  --color-bg1-blue: #5271ff;
-  --color-bg1-blue-d: oklch(53% 0.21 270);
-  --color-blue: oklch(54% 0.23 270);
-  --color-blue-d: oklch(46% 0.23 270);
-  --color-cyan: oklch(60% 0.12 214);
-  --color-cyan-d: oklch(52% 0.12 214);
-  --color-fuchsia: oklch(60% 0.27 326);
-  --color-fuchsia-d: oklch(52% 0.27 326);
-  --color-gold: oklch(62% 0.12 90);
-  --color-gold-d: oklch(54% 0.12 90);
-  --color-gray: oklch(40% 0 0);
-  --color-gray-d: oklch(32% 0 0);
-  --color-green: oklch(58% 0.18 142);
-  --color-green-d: oklch(50% 0.18 142);
-  --color-orange: oklch(62% 0.2 56);
-  --color-orange-d: oklch(54% 0.2 56);
-  --color-purple: oklch(54% 0.23 300);
-  --color-purple-d: oklch(46% 0.23 300);
-  --color-red: oklch(58% 0.22 28);
-  --color-red-d: oklch(50% 0.22 28);
+  /* Figtree for reading, Bricolage Grotesque for titles and times. */
+  --font-sans:
+    'Figtree', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
+    'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  --font-display:
+    'Bricolage Grotesque', 'Figtree', ui-sans-serif, system-ui, sans-serif;
+
+  /*
+   * Park and land colours. Deeper than they were, so each can carry white
+   * text and also be text on the paper background: every one clears 4.5:1
+   * against white. The `-d` shade is the same hue for text on a light fill.
+   */
+  --color-bg1-blue: #2f4fd8;
+  --color-bg1-blue-d: #2542b8;
+  --color-blue: #2f4fd8;
+  --color-blue-d: #2542b8;
+  --color-cyan: #0e7490;
+  --color-cyan-d: #0b6178;
+  --color-fuchsia: #a3208a;
+  --color-fuchsia-d: #8c1b77;
+  --color-gold: #8a6a00;
+  --color-gold-d: #735800;
+  --color-gray: #5e5850;
+  --color-gray-d: #4a453e;
+  --color-green: #2e7d32;
+  --color-green-d: #256a29;
+  --color-orange: #9a4508;
+  --color-orange-d: #843b07;
+  --color-purple: #6d3fc4;
+  --color-purple-d: #5a33a6;
+  --color-red: #b03a2e;
+  --color-red-d: #962e24;
+
+  /*
+   * The page and its ink. The screens are written against Tailwind's gray
+   * scale and `black`, so those are redefined as the warm neutrals of the new
+   * look rather than rewritten at every use: a class keeps its meaning --
+   * `text-gray-600` is still "secondary text" -- and only its colour moves.
+   * The tests that read classes therefore still read meaning.
+   */
+  --color-paper: #f6f4ef;
+  --color-ink: #1d1b18;
+  --color-black: #1d1b18;
+  --color-gray-50: #faf8f4;
+  --color-gray-100: #f3f0ea;
+  --color-gray-200: #eae5dc;
+  --color-gray-300: #e4ded3;
+  --color-gray-400: #a39b8f;
+  --color-gray-500: #6f685e;
+  --color-gray-600: #5e5850;
+  --color-gray-700: #3d3934;
+  --color-gray-800: #2a2723;
+  --color-gray-900: #1d1b18;
+  --color-gray-950: #11100e;
+
+  /*
+   * Colour that means something: running, stop, dry run, paused. The fills
+   * here carry white text, so dry run and paused are deepened until they
+   * clear 4.5:1 -- the stock shades were closer to 3:1 with white on them.
+   */
+  --color-green-100: #e3f3ea;
+  --color-green-700: #1e7a46;
+  --color-red-700: #b42318;
+  --color-yellow-600: #9c6300;
+  --color-amber-600: #b45309;
 
   --breakpoint-xs: 360px;
+}
+
+/*
+ * The park's colour as an accent: the park chip, the selected tab. `Screen`
+ * sets `--accent` from its theme, so `text-accent` and `bg-accent/12` follow
+ * whichever park the screen is about without a class per park. Inline, so the
+ * utilities read the variable at the element rather than at the root.
+ */
+@theme inline {
+  --color-accent: var(--accent, var(--color-bg1-blue));
 }
 
 @utility dividers {
@@ -35,7 +126,10 @@
 
 @layer base {
   html {
-    @apply touch-manipulation overflow-hidden bg-white text-black;
+    @apply touch-manipulation overflow-hidden bg-paper text-ink antialiased;
+    /* Times are the point of most screens; digits that keep their width
+       stop a countdown from shuffling the line it sits on. */
+    font-variant-numeric: tabular-nums;
   }
 
   html * {
@@ -52,7 +146,7 @@
   }
 
   h2 {
-    @apply mt-4 text-xl leading-snug font-semibold;
+    @apply mt-4 text-xl leading-snug font-bold;
   }
 
   h3 {
@@ -60,7 +154,7 @@
   }
 
   option {
-    @apply bg-white text-black;
+    @apply bg-white text-ink;
   }
 
   input[type='checkbox'],
