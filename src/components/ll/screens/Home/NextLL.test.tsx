@@ -1,8 +1,8 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 import { useState } from 'react';
 
 import { mk, wdw } from '@/__fixtures__/resort';
-import { Booking } from '@/api/itinerary';
+import { Booking, LLMP } from '@/api/itinerary';
 import { Experience } from '@/api/ll';
 import { MIN_TARGETED_IMPROVEMENT_MINUTES } from '@/autopilot/automodify';
 import { NEXTLL_PENDING_KEY, PendingSearch } from '@/autopilot/nextll';
@@ -28,6 +28,7 @@ import { TODAY, TOMORROW } from '@/testing';
 
 import PartySelector from '../PartySelector';
 import { NEXTLL, NextLL, NextLLChooser } from './NextLL';
+import { NextLLModifyActions } from './NextLLModify';
 
 const BZ = '80010114';
 const OFF: PollerStatus = { mode: 'off', consecutiveFailures: 0, polls: 0 };
@@ -90,6 +91,7 @@ function setup({
   const setPartyIds = jest.fn();
   const replaceTargets = jest.fn();
   const changeTab = jest.fn();
+  const setLeaveGuard = jest.fn();
   const goTo = jest.fn();
   const refreshExperiences = jest.fn();
   const tab = (name: string) => ({ name, icon: null, component: () => null });
@@ -142,6 +144,7 @@ function setup({
             tabs,
             active: tabs[2]!,
             changeTab,
+            setLeaveGuard,
             scrollPos: { get: () => 0, set: () => {} },
           }}
         >
@@ -180,6 +183,7 @@ function setup({
   return {
     ...view,
     goTo,
+    setLeaveGuard,
     refreshExperiences,
     setEnabled,
     addTarget,
@@ -213,6 +217,31 @@ describe('NextLL', () => {
       screen.getByRole('button', { name: 'Book a new Lightning Lane' })
     );
     expect(screen.getByText('Find it')).toBeVisible();
+  });
+
+  // Two people holding one ride at different times: the time alone did not
+  // say whose each was.
+  it('names who holds each pass in the modify list', () => {
+    const lane = {
+      ...heldAt(10),
+      guests: [{ id: 'g1', name: 'Mickey Mouse' }],
+    } as unknown as Booking;
+    setup({ chooser: true, plans: [lane] });
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Modify a held Lightning Lane' })
+    );
+    expect(screen.getByText('Mickey Mouse')).toBeVisible();
+  });
+
+  it('leaves the way back to the header arrow', () => {
+    render(
+      <NextLLModifyActions
+        booking={{ ...heldAt(10), park: mk } as unknown as LLMP}
+      />
+    );
+    expect(
+      screen.queryByText('Back to held Lightning Lanes')
+    ).not.toBeInTheDocument();
   });
 
   it('lists an after-midnight reservation under its park day', () => {
@@ -456,11 +485,77 @@ describe('NextLL', () => {
       expect(screen.queryByText(/Holding/)).not.toBeInTheDocument();
     });
 
+    // Re-saving the party was the only way out; the reservation itself can be
+    // picked, and a search opened on it follows it.
+    it('offers to move either reservation directly', () => {
+      const { goTo } = setup(running);
+      fireEvent.click(
+        screen.getAllByRole('button', { name: 'Move this one' })[0]!
+      );
+      expect(goTo).toHaveBeenCalledWith(
+        <NextLLModifyActions booking={plans[0] as LLMP} />
+      );
+    });
+
     it('says so before a search starts, too', () => {
       setup({ plans });
       fireEvent.change(screen.getByRole('combobox'), { target: { value: BZ } });
       expect(screen.getByText(/More than one person holds/)).toBeVisible();
     });
+  });
+
+  // Leaving the tab stops the search, and a tap on a tab or the footer row
+  // used to do it with no word.
+  it('asks before a tab change ends a running search', () => {
+    const { setLeaveGuard } = setup({
+      enabled: true,
+      status: RUNNING,
+      targets: [{ experienceId: BZ }],
+    });
+    const guard = setLeaveGuard.mock.calls.at(-1)?.[0];
+    expect(guard).toBeInstanceOf(Function);
+    const leave = jest.fn();
+    act(() => {
+      expect(guard('Plans', leave)).toBe(true);
+    });
+    expect(screen.getByRole('alertdialog')).toHaveTextContent(
+      `Leaving stops the search for ${name}`
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Stay' }));
+    expect(leave).not.toHaveBeenCalled();
+    act(() => {
+      guard('Plans', leave);
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Leave' }));
+    expect(leave).toHaveBeenCalledTimes(1);
+  });
+
+  it('sets no guard while nothing is running', () => {
+    const { setLeaveGuard } = setup();
+    expect(setLeaveGuard).not.toHaveBeenCalledWith(expect.any(Function));
+  });
+
+  // The chip under the title was the only sign here that dry run, the same
+  // setting as Autopilot's, stops NextLL booking too.
+  it('says a dry run books nothing here either', () => {
+    setup({ dryRun: true });
+    expect(
+      screen.getByText(/Dry run is on, so this books nothing/)
+    ).toBeVisible();
+  });
+
+  it('says a met goal keeps looking until Done', () => {
+    setup({
+      enabled: true,
+      status: RUNNING,
+      plans: [heldAt(10)],
+      targets: [{ experienceId: BZ, before: new ParkTime(13) }],
+    });
+    expect(
+      screen.getByText(
+        'It keeps looking for an earlier time until you tap Done.'
+      )
+    ).toBeVisible();
   });
 
   it('stops and clears its target', () => {
