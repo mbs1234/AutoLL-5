@@ -20,12 +20,12 @@ export default function Disclosure({
   children: React.ReactNode;
 }) {
   return (
-    <details className="mt-4 border-t border-gray-200 pt-2">
+    <details className="group mt-4 rounded-2xl border border-gray-300 bg-white px-4 py-3">
       <summary className="cursor-pointer list-none font-semibold">
         {/* The marker is drawn here rather than left to the browser, whose
             default triangle is inconsistent across iOS and desktop and
             cannot be positioned. */}
-        <span className="mr-1 inline-block text-gray-500 transition-transform">
+        <span className="mr-1.5 inline-block text-gray-500 transition-transform group-open:rotate-90">
           &#9656;
         </span>
         {title}
@@ -33,7 +33,7 @@ export default function Disclosure({
           <span className="ml-1 font-normal text-gray-600">({count})</span>
         )}
       </summary>
-      <div className="mt-1">{children}</div>
+      <div className="mt-2">{children}</div>
     </details>
   );
 }

@@ -107,9 +107,9 @@ function SeveralHeld({
   return (
     <div
       role="status"
-      className="mt-3 rounded-sm bg-amber-100 p-2 text-amber-900"
+      className="mt-3 rounded-2xl bg-amber-100 p-3.5 text-amber-900"
     >
-      <p className="font-semibold">
+      <p className="my-0 font-semibold">
         More than one person holds {name ?? 'this attraction'}.
       </p>
       <ul className="mt-1">
@@ -120,7 +120,7 @@ function SeveralHeld({
           </li>
         ))}
       </ul>
-      <p className="mt-1 text-sm">
+      <p className="mt-1 mb-0 text-sm">
         NextLL moves the one your saved party holds. Save a party of only the
         people whose reservation should move &mdash; the gear menu, then Party
         Selection &mdash; and start again.
@@ -131,7 +131,7 @@ function SeveralHeld({
 
 function GoalText({ children }: { children: ReactNode }) {
   return (
-    <p className="mt-1 text-sm text-gray-600">
+    <p className="mt-2 mb-0 text-sm font-semibold text-gray-600">
       Goal: a return time {children}.
     </p>
   );
@@ -156,7 +156,9 @@ export function NextLLChooser({ ref }: Partial<HomeTabProps> = {}) {
   }
   return (
     <Tab title={NEXTLL} subhead={<ContextStrip />} ref={ref}>
-      <h2 className="mt-2 text-xl font-semibold">What do you want to do?</h2>
+      <h2 className="mt-3 font-display text-2xl font-bold tracking-tight">
+        What do you want to do?
+      </h2>
       <p className="mt-2 text-sm text-gray-600">
         Find a new Lightning Lane, or improve one you already hold.
       </p>
@@ -371,8 +373,8 @@ export function NextLL({
             </Button>
           )}
           {pendingExp && (
-            <div className="mt-2 rounded-sm border border-gray-300 p-3">
-              <p>
+            <div className="mt-3 rounded-2xl border border-gray-300 bg-white p-3.5">
+              <p className="my-0">
                 Still looking for{' '}
                 <span className="font-semibold">{pendingExp.name}</span>?
                 Searching stopped when you left this tab.
@@ -392,7 +394,7 @@ export function NextLL({
           <label className="mt-4 block">
             <span className="font-semibold">Attraction</span>
             <select
-              className="mt-1 block w-full rounded-sm border border-gray-300 p-2"
+              className="mt-1 block w-full rounded-xl border border-gray-300 bg-white p-2.5"
               value={choice}
               onChange={e => setChoice(e.target.value)}
             >
@@ -410,7 +412,7 @@ export function NextLL({
             <input
               type="time"
               aria-label="Earliest acceptable return time"
-              className="rounded-sm border border-gray-300 px-1 py-0.5"
+              className="rounded-lg border border-gray-300 bg-white px-2 py-1"
               value={after}
               onChange={e => setAfter(e.target.value)}
             />
@@ -424,7 +426,7 @@ export function NextLL({
             <input
               type="time"
               aria-label="Latest acceptable return time"
-              className="rounded-sm border border-gray-300 px-1 py-0.5"
+              className="rounded-lg border border-gray-300 bg-white px-2 py-1"
               value={before}
               onChange={e => setBefore(e.target.value)}
             />
@@ -462,58 +464,82 @@ export function NextLL({
         </>
       ) : (
         <>
-          <h2 className="mt-2 text-xl font-semibold">{chosen?.name}</h2>
+          <section
+            aria-label="The search"
+            className="mt-3 rounded-[20px] border border-gray-300 bg-white p-4"
+          >
+            <h2 className="mt-0 font-display text-2xl leading-tight font-bold tracking-tight">
+              {chosen?.name}
+            </h2>
 
-          {held ? (
-            <p className="mt-2">
-              Holding <Time time={held.start.time} />
-              {goalMet ? (
-                <span className="font-semibold"> &mdash; that will do.</span>
-              ) : (
-                <> &mdash; still looking for a time inside your window.</>
-              )}
-            </p>
-          ) : several && chosen ? (
-            <SeveralHeld
-              name={chosen.name}
-              plans={plans}
-              experienceId={chosen.id}
-              date={bookingDate}
-            />
-          ) : (
-            <p className="mt-2">
-              Nothing held yet. Checking&hellip;{' '}
-              <span className="text-gray-500">
-                ({status.polls} {status.polls === 1 ? 'check' : 'checks'})
-              </span>
-            </p>
-          )}
+            {held ? (
+              // One sentence, so it still reads as one -- "Holding 2:05 PM --
+              // still looking" -- with the time drawn as the line it deserves.
+              <p className="mt-3 mb-0 text-sm font-semibold text-gray-600">
+                Holding{' '}
+                <Time
+                  time={held.start.time}
+                  className="my-1 block font-display text-5xl leading-none font-bold tracking-tight text-ink [&_span_span]:text-lg"
+                />
+                {goalMet ? (
+                  <span className="font-bold text-green-700">
+                    {' '}
+                    &mdash; that will do.
+                  </span>
+                ) : (
+                  <> &mdash; still looking for a time inside your window.</>
+                )}
+              </p>
+            ) : several && chosen ? (
+              <SeveralHeld
+                name={chosen.name}
+                plans={plans}
+                experienceId={chosen.id}
+                date={bookingDate}
+              />
+            ) : (
+              <p className="mt-3 mb-0">
+                Nothing held yet. Checking&hellip;{' '}
+                <span className="text-gray-500">
+                  ({status.polls} {status.polls === 1 ? 'check' : 'checks'})
+                </span>
+              </p>
+            )}
 
-          {/* The poller gives up after MAX_CONSECUTIVE_FAILURES and returns
+            {/* The poller gives up after MAX_CONSECUTIVE_FAILURES and returns
               without scheduling another tick, leaving `enabled` true and the
               wake lock released. Every line above still reads as a live
               search, so without this the screen says "Checking..." at a loop
               that stopped -- and an expired session, which is what usually
               stops it, is exactly the case where the user has to do something.
               Autopilot's screen has said this since it had one. */}
-          {status.mode === 'stopped' && (
-            <p className="mt-2 font-semibold text-red-700">
-              Stopped after {status.consecutiveFailures} failed checks
-              {status.lastError ? `: ${status.lastError}` : ''}. Tap{' '}
-              {goalMet ? 'Done' : 'Stop looking'} and start it again to retry.
-            </p>
-          )}
+            {status.mode === 'stopped' && (
+              <p className="mt-3 mb-0 font-semibold text-red-700">
+                Stopped after {status.consecutiveFailures} failed checks
+                {status.lastError ? `: ${status.lastError}` : ''}. Tap{' '}
+                {goalMet ? 'Done' : 'Stop looking'} and start it again to retry.
+              </p>
+            )}
 
-          {target && <GoalLine target={target} />}
+            {target && <GoalLine target={target} />}
 
-          {bookingDate !== parkDate() && (
-            <p className="mt-1 text-sm text-gray-600">
-              Working on {bookingDate}, not today.
-            </p>
-          )}
+            {bookingDate !== parkDate() && (
+              <p className="mt-1 mb-0 text-sm text-gray-600">
+                Working on {bookingDate}, not today.
+              </p>
+            )}
+          </section>
 
-          <div className="mt-4">
-            <Button type="full" color="bg-red-700 text-white" onClick={stop}>
+          {/* Done is the search succeeding, so it is green; Stop looking is
+              giving up on it, so it stays red. Either way the same tap. */}
+          <div className="mt-3">
+            <Button
+              type="full"
+              color={
+                goalMet ? 'bg-green-700 text-white' : 'bg-red-700 text-white'
+              }
+              onClick={stop}
+            >
               {goalMet ? 'Done' : 'Stop looking'}
             </Button>
           </div>
