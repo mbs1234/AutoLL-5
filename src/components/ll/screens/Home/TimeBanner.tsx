@@ -9,7 +9,7 @@ export default function TimeBanner({
   dropTime?: ParkTime;
 }) {
   return bookTime || dropTime ? (
-    <div className="flex justify-center gap-x-8 rounded-xl border border-gray-300 bg-white py-1.5 font-semibold text-ink">
+    <div className="flex gap-2">
       <LabeledTime label="Book" time={bookTime} />
       <LabeledTime label="Drop" time={dropTime} />
     </div>
@@ -20,12 +20,21 @@ function LabeledTime({ label, time }: { label?: string; time?: ParkTime }) {
   if (!time) return null;
   const now = DateTime.now().time.with({ second: 0 });
   return (
-    <div>
+    // Label and time in one element, so each still reads "Book: 7:00 AM".
+    <div className="flex-1 rounded-2xl border border-gray-300 bg-white px-3.5 py-2 text-xs font-bold tracking-wide text-gray-600 uppercase">
       {label}:{' '}
       {time > now ? (
-        <Time time={time} />
+        <Time
+          time={time}
+          className="block font-display text-2xl leading-tight tracking-tight text-ink normal-case [&_span_span]:text-sm"
+        />
       ) : (
-        <time dateTime={`${time}`}>now</time>
+        <time
+          dateTime={`${time}`}
+          className="block font-display text-2xl leading-tight tracking-tight text-ink normal-case"
+        >
+          now
+        </time>
       )}
     </div>
   );
