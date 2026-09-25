@@ -19,6 +19,25 @@ describe('SettingsButton', () => {
     expect(screen.getByTitle('Settings Menu')).not.toHaveClass('absolute');
   });
 
+  // The rows' padding sat on the list item, so a tap on the top or bottom of
+  // a row landed on nothing. jsdom does no hit-testing, so it is the padding's
+  // place that is asserted.
+  it('makes the whole of each menu row tappable', () => {
+    render(<SettingsButton />);
+    fireEvent.click(screen.getByTitle('Settings Menu'));
+    const row = screen.getByText('Party Selection').closest('button')!;
+    expect(row).toHaveClass('py-3');
+    expect(row.closest('li')).toHaveClass('py-0!');
+  });
+
+  it('says what session-only login does', () => {
+    render(<SettingsButton />);
+    fireEvent.click(screen.getByTitle('Settings Menu'));
+    expect(
+      screen.getByText(/forgets your sign-in when this tab closes/)
+    ).toBeVisible();
+  });
+
   it('names the build in its menu', () => {
     render(<SettingsButton />);
     fireEvent.click(screen.getByTitle('Settings Menu'));

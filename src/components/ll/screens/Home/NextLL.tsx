@@ -24,14 +24,16 @@ import ContextStrip from '@/components/ll/ContextStrip';
 import AutopilotContext from '@/contexts/AutopilotContext';
 import BookingDateContext from '@/contexts/BookingDateContext';
 import ExperiencesContext from '@/contexts/ExperiencesContext';
+import NavContext from '@/contexts/NavContext';
 import PlansContext from '@/contexts/PlansContext';
-import { parkDate } from '@/datetime';
+import { formatDate, parkDate } from '@/datetime';
 import useSavedParty from '@/hooks/useSavedParty';
 import AutopilotProvider from '@/providers/AutopilotProvider';
 import { NEXTLL_WATCHLIST_KEY } from '@/storageNamespace';
 
 import { HomeTabProps } from '../Home';
 import { NextLLBookingActivity } from '../NextLLActivity';
+import PartySelector from '../PartySelector';
 import RefreshButton from '../RefreshButton';
 import { NextLLModifyPicker } from './NextLLModify';
 import ParkSelect from './ParkSelect';
@@ -205,6 +207,7 @@ export function NextLL({
   // eligible on the account, silently overriding the choice made next door.
   const [partyIds] = useSavedParty();
   const { experiences, refreshExperiences } = use(ExperiencesContext);
+  const { goTo } = use(NavContext);
   const { plans } = use(PlansContext);
   const { bookingDate } = use(BookingDateContext);
   const {
@@ -417,7 +420,8 @@ export function NextLL({
               onChange={e => setAfter(e.target.value)}
             />
             <span className="text-sm text-gray-600">
-              optional &mdash; set both to aim at a particular time
+              optional &mdash; nothing earlier is booked, even if nothing later
+              comes
             </span>
           </label>
 
@@ -431,21 +435,27 @@ export function NextLL({
               onChange={e => setBefore(e.target.value)}
             />
             <span className="text-sm text-gray-600">
-              optional &mdash; leave empty for as early as possible
+              optional &mdash; takes the first time offered, then moves it
+              earlier to meet this
             </span>
           </label>
 
           <div className="mt-4">
-            <Button type="full" onClick={start}>
+            <Button type="full" onClick={start} disabled={!choice}>
               Find it
             </Button>
           </div>
 
-          <p className="mt-3 text-sm text-gray-600">
-            {partyIds.size > 0
-              ? `Books for your saved party of ${partyIds.size}. Change it from the LL tab.`
-              : 'Books for everyone eligible. Choose a smaller party from the LL tab if you want fewer.'}
-          </p>
+          <div className="mt-3 flex flex-wrap items-center gap-2 text-sm text-gray-600">
+            <span>
+              {partyIds.size > 0
+                ? `Books for your saved party of ${partyIds.size}.`
+                : 'Books for everyone eligible.'}
+            </span>
+            <Button type="small" onClick={() => goTo(<PartySelector />)}>
+              Choose party
+            </Button>
+          </div>
           {several && chosen && (
             <SeveralHeld
               name={chosen.name}
@@ -456,10 +466,17 @@ export function NextLL({
           )}
 
           {bookable.length === 0 && (
-            <p className="mt-3 text-sm text-gray-600">
-              No attractions loaded yet. Switch to the LL tab and let the list
-              load first, or pick a different park there.
-            </p>
+            <div className="mt-3 text-sm text-gray-600">
+              <p className="my-0">
+                No attractions loaded yet for this park. Refresh the list, or
+                pick a different park above.
+              </p>
+              <div className="mt-2">
+                <Button type="small" onClick={refreshExperiences}>
+                  Refresh list
+                </Button>
+              </div>
+            </div>
           )}
         </>
       ) : (
@@ -525,7 +542,7 @@ export function NextLL({
 
             {bookingDate !== parkDate() && (
               <p className="mt-1 mb-0 text-sm text-gray-600">
-                Working on {bookingDate}, not today.
+                Working on {formatDate(bookingDate, 'short')}, not today.
               </p>
             )}
           </section>

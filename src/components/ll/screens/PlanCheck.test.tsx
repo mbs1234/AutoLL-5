@@ -17,6 +17,7 @@ import { ParkTime, modifyDate, parkDate } from '@/datetime';
 import { RateLimitExceeded } from '@/ratelimit';
 import { TODAY } from '@/testing';
 
+import PartySelector from './PartySelector';
 import PlanCheck from './PlanCheck';
 
 const guest = (id: string, name: string, rest: Partial<Guest> = {}): Guest =>
@@ -31,6 +32,7 @@ function setup({
   pollExperiences = jest.fn(async () => []),
   onReviewed = jest.fn(),
   bookingDate = TODAY,
+  goTo = jest.fn(),
   ...state
 }: Partial<AutopilotState> & {
   targets?: WatchTarget[];
@@ -39,11 +41,10 @@ function setup({
   pollExperiences?: jest.Mock;
   onReviewed?: jest.Mock;
   bookingDate?: string;
+  goTo?: jest.Mock;
 } = {}) {
   render(
-    <NavContext
-      value={{ goTo: () => {}, goBack: async () => {} } as unknown as never}
-    >
+    <NavContext value={{ goTo, goBack: async () => {} } as unknown as never}>
       <ParkContext value={{ park: mk, setPark: () => {} }}>
         <BookingDateContext value={{ bookingDate, setBookingDate: () => {} }}>
           <ClientsContext value={{ ll: { guests } } as unknown as Clients}>
@@ -84,7 +85,7 @@ function setup({
       </ParkContext>
     </NavContext>
   );
-  return { guests, pollExperiences, onReviewed };
+  return { guests, pollExperiences, onReviewed, goTo };
 }
 
 const tapCheck = async () => {
@@ -130,6 +131,7 @@ describe('PlanCheck', () => {
     expect(onReviewed).toHaveBeenCalledWith(
       expect.objectContaining({ blockers: 1 })
     );
+    expect(screen.getByText('1 blocker needs attention.')).toBeVisible();
   });
 
   // The screen's central safety claim, and the one thing no unit test of the
@@ -162,7 +164,7 @@ describe('PlanCheck', () => {
     ).toBeVisible();
     expect(screen.getByText('1 item to review.')).toBeVisible();
     expect(
-      screen.queryByText(/blockers? need attention/)
+      screen.queryByText(/blockers? needs? attention/)
     ).not.toBeInTheDocument();
   });
 
@@ -229,6 +231,43 @@ describe('PlanCheck', () => {
       expect(screen.getByText(/No guests came back eligible/)).toBeVisible()
     );
     expect(screen.queryByText(/generally eligible/)).not.toBeInTheDocument();
+  });
+
+  // It used to say "check the party selection on the LL tab", which has no
+  // party control; the party is under the gear.
+  it('opens Party Selection when nobody came back eligible', async () => {
+    const { goTo } = setup({
+      guests: jest.fn(async () => ({
+        eligible: [],
+        ineligible: [
+          guest('g9', 'Stale', { ineligibleReason: 'NOT_IN_PARTY' }),
+        ],
+      })),
+    });
+    await tapCheck();
+    await waitFor(() =>
+      expect(screen.getByText(/No guests came back eligible/)).toBeVisible()
+    );
+    screen.getByText('Choose party').click();
+    expect(goTo).toHaveBeenCalledWith(<PartySelector />);
+  });
+
+  it("says in plain words why a guest can't book", async () => {
+    setup({
+      guests: jest.fn(async () => ({
+        eligible: [guest('g1', 'Ana')],
+        ineligible: [
+          guest('g2', 'Bo', { ineligibleReason: 'EXPERIENCE_LIMIT_REACHED' }),
+        ],
+      })),
+    });
+    await tapCheck();
+    await waitFor(() =>
+      expect(screen.getByText(/Already booked this one today/)).toBeVisible()
+    );
+    expect(
+      screen.queryByText(/EXPERIENCE_LIMIT_REACHED/)
+    ).not.toBeInTheDocument();
   });
 
   it('shows when an ineligible guest becomes eligible later', async () => {

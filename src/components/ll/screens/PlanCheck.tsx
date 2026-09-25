@@ -26,7 +26,9 @@ import useDataLoader from '@/hooks/useDataLoader';
 import { RATE_LIMIT_EXCEEDED } from '@/ratelimit';
 import { loadSavedPartyIds } from '@/savedParty';
 
+import { reasonText } from '../ineligibleReason';
 import Configure from './Configure';
+import PartySelector from './PartySelector';
 
 const STYLE: Record<PlanCheckLevel, string> = {
   blocker: 'bg-red-100 text-red-900',
@@ -222,7 +224,9 @@ export default function PlanCheck({
         }`}
       >
         {blockers
-          ? `${blockers} blocker${blockers === 1 ? '' : 's'} need attention.`
+          ? blockers === 1
+            ? '1 blocker needs attention.'
+            : `${blockers} blockers need attention.`
           : reviews
             ? `${reviews} item${reviews === 1 ? '' : 's'} to review.`
             : 'Ready to run within the current safeguards.'}
@@ -245,14 +249,15 @@ export default function PlanCheck({
             <span className="font-semibold">{LABEL[item.level]}:</span>{' '}
             {item.text}
             {item.subject && (
-              <Button
-                type="small"
-                className="mt-2"
-                disabled={item.subject.kind === 'tipboard' && refreshing}
-                onClick={() => actOn(item)}
-              >
-                {tipboardLabel(item.subject.kind, refreshing)}
-              </Button>
+              <div className="mt-2">
+                <Button
+                  type="small"
+                  disabled={item.subject.kind === 'tipboard' && refreshing}
+                  onClick={() => actOn(item)}
+                >
+                  {tipboardLabel(item.subject.kind, refreshing)}
+                </Button>
+              </div>
             )}
           </li>
         ))}
@@ -279,10 +284,17 @@ export default function PlanCheck({
         </p>
       )}
       {nobodyEligible && (
-        <p className="mt-2 rounded-sm bg-red-100 p-2 text-sm text-red-900">
-          No guests came back eligible. Check the party selection on the LL tab
-          — the saved party may no longer be on this account.
-        </p>
+        <div className="mt-2 rounded-sm bg-red-100 p-2 text-sm text-red-900">
+          <p className="my-0">
+            No guests came back eligible. The saved party may no longer be on
+            this account.
+          </p>
+          <div className="mt-2">
+            <Button type="small" onClick={() => goTo(<PartySelector />)}>
+              Choose party
+            </Button>
+          </div>
+        </div>
       )}
       {ineligible.length > 0 && (
         <div className="mt-2 rounded-sm bg-amber-100 p-2 text-sm text-amber-900">
@@ -299,7 +311,7 @@ export default function PlanCheck({
                     eligible from <Time time={guest.eligibleAfter} />
                   </>
                 ) : (
-                  (guest.ineligibleReason ?? 'ineligible')
+                  reasonText(guest.ineligibleReason)
                 )}
               </li>
             ))}

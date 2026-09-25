@@ -45,7 +45,8 @@ export default function Configure({
     setAvoidOverlaps,
     passkeyStatus,
   } = use(AutopilotContext);
-  const { experiences, unknownExperienceIds } = use(ExperiencesContext);
+  const { experiences, unknownExperienceIds, refreshExperiences } =
+    use(ExperiencesContext);
   const { park } = use(ParkContext);
   const { bookingDate } = use(BookingDateContext);
 
@@ -362,11 +363,11 @@ export default function Configure({
               <p>
                 <span className="font-semibold">Swap in is on.</span> When all
                 three Multi Pass slots are taken and an attraction marked above
-                appears, Autopilot gives up your <em>lowest-priority</em>{' '}
-                reservation for it &mdash; preferring to let go of a non-Tier-1.
-                The swap is a single request, so the old reservation is only
-                released if the new one is secured. With a slot free it simply
-                books instead.
+                appears, Autopilot gives up the reservation <em>it</em> ranks
+                lowest &mdash; by its built-in ranking, not your Plan rank
+                &mdash; preferring to let go of a non-Tier-1. The swap is a
+                single request, so the old reservation is only released if the
+                new one is secured. With a slot free it simply books instead.
               </p>
             )}
           </div>
@@ -375,9 +376,14 @@ export default function Configure({
 
       <h3>Lightning Lane attractions</h3>
       {watchable.length === 0 ? (
-        <p className="text-sm text-gray-600">
-          No attractions loaded yet. Go back and refresh the list first.
-        </p>
+        <div className="text-sm text-gray-600">
+          <p className="my-0">No attractions loaded yet for this park.</p>
+          <div className="mt-2">
+            <Button type="small" onClick={refreshExperiences}>
+              Refresh list
+            </Button>
+          </div>
+        </div>
       ) : (
         <ul>
           {unwatched.map(exp => (

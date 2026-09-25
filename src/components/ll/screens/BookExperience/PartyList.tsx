@@ -20,9 +20,9 @@ export default function PartyList() {
       {eligible.length > maxPartySize && selected.length === maxPartySize && (
         <Alert title="Party Size Restricted">
           <p>
-            Lightning Lane reservations are limited to 20 guests. If everyone in
-            your party wishes to experience this attraction, you will need to
-            book multiple reservations.
+            Lightning Lane reservations are limited to {maxPartySize} guests. If
+            everyone in your party wishes to experience this attraction, you
+            will need to book multiple reservations.
           </p>
         </Alert>
       )}

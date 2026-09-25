@@ -77,7 +77,7 @@ describe('Today', () => {
 
   it('explains the iOS limitation when unsupported', () => {
     setup({ notifications: 'unsupported' });
-    expect(screen.getByText(/Home Screen/)).toBeVisible();
+    expect(screen.getByText(/the alert sound is the only alarm/)).toBeVisible();
   });
 
   it('requests notifications from the pre-trip checklist', () => {
@@ -261,6 +261,37 @@ describe('Today', () => {
   it('shows a prominent banner while a dry run is on', () => {
     setup({ dryRun: true });
     expect(screen.getByText(/Dry run is on/)).toBeVisible();
+  });
+
+  // Each notice that names a screen gets a button to it. Configure, not a
+  // switch: turning a safeguard off stays on the screen that explains it.
+  it('opens Configure from the dry-run banner', () => {
+    setup({ dryRun: true });
+    const banner = screen.getByText(/Dry run is on/).closest('div')!;
+    within(banner).getByRole('button', { name: 'Open Configure' }).click();
+    expect(nav.goTo.mock.calls[0]?.[0].type).toBe(Configure);
+  });
+
+  it('opens Configure from the unknown-attraction notice', () => {
+    setup({ unknownExperienceIds: ['99999'] });
+    const notice = screen.getByText(/does not recognise/).closest('div')!;
+    within(notice).getByRole('button', { name: 'Open Configure' }).click();
+    expect(nav.goTo.mock.calls[0]?.[0].type).toBe(Configure);
+  });
+
+  it('says a drop less than a minute off is under a minute away', () => {
+    setup({
+      enabled: true,
+      status: {
+        ...OFF,
+        mode: 'burst',
+        polls: 3,
+        target: new ParkTime(9, 1),
+        secondsToTarget: 20,
+      },
+    });
+    expect(screen.getByText('(in under a minute)')).toBeVisible();
+    expect(screen.queryByText(/in 0 min/)).not.toBeInTheDocument();
   });
 
   it('shows the next Lightning Lane and the next drop', () => {

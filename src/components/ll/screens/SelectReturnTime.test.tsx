@@ -8,6 +8,7 @@ import {
 } from '@/__fixtures__/ll';
 import { Offer } from '@/api/ll';
 import { Overlap } from '@/api/ll/wdw';
+import { APP_NAME } from '@/appIdentity';
 import RebookingContext from '@/contexts/RebookingContext';
 import { DateTime, ParkTime, formatTime } from '@/datetime';
 import {
@@ -170,8 +171,21 @@ describe('SelectReturnTime', () => {
     expect(nav.goBack).toHaveBeenCalledTimes(1);
     expect(onOfferChange).toHaveBeenCalledWith(newOffer);
 
-    click('Keep');
+    click('Keep current');
     expect(nav.goBack).toHaveBeenCalledTimes(2);
+  });
+
+  // The heading read "Availabile Times", and the note called the app "BG1".
+  it('spells its heading and names this app', async () => {
+    await renderComponent(createOffer(TODAY, new ParkTime(12, 30)), {
+      10: [45],
+      13: [15],
+    });
+    expect(
+      screen.getByRole('heading', { name: 'Available Times' })
+    ).toBeVisible();
+    expect(screen.getByText(new RegExp(`${APP_NAME} makes`))).toBeVisible();
+    expect(screen.queryByText(/BG1/)).not.toBeInTheDocument();
   });
 
   it('shows future day availability', async () => {
@@ -294,7 +308,7 @@ describe('SelectReturnTime', () => {
       {},
       'auto'
     );
-    click(see.all('Keep')[0]!);
+    click(see.all('Keep current')[0]!);
     expect(nav.goBack).toHaveBeenCalledWith({ screen: Home });
   });
 });

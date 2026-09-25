@@ -34,7 +34,7 @@ describe('RebookingHeader', () => {
     see(booking.name);
     see.time(booking.start.time);
     see.time(booking.end.time);
-    click('Keep');
+    click('Keep current');
     expect(rebooking.end).toHaveBeenCalledTimes(1);
     expect(nav.goBack).not.toHaveBeenCalled();
   });
@@ -47,7 +47,7 @@ describe('RebookingHeader', () => {
 
   it('goes back to specified screen when Keep clicked', async () => {
     render(<Test back={{ screen: Home }} />);
-    click('Keep');
+    click('Keep current');
     await waitFor(() => expect(nav.goBack).toHaveBeenCalledTimes(1));
     expect(nav.goBack).toHaveBeenLastCalledWith({ screen: Home });
   });

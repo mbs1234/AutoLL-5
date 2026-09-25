@@ -68,7 +68,9 @@ export default function AutopilotStatus({
               status.secondsToTarget > 0 && (
                 <span className="ml-auto text-base font-bold text-green-700">
                   {' '}
-                  (in {Math.round(status.secondsToTarget / 60)} min)
+                  {status.secondsToTarget < 60
+                    ? '(in under a minute)'
+                    : `(in ${Math.round(status.secondsToTarget / 60)} min)`}
                 </span>
               )}
           </div>

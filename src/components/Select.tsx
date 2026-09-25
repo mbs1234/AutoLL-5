@@ -12,8 +12,8 @@ export function SelectMenu<K extends string, V = K>(props: MenuProps<K, V>) {
     <ul className="dividers overflow-auto">
       {[...options].map(([k, opt]) => {
         return (
-          <li key={opt.text}>
-            <label className="flex items-center gap-x-2.5 px-4">
+          <li key={opt.text} className="py-0!">
+            <label className="flex items-center gap-x-2.5 px-4 py-3">
               <input
                 type="radio"
                 name="_SELECT_RADIO_BUTTON_"

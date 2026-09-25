@@ -9,7 +9,7 @@ import ContextStrip from '@/components/ll/ContextStrip';
 import BookingDateContext from '@/contexts/BookingDateContext';
 import NavContext from '@/contexts/NavContext';
 import PlansContext from '@/contexts/PlansContext';
-import { parkDate } from '@/datetime';
+import { formatDate, parkDate } from '@/datetime';
 
 import { HomeTabProps } from '../Home';
 import RefreshButton from '../RefreshButton';
@@ -45,7 +45,7 @@ export function NextLLModifyPicker({
       </h2>
       <p className="mt-2 text-sm text-gray-600">
         Pick the reservation to improve or replace. Only Multi Pass Lightning
-        Lanes held on {bookingDate} are listed.
+        Lanes held on {formatDate(bookingDate, 'short')} are listed.
       </p>
       {modifiable.length > 0 ? (
         <ul className="mt-3 space-y-2">

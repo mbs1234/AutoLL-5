@@ -192,7 +192,12 @@ export default function LoginForm({
         )}
         {error && <p role="alert">{error}</p>}
         {state !== 'starting' && (
-          <button className="button" onClick={() => void beginLogin()}>
+          // A class that no longer exists drew this as plain text. It is the
+          // only thing to do on this screen, so it is drawn as the main action.
+          <button
+            className="min-h-13 w-full rounded-2xl bg-ink px-4 py-3 text-[17px] font-bold text-white"
+            onClick={() => void beginLogin()}
+          >
             Sign in with Disney
           </button>
         )}

@@ -200,8 +200,8 @@ describe('BookExperience', () => {
     see.no(mickey.name);
     await clickModify();
     screen.getByRole('checkbox', { checked: true });
-    expect(see(mickey.name)).toHaveTextContent('TOO EARLY FOR PARK HOPPING');
-    expect(see(pluto.name)).toHaveTextContent('TOO EARLY FOR PARK HOPPING');
+    expect(see(mickey.name)).toHaveTextContent('Too early to park hop');
+    expect(see(pluto.name)).toHaveTextContent('Too early to park hop');
   });
 
   const newOffer: Offer = {
@@ -263,9 +263,7 @@ describe('BookExperience', () => {
     });
     await renderComponent();
     see('No Eligible Guests');
-    expect(see(donald.name)).toHaveTextContent(
-      donald.ineligibleReason.replace(/_/g, ' ')
-    );
+    expect(see(donald.name)).toHaveTextContent('No park ticket for this day');
   });
 
   it('shows "No Reservations Available" on failed response', async () => {
@@ -288,7 +286,7 @@ describe('BookExperience', () => {
     );
     await renderComponent();
     see('No Eligible Guests');
-    expect(see.all('EXPERIENCE LIMIT REACHED')).toHaveLength(3);
+    expect(see.all('Already booked this one today')).toHaveLength(3);
   });
 
   it('shows "No Reservations Available" on OfferError with eligible guests', async () => {
