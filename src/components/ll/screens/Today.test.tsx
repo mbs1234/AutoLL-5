@@ -368,7 +368,7 @@ describe('Today', () => {
 
   it('shows the next Lightning Lane and the next drop', () => {
     setup({ ll: { nextBookTime: new ParkTime(11) } });
-    expect(screen.getByText('Next Lightning Lane:')).toBeVisible();
+    expect(screen.getByText('Book again at:')).toBeVisible();
     expect(document.querySelector('time[datetime="11:00:00"]')).not.toBeNull();
     expect(screen.getByText('Next scheduled drop:')).toBeVisible();
     expect(document.querySelector('time[datetime="11:30:00"]')).not.toBeNull();
@@ -678,7 +678,7 @@ describe('Today', () => {
     });
     expect(screen.getByText(/1 armed, 1 paused/)).toBeVisible();
     const items = screen
-      .getByRole('heading', { name: 'Plan (2)' })
+      .getByRole('heading', { name: 'Watching (2)' })
       .parentElement!.querySelectorAll('li');
     expect(items[0]).toHaveTextContent(wdw.experience(DB).name);
     expect(items[0]).toHaveTextContent(/Paused · Auto-move · Rank 1/);

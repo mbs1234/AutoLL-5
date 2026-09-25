@@ -21,7 +21,7 @@ describe('OfferDetails', () => {
     renderComponent(offer);
     see.time(offer.start.time);
     see.time(offer.end.time);
-    click('Change');
+    click('Change time');
     expect(nav.goTo).toHaveBeenCalledWith(
       <SelectReturnTime offer={offer} onOfferChange={onOfferChange} />
     );

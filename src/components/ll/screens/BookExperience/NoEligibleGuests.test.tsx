@@ -34,20 +34,20 @@ describe('NoEligibleGuests', () => {
   it(`shows "No Eligible Guests" if not rebooking`, () => {
     renderComponent();
     see('No Eligible Guests');
-    expect(see('Eligible at')).toHaveTextContent(formatTime(ll.nextBookTime));
+    expect(see('Book again at')).toHaveTextContent(formatTime(ll.nextBookTime));
     expect(IneligibleGuestList).toHaveBeenCalled();
   });
 
   it(`shows "Unable to Modify" if rebooking`, () => {
     renderComponent({ modify: true });
     see('Unable to Modify');
-    see.no('Eligible at');
+    see.no('Book again at');
     expect(IneligibleGuestList).toHaveBeenCalled();
   });
 
-  it(`doesn't show "Eligible at" time if eligible now`, () => {
+  it(`doesn't show "Book again at" time if eligible now`, () => {
     setTime(ll.nextBookTime);
     renderComponent();
-    see.no('Eligible at');
+    see.no('Book again at');
   });
 });

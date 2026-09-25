@@ -3,7 +3,7 @@ import { RequestError } from '@/api/client';
 import PlansContext from '@/contexts/PlansContext';
 import { ParkTime } from '@/datetime';
 import { ping } from '@/ping';
-import { TODAY, act, click, loading, nav, see } from '@/testing';
+import { TODAY, act, click, loading, nav, screen, see } from '@/testing';
 
 import BookNewReturnTime from './BookNewReturnTime';
 import BookingDetails from './BookingDetails';
@@ -42,7 +42,7 @@ describe('BookNewReturnTime', () => {
     see.time(modOffer.start.time);
     see.time(modOffer.end.time);
 
-    click('Change');
+    click('Change time');
     expect(nav.goTo).toHaveBeenCalledWith(
       <SelectReturnTime offer={modOffer} onOfferChange={expect.any(Function)} />
     );
@@ -56,7 +56,8 @@ describe('BookNewReturnTime', () => {
     };
     act(() => onOfferChange(newOffer));
 
-    click('Modify Lightning Lane');
+    // The commit says what it does: the time it moves to.
+    click('Move to 12:25 PM');
     await loading();
     expect(ll.book).toHaveBeenCalledWith(newOffer);
     expect(refreshPlans).toHaveBeenCalledTimes(1);
@@ -74,10 +75,10 @@ describe('BookNewReturnTime', () => {
     ll.book.mockRejectedValueOnce(
       new RequestError({ ok: false, status: 0, data: {} })
     );
-    click('Modify Lightning Lane');
+    click(screen.getByText(/^Move to /));
     await loading();
     see('Disney did not answer.');
-    see.no('Modify Lightning Lane');
+    expect(screen.queryByText(/^Move to /)).not.toBeInTheDocument();
     expect(refreshPlans).toHaveBeenCalled();
     expect(nav.goBack).not.toHaveBeenCalled();
   });
@@ -87,9 +88,9 @@ describe('BookNewReturnTime', () => {
     ll.book.mockRejectedValueOnce(
       new RequestError({ ok: false, status: 400, data: {} })
     );
-    click('Modify Lightning Lane');
+    click(screen.getByText(/^Move to /));
     await loading();
     see.no('Disney did not answer.');
-    see('Modify Lightning Lane');
+    expect(screen.getByText(/^Move to /)).toBeVisible();
   });
 });

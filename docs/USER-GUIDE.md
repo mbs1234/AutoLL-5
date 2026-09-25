@@ -132,7 +132,7 @@ nothing Epcot-shaped can spend an action. But it also means a plan can look
 empty simply because you are looking at the wrong day.
 
 Autopilot follows those two controls too, on every tab. So while it runs with
-something armed, switching park or day — or tapping **Modify** on a pass
+something armed, switching park or day — or tapping **Swap ride** on a pass
 for another park or day — asks first: "It is watching 3 armed at Magic Kingdom for today…"
 **Stay** keeps it where it is; **Switch** points it at the new park or day, and
 the plan left behind waits until you switch back.
@@ -400,18 +400,18 @@ dry run is on, whether the sign-in lasts past 5 PM, and the alert sound, with
 pass to open it. Once its window is open, a live pass counts down — "· window
 ends in 20 min", amber in the last half hour. That is a reminder, not a watch:
 nothing acts on it, and a pass tapped in minutes ago may still show until Plans
-refreshes. **Plan (N)** is what Autopilot is still after, for the park in the
+refreshes. **Watching (N)** is what Autopilot is still after, for the park in the
 header only; tap a row to open its card in Configure. The two lists are scoped
 differently on purpose, which is why you can see "Held (2)" above "Nothing
 watched at Magic Kingdom on this date." If this date's plan was saved at
 another park, Today names it and offers **Switch to** that park — it never
-switches by itself. And while Autopilot runs with nothing armed, Plan says so in
+switches by itself. And while Autopilot runs with nothing armed, it says so in
 amber: it can only alert.
 
 **The four buttons** — Configure, Plan check, Timeline, Activity — are the
 screens Today deliberately does not try to be.
 
-**Next Lightning Lane / Next scheduled drop** are the two times that decide when
+**Book again at / Next scheduled drop** are the two times that decide when
 anything can happen: when your next booking window opens, and the park's next
 drop from the built-in table. On any other date there is no drop time, because
 Autopilot bursts for drops only on the day itself; a line says so, and that at
@@ -549,7 +549,7 @@ because the day's log is saved. Only the Status block is live.
 **How to tell it is working.** Freshness line recent → button red → Status not
 "Off" or "Stopped" → check counter rising. If all four look healthy and nothing
 is booking, look for the red refusal box, then the amber "failed checks in a
-row" line, then the yellow dry-run banner, then the "n armed" count in Plan. A
+row" line, then the yellow dry-run banner, then the "n armed" count under Watching. A
 running Autopilot with **0 armed** will never book anything. The line under the
 latest event sums it up: "Nothing booked yet. Most often, the offered time was
 outside the window (12×)."
@@ -628,8 +628,8 @@ One row per attraction: a ☆ favourite, the name, a tier badge, the current
 **STANDBY** wait, and an **LL** button showing the next return time. Tap that
 button to start booking.
 
-The banner under the header reads `BOOK:` and `DROP:` — the next moment you may
-book, and the park's next drop.
+The banner under the header reads `BOOK AGAIN AT:` and `NEXT SCHEDULED DROP:` —
+the next moment you may book, and the park's next drop from the built-in table.
 
 **Sorting.** **Sort by**, at the top of the list, offers Priority (the app's own ranking),
 Nearby (closest first, today only), Standby, Soonest, and A to Z. Whatever you
@@ -657,14 +657,14 @@ Today; it is navigation only, so a mis-tap can never change what gets booked.
 
 Tap any LL time on the tip board. You get the attraction, its land and park, a
 box listing the passes you already hold that day, the offered window as
-**Arrive by: 10:54 AM – 11:54 AM** with a **Change** button, and **Your Party**
-with a **Modify** button. The button at the bottom commits.
+**Arrive by: 10:54 AM – 11:54 AM** with a **Change time** button, and **Your
+Party** with an **Edit party** button. The button at the bottom commits.
 
-- **Change** opens a grid of return times by hour. Tick **Show all** to see
+- **Change time** opens a grid of return times by hour. Tick **Show all** to see
   ten-minute slots across the whole day — those are the app's educated guesses,
   not Disney's real inventory, and picking one that does not exist gets you the
   nearest one that does.
-- **Modify** trims the party. Adding someone who was not previously selected
+- **Edit party** trims the party. Adding someone who was not previously selected
   fetches a fresh offer, so the return time can change; removing guests leaves
   the offer alone.
 
@@ -689,8 +689,8 @@ boarding groups and Multiple Experiences passes are read-only however they look.
 
 On a Multi Pass's details screen:
 
-- **Change** — a different return time for the same attraction
-- **Modify** — hand the pass back to the booking flow to trade it for a
+- **Change time** — a different return time for the same attraction
+- **Swap ride** — hand the pass back to the booking flow to trade it for a
   different attraction, keeping it held until the replacement is booked. Until
   you book or tap **Keep current**, every tab carries a "Modifying …" strip, and
   the booking screen says what the new booking replaces.
@@ -778,9 +778,9 @@ ahead of time.
 
 ![A search in progress](user-guide/time-search.png)
 
-NextLL → Modify a held Lightning Lane → pick one → **Improve return time**. Also
-reachable from a held pass: Plans → the row → **Change** → "Search for a better
-time". It works on the pass you opened it from, even when someone else in your
+NextLL → Modify a held Lightning Lane → pick one → **Find a better time**. Also
+reachable from a held pass: Plans → the row → **Change time** → **Find a better
+time**. It works on the pass you opened it from, even when someone else in your
 party holds the same ride at another time.
 
 This is the one screen that can do what Autopilot structurally cannot. Autopilot
@@ -945,7 +945,7 @@ requested time resolves it with no tap from you.
 ## Common questions
 
 **"Why is nothing booking?"** In order: is Dry run on (yellow banner)? Is
-anything armed (`n armed` in Plan, not paused)? Is the refusal box showing? Did
+anything armed (`n armed` under Watching, not paused)? Is the refusal box showing? Did
 it stop? Then read **Why nothing was booked** on Activity.
 
 **"Why did it skip a time I wanted?"** Most likely the offered time fell outside

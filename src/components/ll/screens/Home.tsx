@@ -10,8 +10,8 @@ import useScreenState from '@/hooks/useScreenState';
 import CalendarIcon from '@/icons/CalendarIcon';
 import ClockIcon from '@/icons/ClockIcon';
 import DayIcon from '@/icons/DayIcon';
-import DropIcon from '@/icons/DropIcon';
 import LightningIcon from '@/icons/LightningIcon';
+import SearchIcon from '@/icons/SearchIcon';
 import kvdb from '@/kvdb';
 import onVisible from '@/onVisible';
 import { HOME_TAB_KEY } from '@/storageNamespace';
@@ -52,7 +52,7 @@ const tabs = [
   },
   {
     name: 'NextLL' as const,
-    icon: <DropIcon />,
+    icon: <SearchIcon />,
     component: NextLLTab,
   },
 ];

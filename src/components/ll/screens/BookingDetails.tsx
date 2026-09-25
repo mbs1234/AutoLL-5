@@ -125,7 +125,7 @@ export default function BookingDetails({
                   goTo(<ChangeBookingTime booking={booking} />);
                 }}
               >
-                Change
+                Change time
               </Button>
             )
           }

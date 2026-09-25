@@ -20,7 +20,7 @@ export default function ModifyParty({ party }: { party: Party }) {
 
   return (
     <PartyContext value={party}>
-      <Screen title="Modify Party" theme={experience.park.theme}>
+      <Screen title="Edit Party" theme={experience.park.theme}>
         <h2>{experience.name}</h2>
         <div>{experience.park.name}</div>
         <h3>Your Party</h3>

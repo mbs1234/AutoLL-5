@@ -73,7 +73,7 @@ describe('BookingDetails', () => {
     see(mickey.name);
     see(minnie.name);
     see(pluto.name);
-    click('Modify');
+    click('Swap ride');
     expect(rebooking.begin).toHaveBeenLastCalledWith(booking);
     expect(nav.goBack).toHaveBeenCalledTimes(1);
 
@@ -94,7 +94,7 @@ describe('BookingDetails', () => {
     ll.offer.mockRejectedValueOnce(
       new OfferError({ eligible: [], ineligible: booking.guests })
     );
-    click('Change');
+    click('Change time');
     expect(nav.goTo).toHaveBeenLastCalledWith(
       <ChangeBookingTime booking={booking} />
     );
@@ -133,7 +133,7 @@ describe('BookingDetails', () => {
       `${sdd.name} was temporarily unavailable during your return time.`
     );
     see.no('Redemptions left: 1');
-    see.no('Modify');
+    see.no('Swap ride');
     see.no('Cancel');
   });
 
@@ -194,12 +194,12 @@ describe('BookingDetails', () => {
     renderComponent(lttRes);
     see(lttRes.name);
     see.no('Cancel');
-    see.no('Modify');
+    see.no('Swap ride');
   });
 
   it("doesn't show Modify or Change buttons if unmodifiable", () => {
     renderResort(<BookingDetails booking={booking} unmodifiable />);
-    see.no('Modify');
-    see.no('Change');
+    see.no('Swap ride');
+    see.no('Change time');
   });
 });

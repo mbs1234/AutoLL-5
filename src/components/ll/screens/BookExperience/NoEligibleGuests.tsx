@@ -28,7 +28,7 @@ export default function NoEligibleGuests() {
               <Alert
                 title={
                   <>
-                    Eligible at <Time time={ll.nextBookTime} />
+                    Book again at <Time time={ll.nextBookTime} />
                   </>
                 }
               />

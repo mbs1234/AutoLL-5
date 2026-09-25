@@ -52,14 +52,14 @@ describe('YourDay', () => {
           }
         }
         if (booking.modifiable) {
-          inLI.getByRole('button', { name: 'Modify' });
+          inLI.getByRole('button', { name: 'Swap ride' });
         }
       });
   });
 
   it("doesn't show Modify buttons if unmodifiable", async () => {
     renderComponent(bookings, true);
-    see.no('Modify');
+    see.no('Swap ride');
   });
 
   it('shows "No existing plans" message if no plans', async () => {

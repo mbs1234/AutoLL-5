@@ -52,7 +52,7 @@ describe('Home', () => {
     click(booking.name);
     jest.spyOn(Element.prototype, 'scroll');
     await see.screen('Your Lightning Lane');
-    click('Modify');
+    click('Swap ride');
     await see.screen('LL');
     expect(see(hs.name)).toBeEnabled();
     expect(Element.prototype.scroll).toHaveBeenCalledTimes(2);

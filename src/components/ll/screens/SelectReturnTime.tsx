@@ -105,7 +105,7 @@ export default function SelectReturnTime<B extends Offer['booking']>({
             take a better one the moment it appears.
           </p>
           <Button type="small" className="mt-2" onClick={searchForBetter}>
-            Search for a better time
+            Find a better time
           </Button>
         </div>
       )}
