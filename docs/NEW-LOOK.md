@@ -88,3 +88,14 @@ Each is its own pull request, checked in the harness at phone width before it
 merges. When AutoLL-3 changes a screen a slice has redrawn, the fix is re-made
 in the new screen inside the merge that brings it — see
 [docs/SYNC.md](SYNC.md).
+
+## Re-made in a sync
+
+What an AutoLL-3 change needed here to keep working in the new look, made inside
+the merge that brought it:
+
+- **1.4.3.** The tab buttons are narrower (`px-1`, `min-w-12`), so five tabs
+  and the gear, which is now part of the tab row, fit a 360 px screen. In the
+  dialog that asks before a park or day switch moves a running Autopilot,
+  **Switch** is drawn in ink: with both buttons quiet, nothing said which one
+  acts.
