@@ -1,4 +1,4 @@
-import { use, useEffect, useState } from 'react';
+import { use, useEffect, useRef, useState } from 'react';
 
 import { Experience } from '@/api/ll';
 import { WatchTarget, targetApplies } from '@/autopilot/watchlist';
@@ -12,7 +12,6 @@ import AutopilotContext from '@/contexts/AutopilotContext';
 import BookingDateContext from '@/contexts/BookingDateContext';
 import ExperiencesContext from '@/contexts/ExperiencesContext';
 import ParkContext from '@/contexts/ParkContext';
-import StarIcon from '@/icons/StarIcon';
 
 export const CONFIGURE = 'Configure';
 
@@ -51,16 +50,30 @@ export default function Configure({
   const { bookingDate } = use(BookingDateContext);
 
   // A removal can be undone for a moment. The target is kept whole, flags and
-  // window included, because that is what a mis-tap used to lose.
-  const [removed, setRemoved] = useState<{
-    target: WatchTarget;
-    name: string;
-  }>();
+  // window included, because that is what a mis-tap used to lose. Every
+  // removal in the moment is kept: a second one used to wipe the first's
+  // undo, so two quick removals lost the first for good.
+  const [removed, setRemoved] = useState<
+    { target: WatchTarget; name: string }[]
+  >([]);
+  const remember = (target: WatchTarget, name: string) =>
+    setRemoved(current => [
+      ...current.filter(r => r.target.experienceId !== target.experienceId),
+      { target, name },
+    ]);
   useEffect(() => {
-    if (!removed) return;
-    const timer = setTimeout(() => setRemoved(undefined), UNDO_MS);
+    if (removed.length === 0) return;
+    const timer = setTimeout(() => setRemoved([]), UNDO_MS);
     return () => clearTimeout(timer);
   }, [removed]);
+  // A Plan Check item about a setting opens here at the safeguards, which it
+  // is about, rather than at the top of a long screen.
+  const safeguardsRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (focus?.kind === 'setting') {
+      safeguardsRef.current?.scrollIntoView?.({ block: 'center' });
+    }
+  }, [focus]);
   // The target just added starts unfolded: adding is when it gets set up.
   const [justAdded, setJustAdded] = useState<string>();
   const [filterText, setFilterText] = useState('');
@@ -137,7 +150,10 @@ export default function Configure({
         for each. Turn it on from Today.
       </p>
 
-      <div className="mt-3 flex flex-wrap items-center gap-2">
+      <div
+        ref={safeguardsRef}
+        className="mt-3 flex flex-wrap items-center gap-2"
+      >
         <Toggle
           on={dryRun}
           variant="rehearsal"
@@ -215,13 +231,19 @@ export default function Configure({
                 key={target.experienceId}
                 className="flex items-center gap-2 py-1"
               >
+                <span className="flex-1">
+                  {target.name ?? target.experienceId}
+                </span>
                 <Button
+                  type="small"
                   title={`Remove unavailable target ${target.experienceId}`}
-                  onClick={() => removeTarget(target.experienceId)}
+                  onClick={() => {
+                    removeTarget(target.experienceId);
+                    remember(target, target.name ?? target.experienceId);
+                  }}
                 >
-                  <StarIcon />
+                  Remove
                 </Button>
-                <span>{target.name ?? target.experienceId}</span>
               </li>
             ))}
           </ul>
@@ -268,31 +290,39 @@ export default function Configure({
                   exp.id === justAdded ||
                   (focus?.kind === 'target' && exp.id === focus.experienceId)
                 }
+                justAdded={exp.id === justAdded}
                 onRemove={() => {
                   const target = targetFor(exp.id) ?? { experienceId: exp.id };
                   removeTarget(exp.id);
-                  setRemoved({ target, name: exp.name });
+                  remember(target, exp.name);
                 }}
               />
             </li>
           ))}
         </ul>
       )}
-      {removed && (
+      {removed.length > 0 && (
         <div
           role="status"
-          className="mt-2 flex items-center gap-2 rounded-sm bg-gray-100 p-2 text-sm"
+          className="mt-2 flex flex-col gap-1 rounded-sm bg-gray-100 p-2 text-sm"
         >
-          <span className="flex-1">Stopped watching {removed.name}.</span>
-          <Button
-            type="small"
-            onClick={() => {
-              addTarget(removed.target);
-              setRemoved(undefined);
-            }}
-          >
-            Undo
-          </Button>
+          {removed.map(entry => (
+            <div
+              key={entry.target.experienceId}
+              className="flex items-center gap-2"
+            >
+              <span className="flex-1">Stopped watching {entry.name}.</span>
+              <Button
+                type="small"
+                onClick={() => {
+                  addTarget(entry.target);
+                  setRemoved(current => current.filter(r => r !== entry));
+                }}
+              >
+                Undo
+              </Button>
+            </div>
+          ))}
         </div>
       )}
 
@@ -387,18 +417,22 @@ export default function Configure({
       ) : (
         <ul>
           {unwatched.map(exp => (
-            <li key={exp.id} className="flex items-center gap-2 py-1">
+            <li key={exp.id} className="py-0.5">
+              {/* The whole row adds, with a plus: the star here meant Watch,
+                  on the LL tab Favourite, and in the list above Remove. */}
               <Button
                 title={`Watch ${exp.name}`}
-                color="bg-gray-200 text-black"
+                className="w-full justify-start! gap-2 text-left"
                 onClick={() => {
                   addTarget({ experienceId: exp.id });
                   setJustAdded(exp.id);
                 }}
               >
-                <StarIcon />
+                <span aria-hidden className="text-lg leading-none">
+                  +
+                </span>
+                {exp.name}
               </Button>
-              <span>{exp.name}</span>
             </li>
           ))}
         </ul>

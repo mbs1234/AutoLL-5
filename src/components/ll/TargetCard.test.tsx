@@ -101,7 +101,9 @@ describe('TargetCard', () => {
 
   it('opens to the controls, which call back with the id', () => {
     setup();
-    screen.getByTitle(`Auto-book ${NAME}`).click();
+    fireEvent.click(
+      screen.getByRole('radio', { name: `Auto-book for ${NAME}` })
+    );
     expect(handlers.toggleAutoBook).toHaveBeenCalledWith(BZ);
     screen.getByTitle(`Pause ${NAME}`).click();
     expect(handlers.togglePaused).toHaveBeenCalledWith(BZ);
@@ -159,17 +161,59 @@ describe('TargetCard', () => {
     });
   });
 
-  it('shows the state each chip is in', () => {
-    setup({ autoModify: true, autoSwap: true });
-    expect(screen.getByTitle(`Stop auto-moving ${NAME}`)).toHaveTextContent(
-      'Auto-move on'
+  // Adding a ride used to arm nothing, silently.
+  it('says a just-added ride will only alert until a choice is made', () => {
+    render(
+      <Handlers>
+        <TargetCard
+          experience={experience()}
+          target={{ experienceId: BZ }}
+          defaultOpen
+          justAdded
+          onRemove={() => {}}
+        />
+      </Handlers>
     );
+    expect(
+      screen.getByText(/Just added. It will only alert until you choose/)
+    ).toBeVisible();
+  });
+
+  it('says nothing more once a choice is made', () => {
+    render(
+      <Handlers>
+        <TargetCard
+          experience={experience()}
+          target={{ experienceId: BZ, autoBook: true }}
+          defaultOpen
+          justAdded
+          onRemove={() => {}}
+        />
+      </Handlers>
+    );
+    expect(screen.queryByText(/Just added/)).not.toBeInTheDocument();
+  });
+
+  // Swap in gave no sign of what it would give up, and Configure's help
+  // called that the "lowest-priority" pass, which reads as your own rank.
+  it('says what a swap would do with the passes held now', () => {
+    setup({ autoSwap: true });
+    expect(
+      screen.getByText('With a slot free it books instead of swapping.')
+    ).toBeInTheDocument();
+  });
+
+  it('shows the state each control is in', () => {
+    setup({ autoModify: true, autoSwap: true });
+    expect(
+      screen.getByRole('radio', { name: `Auto-move for ${NAME}` })
+    ).toBeChecked();
     expect(screen.getByTitle(`Stop swapping in ${NAME}`)).toHaveTextContent(
       'Swap in on'
     );
-    expect(screen.getByTitle(`Auto-book ${NAME}`)).toHaveTextContent(
-      'Auto-book off'
-    );
+    expect(
+      screen.getByRole('radio', { name: `Auto-book for ${NAME}` })
+    ).not.toBeChecked();
   });
 
   it('offers a passkey only where one is possible', () => {

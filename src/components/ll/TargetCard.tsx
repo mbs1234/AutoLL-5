@@ -1,15 +1,82 @@
 import { use, useEffect, useRef, useState } from 'react';
 
 import { Experience } from '@/api/ll';
+import {
+  MAX_HELD_MP,
+  chooseSwapVictim,
+  heldMPToday,
+} from '@/autopilot/autoswap';
 import { describeMode } from '@/autopilot/describe';
 import { WatchTarget } from '@/autopilot/watchlist';
 import Button from '@/components/Button';
+import { Time } from '@/components/Time';
 import Toggle from '@/components/Toggle';
 import TargetWindow from '@/components/ll/TargetWindow';
 import AutopilotContext from '@/contexts/AutopilotContext';
+import BookingDateContext from '@/contexts/BookingDateContext';
+import PlansContext from '@/contexts/PlansContext';
 import { ParkTime } from '@/datetime';
 
 const DOT = <span aria-hidden> · </span>;
+
+type Mode = 'watch' | 'book' | 'move' | 'book-move' | 'book-then-move';
+
+/**
+ * What Autopilot does for one attraction, as one choice.
+ *
+ * Three chips used to overlap here -- Auto-book, Auto-move and Book then move
+ * -- and "Book then move" on beside "Auto-book off" read as if nothing would
+ * book. The five combinations that mean something are the choices, named as
+ * the summary line names them, each with what it will do. Swap in, Pause and
+ * Passkey stay separate: they combine with any of these.
+ */
+const MODES: { mode: Mode; label: string; hint: string }[] = [
+  {
+    mode: 'watch',
+    label: 'Watch only',
+    hint: 'Alert when it comes up; book nothing.',
+  },
+  {
+    mode: 'book',
+    label: 'Auto-book',
+    hint: 'Book a time inside the window.',
+  },
+  {
+    mode: 'move',
+    label: 'Auto-move',
+    hint: 'Move a pass you hold to a better time; book nothing new.',
+  },
+  {
+    mode: 'book-move',
+    label: 'Auto-book and move',
+    hint: 'Book inside the window, then keep moving it earlier.',
+  },
+  {
+    mode: 'book-then-move',
+    label: 'Book then move',
+    hint: 'Take the first time offered, even outside the window, then move it into the window.',
+  },
+];
+
+const FLAGS: Record<
+  Mode,
+  { autoBook: boolean; autoModify: boolean; bookThenMove: boolean }
+> = {
+  watch: { autoBook: false, autoModify: false, bookThenMove: false },
+  book: { autoBook: true, autoModify: false, bookThenMove: false },
+  move: { autoBook: false, autoModify: true, bookThenMove: false },
+  'book-move': { autoBook: true, autoModify: true, bookThenMove: false },
+  'book-then-move': { autoBook: false, autoModify: false, bookThenMove: true },
+};
+
+/** Read the way the engine reads the flags: book then move wins. */
+function modeOf(target: WatchTarget): Mode {
+  if (target.bookThenMove) return 'book-then-move';
+  if (target.autoBook && target.autoModify) return 'book-move';
+  if (target.autoBook) return 'book';
+  if (target.autoModify) return 'move';
+  return 'watch';
+}
 
 const bound = (time?: ParkTime) => (time ? String(time).slice(0, 5) : '');
 
@@ -135,12 +202,15 @@ export default function TargetCard({
   experience,
   target,
   defaultOpen,
+  justAdded,
   onRemove,
 }: {
   experience: Experience;
   target?: WatchTarget;
   /** Start unfolded, for the target that was just added. */
   defaultOpen?: boolean;
+  /** Just added: it only alerts until an action is chosen, so say so. */
+  justAdded?: boolean;
   onRemove: () => void;
 }) {
   const {
@@ -153,8 +223,23 @@ export default function TargetCard({
     setTargetWindow,
     setTargetRank,
   } = use(AutopilotContext);
+  const { plans } = use(PlansContext);
+  const { bookingDate } = use(BookingDateContext);
   const { id, name } = experience;
   const t: WatchTarget = target ?? { experienceId: id };
+  const mode = modeOf(t);
+  // Toggles, so only the flags that differ are flipped. Each one is a
+  // functional update in the provider, so several in one tap compose.
+  function choose(next: Mode) {
+    const want = FLAGS[next];
+    if (!!t.autoBook !== want.autoBook) toggleAutoBook(id);
+    if (!!t.autoModify !== want.autoModify) toggleAutoModify(id);
+    if (!!t.bookThenMove !== want.bookThenMove) toggleBookThenMove(id);
+  }
+  // The engine's own choice of what a swap gives up, from the passes held
+  // now. It changes as they do, so it is a statement about now, not a plan.
+  const held = heldMPToday(plans, bookingDate);
+  const victim = chooseSwapVictim(held, experience);
   // A card opened from elsewhere -- Today's plan, the Timeline, Plan Check, or
   // just added -- is brought into view. It used to open where it was, often
   // below the fold of a long screen.
@@ -162,9 +247,6 @@ export default function TargetCard({
   useEffect(() => {
     if (defaultOpen) cardRef.current?.scrollIntoView?.({ block: 'center' });
   }, [defaultOpen]);
-  const autoBook = !!t.autoBook;
-  const autoModify = !!t.autoModify;
-  const bookThenMove = !!t.bookThenMove;
   const autoSwap = !!t.autoSwap;
   const paused = !!t.paused;
   const passkey = !!t.passkey;
@@ -208,34 +290,41 @@ export default function TargetCard({
         </span>
       </summary>
       <div className="border-t border-gray-200 px-3 pb-3">
+        {justAdded && mode === 'watch' && (
+          <p className="mt-2 mb-0 rounded-sm bg-amber-100 p-2 text-sm font-semibold text-amber-900">
+            Just added. It will only alert until you choose what Autopilot
+            should do when it comes back.
+          </p>
+        )}
+        <fieldset className="mt-2">
+          <legend className="text-sm font-semibold">
+            What should Autopilot do?
+          </legend>
+          <div className="mt-1 flex flex-col">
+            {MODES.map(option => (
+              <label
+                key={option.mode}
+                className="flex min-h-11 items-start gap-2 py-1 text-sm"
+              >
+                <input
+                  type="radio"
+                  name={`mode-${id}`}
+                  className="mt-1 size-4 shrink-0"
+                  aria-label={`${option.label} for ${name}`}
+                  checked={mode === option.mode}
+                  onChange={() => choose(option.mode)}
+                />
+                <span>
+                  <span className="font-semibold">{option.label}</span>
+                  <span className="block text-xs text-gray-600">
+                    {option.hint}
+                  </span>
+                </span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
         <div className="mt-2 flex flex-wrap gap-2">
-          <Toggle
-            on={autoBook}
-            variant="action"
-            label="Auto-book"
-            title={autoBook ? `Stop auto-booking ${name}` : `Auto-book ${name}`}
-            onToggle={() => toggleAutoBook(id)}
-          />
-          <Toggle
-            on={autoModify}
-            variant="action"
-            label="Auto-move"
-            title={
-              autoModify ? `Stop auto-moving ${name}` : `Auto-move ${name}`
-            }
-            onToggle={() => toggleAutoModify(id)}
-          />
-          <Toggle
-            on={bookThenMove}
-            variant="action"
-            label="Book then move"
-            title={
-              bookThenMove
-                ? `Stop book-then-move for ${name}`
-                : `Book then move ${name}`
-            }
-            onToggle={() => toggleBookThenMove(id)}
-          />
           <Toggle
             on={autoSwap}
             variant="action"
@@ -268,6 +357,29 @@ export default function TargetCard({
             />
           )}
         </div>
+        {autoSwap && (
+          <p className="mt-2 mb-0 text-xs text-gray-600">
+            {held.some(b => b.facilityId === id) ? (
+              'You hold it already, so there is nothing to swap in.'
+            ) : held.length < MAX_HELD_MP ? (
+              'With a slot free it books instead of swapping.'
+            ) : victim ? (
+              <>
+                With all three held now, it would give up{' '}
+                <span className="font-semibold">{victim.name}</span>
+                {victim.start.time && (
+                  <>
+                    {' '}
+                    at <Time time={victim.start.time} />
+                  </>
+                )}{' '}
+                &mdash; the pass it ranks lowest, not your Plan rank.
+              </>
+            ) : (
+              'Nothing held now is ranked low enough to give up for it.'
+            )}
+          </p>
+        )}
         {/* The window governs booking, moving and swapping. Leaving a bound
             empty means unbounded on that side. */}
         <div className="mt-2 flex flex-wrap items-center gap-2 text-sm">

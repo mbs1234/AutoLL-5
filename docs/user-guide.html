@@ -859,28 +859,36 @@
       <h4>Adding an attraction</h4>
       <p>
         Scroll to <span class="ui">Lightning Lane attractions</span> at the
-        bottom and tap the ☆ beside a name. It moves up into
-        <span class="ui">Watching (N)</span> and its card opens so you can set it
-        up. The <span class="ui">Filter attractions</span> box narrows both
-        lists.
+        bottom and tap a name — each row reads <span class="ui">+</span> and the
+        ride. It moves up into <span class="ui">Watching (N)</span> and its card
+        opens, in view, so you can set it up. The
+        <span class="ui">Filter attractions</span> box narrows both lists.
       </p>
       <p>
-        A newly added target starts with <strong>every action off</strong> — it
-        only watches and alerts. That is on purpose: alerting and booking are
-        separate decisions.
+        A newly added target starts as <strong>Watch only</strong> — it only
+        alerts. That is on purpose: alerting and booking are separate decisions.
+        The card says so until you choose.
       </p>
 
-      <h4>The five actions</h4>
+      <h4>What Autopilot does for it</h4>
       <figure>
         <img src="user-guide/configure-card.png" alt="A target card unfolded, showing Auto-book on, four other action chips, a return window of 10:03 AM to 2:33 PM, and a plan rank of 1." loading="lazy">
         <figcaption>
-          Space Mountain's card unfolded: the action chips, the return window
-          and the plan rank.
+          Space Mountain's card unfolded, with the earlier action chips; the
+          card now asks one question instead.
         </figcaption>
       </figure>
+      <p>
+        <span class="ui">What should Autopilot do?</span> is one choice of five,
+        each with a line saying what it will do:
+      </p>
       <div class="tablewrap">
         <table class="free">
           <tbody>
+            <tr>
+              <td>Watch only</td>
+              <td>Alerts when it comes up; books nothing.</td>
+            </tr>
             <tr>
               <td>Auto-book</td>
               <td>Books it without asking, the moment a return time inside its window is offered.</td>
@@ -890,12 +898,23 @@
               <td>For a pass you already hold, moves it earlier when a better time appears — but only for a gain of <strong>30 minutes or more</strong>, and never later.</td>
             </tr>
             <tr>
+              <td>Auto-book and move</td>
+              <td>Both: books inside the window, then keeps moving it earlier.</td>
+            </tr>
+            <tr>
               <td>Book then move</td>
               <td>Takes the first time offered <strong>even outside your window</strong>, so you hold something, then works to move it in.</td>
             </tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Chips under it combine with any choice:</p>
+      <div class="tablewrap">
+        <table class="free">
+          <tbody>
             <tr>
               <td>Swap in</td>
-              <td>When all three slots are full, gives up a held pass to take this one.</td>
+              <td>When all three slots are full, gives up the held pass the app ranks lowest to take this one. While it is on, the card says which pass that would be now.</td>
             </tr>
             <tr>
               <td>Pause</td>
@@ -921,12 +940,12 @@
           attraction can be booked with Auto-book off.
         </li>
         <li>
-          <strong>Pausing keeps everything you armed.</strong> The chips stay on,
-          they just do not fire.
+          <strong>Pausing keeps everything you armed.</strong> The choice stays,
+          it just does not fire.
         </li>
       </ul>
       <p>
-        A sixth chip, <strong>Passkey</strong>, appears on non-Tier-1
+        A third chip, <strong>Passkey</strong>, appears on non-Tier-1
         attractions only — see <a href="#drops">Around a drop</a>.
       </p>
 
@@ -963,7 +982,9 @@
         Inside the card, at the bottom. Removal is inside the card on purpose,
         so a mis-tap on the list cannot lose a window and a rank. An
         <span class="ui">Undo</span> strip appears for <strong>8 seconds</strong>
-        and remembers only the most recent removal.
+        with an Undo for every attraction removed in that time. A saved target
+        that is not on today's list has a <span class="ui">Remove</span> of its
+        own, with the same Undo.
       </p>
 
       <h4>The three safeguards</h4>
