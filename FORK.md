@@ -1,8 +1,13 @@
 # Fork notes
 
-Built on [joelface/bg1](https://github.com/joelface/bg1) and
+Forked from [AutoLL-3](https://github.com/mbs1234/AutoLL-3) at commit
+`fe30cfac88b7924d48f2f03f01bbaea637e7dfd1` (1.4.1), to build a new interface on
+top of it. It talks to Disney exactly as AutoLL-3 does, so everything
+below about the sensor path and the deploy is AutoLL-3's and stays in step with
+it; [docs/SYNC.md](docs/SYNC.md) covers how. AutoLL-3 in turn is built on
+[joelface/bg1](https://github.com/joelface/bg1) and
 [jgeurts/bg1](https://github.com/jgeurts/bg1), both GPL-3.0-only.
-Deployed to <https://mbs1234.github.io/AutoLL-3/>.
+Deployed to <https://mbs1234.github.io/AutoLL-5/>.
 
 ## Why a plain `mickey` build does not work
 
@@ -41,7 +46,7 @@ installer commit (static) ─► overlay index/start/news/contact/autoloader/ico
                               (never overwriting freshly built bg1.js, bg1.css,
                                responder.html or their chunks)
 runtime commit ────────────► overlay sensor-data.js
-                            ─► brand URLs and labels for mbs1234.github.io/AutoLL-3
+                            ─► brand URLs and labels for mbs1234.github.io/AutoLL-5
                             ─► GitHub Pages
 ```
 
@@ -83,13 +88,13 @@ without naming a cause. The overlay step now fails the build rather than
 warning, so this cannot recur silently.
 
 **And a second trap, found 2026-09-17 and closed the same day.** The branding
-step rewrites `AutoLL-2` to `AutoLL-3` across every `.html`, `.js` and `.css`
+step rewrites `AutoLL-2` to `AutoLL-5` across every `.html`, `.js` and `.css`
 file in `dist/` — and by then `sensor-data.js` is a `.js` file in `dist/`, so it
 had been in that rewrite's input set on every deploy that ever ran. Nothing was
 ever damaged, because none of the four patterns happens to occur in 8 KB of
 obfuscated code. That is luck, not design. A payload whose encoded strings
 contained `autoll2` would have been edited in place, and obfuscated code has no
-redundancy to fail loudly with: the build stays green, `autoll3-files.sha256`
+redundancy to fail loudly with: the build stays green, `autoll5-files.sha256`
 faithfully records the corrupted file, and it surfaces in a park as every booking
 failing with no HTTP status. It is now excluded by name, and its hash is taken
 when it is copied and checked again after branding — an exclusion is a claim, and
@@ -125,9 +130,11 @@ all work regardless, and are the bulk of what this repository adds.
 
 ## Verified
 
-Login works from this fork's own origin (confirmed on device 2026-09-04).
+Login works from AutoLL-3's own origin (confirmed on device 2026-09-04).
 Disney's OneID does **not** allowlist the `responderPage` redirect URI, so
-`https://mbs1234.github.io/AutoLL-3/responder.html` authenticates normally. This was
+`https://mbs1234.github.io/AutoLL-3/responder.html` authenticates normally, and
+AutoLL-5's responder at `https://mbs1234.github.io/AutoLL-5/responder.html`
+relies on the same fact. This was
 the main risk in forking at all -- had OneID validated redirect URIs against a
 registered allowlist, no amount of build fixing would have produced a working
 fork.
@@ -314,6 +321,11 @@ a page on Disney's origin; a service worker must be same-origin with the page
 it controls, and this fork's worker would live on `mbs1234.github.io`.
 
 ## Syncing upstream
+
+This section is AutoLL-3's history, kept because it explains the tree. AutoLL-5
+does not sync from joelface/bg1: it takes everything from AutoLL-3, by merge,
+as [docs/SYNC.md](docs/SYNC.md) describes, and its `upstream` remote points at
+AutoLL-3 rather than at bg1.
 
 ```bash
 git fetch upstream

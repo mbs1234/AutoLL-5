@@ -1,9 +1,16 @@
-# AutoLL-3
+# AutoLL-5
 
-AutoLL-3 books Walt Disney World Lightning Lane Multi Passes from the phone in
-your pocket. You tell it which attractions you want, in what order, and between
-which times; it watches Disney's tip board and takes what appears — including in
-the two-second window when a scheduled drop lands.
+AutoLL-5 is [AutoLL-3](https://github.com/mbs1234/AutoLL-3) with a new look. It
+books Walt Disney World Lightning Lane Multi Passes from the phone in your
+pocket: you tell it which attractions you want, in what order, and between which
+times; it watches Disney's tip board and takes what appears — including in the
+two-second window when a scheduled drop lands.
+
+Underneath, it is AutoLL-3: the same booking engine, talking to Disney the same
+way, kept in step with it by merge. What changes here is what you see and touch.
+The screens are redrawn here one at a time, so each can be tried on a phone
+before any of it goes near a park day. Until the first of them lands, it is
+AutoLL-3 1.4.1 under another name.
 
 It is unofficial, experimental software. It is not affiliated with or endorsed
 by Disney, it can stop working the day Disney changes an endpoint, and it comes
@@ -12,27 +19,31 @@ actually hold.
 
 ## Install
 
-Open the [setup page](https://mbs1234.github.io/AutoLL-3/) on the phone you will
-use in the park and install **either** the bookmarklet **or** the userscript.
+Open the [setup page](https://mbs1234.github.io/AutoLL-5/) on the phone you will
+use and install **either** the bookmarklet **or** the userscript.
 
 |  | Bookmarklet | Userscript |
 |---|---|---|
 | Needs | nothing | a userscript manager (Userscripts on iOS, Tampermonkey on Android) |
 | Starts | when you tap it | by itself, on Disney's Lightning Lane page |
 
-Either way it runs on a page whose address begins `disneyworld.disney.go.com`.
+Either way it runs on a page whose address begins
+`disneyworld.disney.go.com`.
 
 Three things worth knowing before you do:
 
-- **It installs alongside AutoLL v1.0 without touching it.** Separate browser
-  storage, separate notifications, its own tab name and icon. Your v1.0 party,
-  watch list and booking history are untouched.
-- **Nothing carries over.** Because the storage is separate, AutoLL-3 starts
-  empty. Re-pick your party and rebuild your watch list before the trip, not at
-  the gate.
-- **Install one userscript, not two.** Both builds' autoloaders match the same
-  Disney URL and will fight over the page. Two *bookmarklets* are fine — each
-  only runs when you tap it.
+- **It installs alongside AutoLL-3, AutoLL-4 and v1.0 without touching them.**
+  Separate browser storage, separate notifications, its own tab name, icon and
+  address. Nothing the other builds hold is disturbed.
+- **Nothing carries over.** Because the storage is separate, AutoLL-5 starts
+  empty. Re-pick your party and rebuild your watch list before you rely on it.
+- **Install one AutoLL userscript, not two.** Every build's autoloader matches
+  the same Disney URL and they will fight over the page. Two *bookmarklets* are
+  fine — each only runs when you tap it.
+
+> **Run one build at a time.** They share Disney's origin and its rate limit, so
+> two live engines contend for the same reservations and the same handful of
+> requests per second.
 
 ## What it does
 
@@ -65,7 +76,7 @@ page gets, so there is a **Test sound** button that proves the channel works
 before you rely on it.
 
 **Keeps a copy.** Safari deletes what a website has stored after about a week
-without a visit, and everything AutoLL-3 knows is stored that way. **Backup and
+without a visit, and everything AutoLL-5 knows is stored that way. **Backup and
 Restore**, in the Settings menu, saves your plan, your party and every drop the
 learner has seen to a file you keep, and puts it back on a phone that has lost
 it. Your Disney sign-in is never in it.
@@ -76,28 +87,30 @@ Disney's own rules allow.
 
 ## Using it
 
-**[User guide](https://mbs1234.github.io/AutoLL-3/guide.html)** — setup, the park
-day, every screen, and what to do when something breaks.
+**[User guide](https://mbs1234.github.io/AutoLL-5/guide.html)** — setup, the park
+day, every screen, and what to do when something breaks. It is AutoLL-3's guide
+under this build's name until a redrawn screen changes what it describes.
 [docs/USER-GUIDE.md](docs/USER-GUIDE.md) is the same text in this repository.
 
 Release notes for each version are on the
-[releases page](https://github.com/mbs1234/AutoLL-3/releases). Building,
+[releases page](https://github.com/mbs1234/AutoLL-5/releases). Building,
 verifying a build and rolling one back are in
 [docs/RELEASING.md](docs/RELEASING.md); [FORK.md](FORK.md) explains why a plain
-upstream build does not run.
+upstream build does not run, and [docs/SYNC.md](docs/SYNC.md) covers keeping
+this build in step with AutoLL-3.
 
 ## Acknowledgements
 
-AutoLL-3 exists because of [joelface/bg1](https://github.com/joelface/bg1) by
+AutoLL-5 exists because of [joelface/bg1](https://github.com/joelface/bg1) by
 Joel Bruick, which made booking from a browser possible at all, and
 [jgeurts/bg1](https://github.com/jgeurts/bg1), whose booking work this builds on
 directly.
 
-It is the current development line of
-[AutoLL](https://github.com/mbs1234/AutoLL), frozen at v1.0, by way of
-[AutoLL-2](https://github.com/mbs1234/AutoLL-2).
-[AutoLL-4](https://github.com/mbs1234/AutoLL-4) is a parallel build kept
-deliberately close, so that if one stops working the other may not.
+It descends from [AutoLL](https://github.com/mbs1234/AutoLL), frozen at v1.0, by
+way of [AutoLL-2](https://github.com/mbs1234/AutoLL-2) and
+[AutoLL-3](https://github.com/mbs1234/AutoLL-3), whose application line it
+tracks. [AutoLL-4](https://github.com/mbs1234/AutoLL-4) is the parallel build
+that talks to Disney differently.
 
 ## License
 

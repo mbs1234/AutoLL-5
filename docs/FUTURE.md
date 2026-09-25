@@ -513,7 +513,7 @@ control to both book endpoints, `daytimeline.test.ts` asserts the pure protected
 span, and every durable/session storage key passes through a typed
 `storageNamespace.ts` boundary. A source scan catches direct storage access and
 handwritten namespaced literals, while notification tags have their own typed
-`autoll3-*` namespace.
+`autoll5-*` namespace.
 
 **Two audible overlaps are accepted until after the trip.** Several real finds
 that arrive while the context is already running can schedule their chimes
@@ -654,7 +654,7 @@ published rules allow.
 
 **Recorded 2026-09-23.** Running as a Home Screen web app — it would dissolve
 three problems at once, with notifications as a second alert channel, no Safari
-toolbar to guard and storage exempt from the seven-day cap, but AutoLL-3 has to
+toolbar to guard and storage exempt from the seven-day cap, but AutoLL-5 has to
 run on Disney's own origin to use the Disney session, and a Home Screen web app
 sends navigation outside its scope back to Safari. Autopilot booking every day of
 a stay on its own on the booking morning — the engine is built around one booking

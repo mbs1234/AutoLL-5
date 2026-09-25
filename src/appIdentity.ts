@@ -12,7 +12,7 @@
  * stops two builds overwriting each other's data, this one stops you
  * mistaking which is which.
  */
-export const APP_NAME = 'AutoLL-3';
+export const APP_NAME = 'AutoLL-5';
 
 /**
  * The same name as a storage- and event-safe token.
@@ -27,16 +27,16 @@ export const APP_NAME = 'AutoLL-3';
  * one-liner, but a silent change in how it strips punctuation would silently
  * repoint every stored key. `appIdentity.test.ts` asserts the two agree.
  */
-export const APP_SLUG = 'autoll3';
+export const APP_SLUG = 'autoll5';
 
 /**
  * The name where space is tight.
  *
  * The tab bar has four buttons across a phone's width and has to stay on one
- * line, so the full name does not fit beside them. `aLL-3` keeps the `LL`
+ * line, so the full name does not fit beside them. `aLL-5` keeps the `LL`
  * that every one of these builds is named for and says which this is.
  */
-export const APP_SHORT = 'aLL-3';
+export const APP_SHORT = 'aLL-5';
 
 /**
  * A one-glyph favicon.
@@ -45,11 +45,11 @@ export const APP_SHORT = 'aLL-3';
  * the bookmarklet has no origin of its own to serve a file from -- and
  * because a single glyph is what actually reads at 16px in a tab strip.
  *
- * A flask rather than AutoLL's bolt: this is the line where things are tried
- * first, and the two have to be distinguishable at a glance rather than on
- * inspection, which two similar glyphs would not be.
+ * A palette rather than AutoLL-3's flask, AutoLL-4's helix or AutoLL's bolt:
+ * this is the line where the new look is built, and it has to be
+ * distinguishable at a glance rather than on inspection.
  */
-export const APP_ICON = '🧪';
+export const APP_ICON = '🎨';
 
 /**
  * Where this build's own pages live.

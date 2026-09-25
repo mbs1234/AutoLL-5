@@ -98,7 +98,7 @@ where items 13 and 14 are aimed.
 
 **1. Never lose something silently — including between trips.** This used to mean
 the screen in your hand. It now has to mean the months between the trips as well.
-Every piece of AutoLL-3's state — the party, the watch list, the booking log and
+Every piece of AutoLL-5's state — the party, the watch list, the booking log and
 the learner's drop observations — lives in `localStorage` on Disney's origin
 (`src/kvdb.ts` wraps it directly), and nothing in `src/` can get any of it off the
 phone. WebKit deletes "all of a website's script-writable storage after seven
@@ -107,7 +107,7 @@ days of Safari use without user interaction on the site"
 naming LocalStorage. The rehearsal manufactures the learned drop times —
 `LEARNED_MIN_DAYS = 2`, and it is the first trip long enough to meet it — and the
 main trip is when they are used, weeks later. A phone that goes about a
-week of Safari use without opening AutoLL-3 in between loses them, and the plan
+week of Safari use without opening AutoLL-5 in between loses them, and the plan
 with them, and nothing says so. Item 12.
 
 **2. Learn from every live day, not only the trip days.** The learner does not
@@ -238,7 +238,7 @@ deletes it after about a week of Safari use without a visit, and there is no way
 get any of it off the phone. The learned drop times that the rehearsal produces
 are the ones the main trip uses.
 
-**What.** An **Export** button that gathers everything under the `autoll3.*`
+**What.** An **Export** button that gathers everything under the `autoll5.*`
 namespace into one versioned JSON file and hands it to the share sheet —
 `navigator.share` with a file, from a user gesture — so it can go to Files,
 AirDrop or a Mac. Then a **Restore** that reads one back.
@@ -367,7 +367,7 @@ byte-verified while the phone still ran 1.3.0. On a park day that gap is the
 difference between an emergency fix reaching the pocket and not.
 
 **What.** The owner's choice (2026-09-23): reload on its own when it finds a new
-version. Check the served manifest — `autoll3-release.json`, fetched with
+version. Check the served manifest — `autoll5-release.json`, fetched with
 `cache: 'no-store'`; Pages sends `access-control-allow-origin: *` — whenever the
 app comes to the foreground, and every fifteen minutes while it is open. When
 its `sourceRevision` is not this bundle's `BUILD_REV`, move to the new build **in
@@ -383,7 +383,7 @@ say instead that a new version is ready and loads once Autopilot is off, and
 offer a tap. Second, version skew: the chunks (`wdw.js` among them) have fixed
 names and are cached apart from `bg1.js`, so a fresh bundle can load a stale
 chunk — already possible inside today's ten-minute window. Content-hashed chunk
-names close that, and change what `autoll3-files.sha256` lists. Third, Disney's
+names close that, and change what `autoll5-files.sha256` lists. Third, Disney's
 page could refuse the fetch; then the check fails quietly and nothing changes.
 
 **Done means.** With the manifest naming another revision: with nothing running,
@@ -1575,7 +1575,7 @@ reconsidered and rejected again, so the next pass does not rediscover them:
 
 - **Running as a Home Screen web app.** It would dissolve three problems at once:
   notifications as a second alert channel, no Safari toolbar to guard, and storage
-  exempt from the seven-day cap. It is not available. AutoLL-3 has to run on
+  exempt from the seven-day cap. It is not available. AutoLL-5 has to run on
   Disney's own origin to use the Disney session, and a Home Screen web app sends
   navigation outside its own scope back to Safari. Recorded so it is not
   rediscovered.

@@ -21,7 +21,7 @@ const server = {
 /**
  * What this build calls itself when asked which build it is.
  *
- * A published bundle is otherwise anonymous: `autoll3-release.json` records the
+ * A published bundle is otherwise anonymous: `autoll5-release.json` records the
  * commit, but that file is on the site rather than in the app, so the phone in
  * a park cannot answer "is this the build we tested?" without a laptop. CI
  * supplies `GITHUB_SHA`; a local run asks git; anything else is a working copy
