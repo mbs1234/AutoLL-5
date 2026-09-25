@@ -117,17 +117,16 @@ const VQStatus = ({
   </LabeledItem>
 );
 
-const className =
-  'inline-block border-2 rounded-sm px-1.5 py-0.5 font-semibold';
+const className = 'inline-block rounded-lg border px-2 py-0.5 font-semibold';
 
 export const Available = ({ time }: { time: React.ReactNode }) => (
-  <span className={`${className} border-gray-500 text-gray-500 bg-gray-50`}>
+  <span className={`${className} border-gray-300 bg-gray-50 text-gray-700`}>
     {time}
   </span>
 );
 
 export const Unavailable = ({ text }: { text: React.ReactNode }) => (
-  <span className={`${className} border-red-d text-red-d bg-red-100`}>
+  <span className={`${className} border-red-200 bg-red-100 text-red-d`}>
     {text}
   </span>
 );

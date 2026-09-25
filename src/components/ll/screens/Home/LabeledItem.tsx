@@ -7,7 +7,7 @@ export default function LabeledItem({
 }) {
   return (
     <div className="flex items-center flex-1 whitespace-nowrap">
-      <span className="mr-2 text-xs font-semibold uppercase text-gray-500">
+      <span className="mr-2 text-[11px] font-bold tracking-wide text-gray-500 uppercase">
         {label}
       </span>{' '}
       <span>{children}</span>

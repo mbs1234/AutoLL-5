@@ -13,7 +13,6 @@ import NavContext from '@/contexts/NavContext';
 import ParkContext from '@/contexts/ParkContext';
 import PlansContext from '@/contexts/PlansContext';
 import ResortContext from '@/contexts/ResortContext';
-import ThemeContext from '@/contexts/ThemeContext';
 import { DateTime, parkDate, upcomingTimes } from '@/datetime';
 import useSavedParty from '@/hooks/useSavedParty';
 import CheckmarkIcon from '@/icons/CheckmarkIcon';
@@ -111,7 +110,6 @@ const Experiences = memo(function Experiences({
 }) {
   const { ll } = use(ClientsContext);
   const { goTo } = use(NavContext);
-  const theme = use(ThemeContext);
   const resort = use(ResortContext);
   const { plans } = use(PlansContext);
   const { bookingDate } = use(BookingDateContext);
@@ -162,7 +160,10 @@ const Experiences = memo(function Experiences({
     experiences: ExtFlexExp[];
     type: string;
   }) => (
-    <ul className="dividers" data-testid={type}>
+    <ul
+      className="divide-y divide-gray-200 overflow-hidden rounded-[18px] border border-gray-300 bg-white px-3 [&>li]:py-3"
+      data-testid={type}
+    >
       {experiences.map(exp => {
         const nextDropTime = isBookingToday
           ? upcomingTimes(exp.dropTimes ?? [])[0]
@@ -181,12 +182,14 @@ const Experiences = memo(function Experiences({
           <li
             key={exp.id + (exp.starred ? '*' : '')}
             className={
-              earlierThanBooked ? 'border-l-3 border-green-500 pl-1' : ''
+              earlierThanBooked
+                ? '-ml-3 border-l-3 border-green-500 pl-2.5'
+                : ''
             }
           >
             <div className="flex items-center gap-x-2">
               <StarButton experience={exp} toggleStar={toggleStar} />
-              <h3 className="flex-1 mt-0 text-lg font-semibold leading-tight truncate">
+              <h3 className="mt-0 flex-1 truncate text-base leading-tight font-bold">
                 {exp.name}
               </h3>
               {exp.tier !== undefined && (
@@ -312,9 +315,7 @@ const Experiences = memo(function Experiences({
       {tierGroups ? (
         [...tierGroups].map(([tier, exps]) => (
           <div key={tier ?? 'none'}>
-            <div
-              className={`-mx-3 px-3 py-1 text-sm uppercase text-center font-semibold ${theme.bg} text-white`}
-            >
+            <div className="mt-4 mb-2 px-1 text-[13px] font-bold tracking-wide text-gray-600 uppercase">
               {tier !== undefined ? `Tier ${tier}` : 'Other'}
             </div>
             <ExperienceList
@@ -328,9 +329,7 @@ const Experiences = memo(function Experiences({
       )}
       {experienced.length > 0 && (
         <>
-          <h2
-            className={`-mx-3 px-3 py-1 text-sm uppercase text-center ${theme.bg} text-white`}
-          >
+          <h2 className="mt-5 mb-2 px-1 text-[13px] font-bold tracking-wide text-gray-600 uppercase">
             Experienced or Expired
           </h2>
           <ExperienceList experiences={experienced} type="experienced" />
@@ -416,7 +415,7 @@ function StarButton({
   return (
     <button
       title={`${experience.starred ? 'Remove from' : 'Add to'} Favorites`}
-      className="-m-2 p-2 text-gray-300"
+      className="-m-2 p-2 text-gray-400"
       onClick={() => toggleStar(experience)}
     >
       <StarIcon themed={experience.starred} />
