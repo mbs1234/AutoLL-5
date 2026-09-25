@@ -11,7 +11,9 @@ const LEVEL_CLASS: Record<AutopilotEvent['level'], string> = {
 export default function LatestEvent({ event }: { event?: AutopilotEvent }) {
   if (!event) return null;
   return (
-    <p className={`mt-3 text-sm font-semibold ${LEVEL_CLASS[event.level]}`}>
+    <p
+      className={`mt-3 mb-0 border-t border-gray-200 pt-3 text-sm font-semibold ${LEVEL_CLASS[event.level]}`}
+    >
       {event.at && (
         <>
           <Time time={event.at} className="text-gray-500" /> &mdash;{' '}

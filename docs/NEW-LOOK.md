@@ -58,13 +58,22 @@ park. Each slice keeps all of them.
 
 ## Slices
 
-| | slice | what changes |
-|---|---|---|
-| 1 | Foundation | palette, fonts, header, tab bar, park chip, default buttons |
-| 2 | Today | status card, held passes as tickets, the plan, actions at the bottom |
-| 3 | Pocket mode | the next drop at full size, sound and screen state, the moving target restyled |
-| 4 | NextLL | the ride, what is held against the goal, what the search has done |
-| 5 | Tip board | next booking and next drop up top, return times as chips |
+| | slice | what changes | state |
+|---|---|---|---|
+| 1 | Foundation | palette, fonts, header, tab bar, park chip, default buttons | merged (#1) |
+| 2 | Today | a status card, the switch beside Pocket it, four tiles, held passes as tickets, the plan with rank badges | this branch |
+| 3 | Pocket mode | the next drop at full size, sound and screen state, the moving target restyled | |
+| 4 | NextLL | the ride, what is held against the goal, what the search has done | |
+| 5 | Tip board | next booking and next drop up top, return times as chips | |
+
+**One deliberate departure from the mockups.** They put Today's main actions in
+a bar along the bottom. The switch stays in the page instead: a bar there sits
+directly above the tabs, where a thumb reaching for a tab would find Stop. The
+full-width switch keeps its place under the status card, with Pocket it beside
+it while Autopilot runs.
+
+**The user guide's screenshots** still show the old look. They are retaken once
+the slices have landed, together, rather than screen by screen.
 
 Each is its own pull request, checked in the harness at phone width before it
 merges. When AutoLL-3 changes a screen a slice has redrawn, the fix is re-made
