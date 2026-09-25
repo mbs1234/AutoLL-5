@@ -83,9 +83,11 @@ export default function SettingsButton() {
           >
             {options.map(opt => {
               return (
-                <li key={opt.text}>
+                // The row's padding on the button, not the item, so the whole
+                // row answers a tap rather than its middle.
+                <li key={opt.text} className="py-0!">
                   <button
-                    className="flex items-center w-full px-4"
+                    className="flex items-center w-full px-4 py-3"
                     onClick={() => {
                       showMenu(false);
                       setTimeout(opt.action, 50);
@@ -104,6 +106,9 @@ export default function SettingsButton() {
               aria-label="Session status"
             >
               Session: {sessionStatus.replaceAll('-', ' ')}
+              <span className="block text-xs">
+                Session-only login forgets your sign-in when this tab closes.
+              </span>
             </li>
             {/* Read each time the menu opens, so it is current without anything
                 having to notify it. Here rather than on Today, which is for the

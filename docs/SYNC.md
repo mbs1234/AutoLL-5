@@ -28,7 +28,10 @@ five requests a second.
 ## The rule
 
 The owner's, when this build was made: **bug fixes and everything else stay in
-step across all three builds; only the new look lives here alone.** In practice:
+step across all three builds; only the new look lives here alone.** Widened
+once since: the usability changes to this build's screens live here too
+([USABILITY.md](USABILITY.md)), in the screens and nowhere under them. In
+practice:
 
 - **A fix is made in AutoLL-3 first.** Once it is verified there and the owner is
   happy with it, it goes to AutoLL-4 and to AutoLL-5, each by merge.
@@ -38,7 +41,9 @@ step across all three builds; only the new look lives here alone.** In practice:
   AutoLL-3 cannot take it without taking the new look too (below), and copying
   it across by hand gives git two versions of one change that it cannot
   recognise as one.
-- **The new look is made here**, in pull requests against this `main`.
+- **The new look is made here**, in pull requests against this `main`, and
+  so are the usability changes, in the UI layer only. One that needs the
+  engine changed is an AutoLL-3 change.
 
 ## Syncing is a merge
 
@@ -87,6 +92,7 @@ separate hand-made copy.
 | `.github/dependabot.yml` | absent here on purpose. Dependencies arrive from AutoLL-3 with every merge, and a Dependabot pull request here would put this build's lockfile out of step with AutoLL-3's. If a sync reports a conflict on it, keep it deleted |
 | the docs, **in part** | `README.md`, `FORK.md`, `SECURITY.md`, `docs/RELEASING.md` and this file are this build's own. The user guide, the roadmap and `FUTURE.md` take AutoLL-3's content with this build's name, and are *ported* where a redrawn screen changes what they describe |
 | the new look | whatever the redesign has changed so far — the reason this build exists. [NEW-LOOK.md](NEW-LOOK.md) lists it slice by slice |
+| the usability work | what the screens say and do, in `src/components` and screen-only hooks. [USABILITY.md](USABILITY.md) lists it slice by slice |
 
 Everything else should be identical to AutoLL-3's. When it is not, one of them
 is wrong.

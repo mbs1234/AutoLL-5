@@ -108,10 +108,8 @@ storage*, below), **Log Out**, a **Session-only login** switch for a borrowed
 phone (the token then lives only as long as the tab), a `Session:` line telling
 you whether you are signed in, a `Last backup:` line, and the build name.
 
-> The Party Selection screen says the cap is 12 guests. At Walt Disney World it
-> is actually 20 — the 12 is left over in shared code. In the harness screenshot
-> above, `Session: missing` is simply because the harness never signs in; on
-> your phone it will read `Session: valid`.
+> In the harness screenshot above, `Session: missing` is simply because the
+> harness never signs in; on your phone it will read `Session: valid`.
 
 ## 4. Choose the park and the day
 

@@ -1,7 +1,7 @@
 import { ll, renderResort } from '@/__fixtures__/ll';
 import useSavedParty, { PARTY_IDS_KEY } from '@/hooks/useSavedParty';
 import kvdb from '@/kvdb';
-import { click, loading, nav, see, waitFor } from '@/testing';
+import { click, loading, nav, screen, see, waitFor } from '@/testing';
 
 import PartySelector from './PartySelector';
 
@@ -32,6 +32,14 @@ describe('PartySelector', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     kvdb.clear();
+  });
+
+  // It said "up to a maximum of 12", which is not Walt Disney World's limit.
+  it("gives the resort's own party limit", async () => {
+    await renderComponent();
+    expect(
+      screen.getByText(/all eligible guests \(up to 20\) are/)
+    ).toBeVisible();
   });
 
   it('renders party selection screen', async () => {

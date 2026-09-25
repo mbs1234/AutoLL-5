@@ -315,7 +315,7 @@ export default function Today({ ref }: HomeTabProps) {
                 >
                   {awakeStatus === 'held'
                     ? 'Screen is being kept awake.'
-                    : 'Screen may sleep, which can slow or pause checks.'}
+                    : 'Screen may sleep, which can slow or pause checks. On an iPhone, Low Power Mode is the usual cause.'}
                 </p>
               </div>
             )}
@@ -453,12 +453,21 @@ export default function Today({ ref }: HomeTabProps) {
       )}
 
       {dryRun && (
-        <p className="mt-3 mb-0 rounded-2xl bg-yellow-100 p-3.5 text-sm font-semibold text-yellow-900">
-          Dry run is on. Autopilot will watch, alert, and run every check, and
-          the activity log will show what it <em>would</em> have booked, moved,
-          or swapped &mdash; but nothing will actually be booked. Turn it off in
-          Configure when you are ready for it to act.
-        </p>
+        <div className="mt-3 rounded-2xl bg-yellow-100 p-3.5 text-sm font-semibold text-yellow-900">
+          <p className="my-0">
+            Dry run is on. Autopilot will watch, alert, and run every check, and
+            the activity log will show what it <em>would</em> have booked,
+            moved, or swapped &mdash; but nothing will actually be booked. Turn
+            it off in Configure when you are ready for it to act.
+          </p>
+          {/* Configure, not a switch here: turning a safeguard off stays on
+              the screen that explains it. */}
+          <div className="mt-2">
+            <Button type="small" onClick={() => goTo(<Configure />)}>
+              Open Configure
+            </Button>
+          </div>
+        </div>
       )}
       {notifications === 'denied' && (
         <p className="mt-3 mb-0 text-sm font-semibold text-red-700">
@@ -466,19 +475,28 @@ export default function Today({ ref }: HomeTabProps) {
           this site in your browser settings.
         </p>
       )}
+      {/* iPhone Safari lands here. It does not vibrate for a web page either,
+          and running from the Home Screen is ruled out, so the sound is the
+          whole alarm -- which is what this has to say. */}
       {notifications === 'unsupported' && (
         <p className="mt-3 mb-0 text-sm text-gray-600">
-          This browser has no notification support, so alerts will chime and
-          vibrate only. On iOS, notifications require adding this page to your
-          Home Screen.
+          This browser shows no notifications, so the alert sound is the only
+          alarm. Keep it armed with Test sound.
         </p>
       )}
       {unknown > 0 && (
-        <p className="mt-3 mb-0 text-sm font-semibold text-red-700">
-          Disney is listing {unknown} attraction{unknown === 1 ? '' : 's'} this
-          build does not recognise. Configure names{' '}
-          {unknown === 1 ? 'it' : 'them'}.
-        </p>
+        <div className="mt-3 text-sm font-semibold text-red-700">
+          <p className="my-0">
+            Disney is listing {unknown} attraction{unknown === 1 ? '' : 's'}{' '}
+            this build does not recognise. Configure names{' '}
+            {unknown === 1 ? 'it' : 'them'}.
+          </p>
+          <div className="mt-2">
+            <Button type="small" onClick={() => goTo(<Configure />)}>
+              Open Configure
+            </Button>
+          </div>
+        </div>
       )}
       {pending && (
         <div className="mt-3 rounded-2xl border border-gray-300 bg-white p-3.5 text-sm">

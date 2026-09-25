@@ -43,6 +43,14 @@ describe('Configure watch list', () => {
     expect(screen.getByText(/No attractions loaded yet/)).toBeVisible();
   });
 
+  // It said "go back and refresh the list first", from a screen whose way
+  // back does not refresh anything.
+  it('refreshes the list from here when nothing has loaded', () => {
+    const { refreshExperiences } = setup({ experiences: [] });
+    fireEvent.click(screen.getByRole('button', { name: 'Refresh list' }));
+    expect(refreshExperiences).toHaveBeenCalled();
+  });
+
   it('adds a target', () => {
     const { addTarget } = setup();
     fireEvent.click(screen.getByTitle(`Watch ${NAME}`));
@@ -255,7 +263,7 @@ describe('Configure swap', () => {
     setup({ watched: [BZ], targets: [{ experienceId: BZ, autoSwap: true }] });
     open('What these actions do');
     expect(screen.getByText(/Swap in is on/)).toBeVisible();
-    expect(screen.getByText(/lowest-priority/)).toBeVisible();
+    expect(screen.getByText(/not your Plan rank/)).toBeVisible();
     expect(
       screen.getByText(/only released if the new one is secured/)
     ).toBeVisible();

@@ -22,6 +22,9 @@ export default function ChangeBookingTime({ booking }: { booking: LLMP }) {
   const { ll } = use(ClientsContext);
   const { loadData, loaderElem } = useDataLoader();
   const [offer, setOffer] = useState<Offer<LLMP>>();
+  // Refresh asks again. It used to do nothing, which left this screen with no
+  // way forward when the first request failed.
+  const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
     const end = rebooking.end;
@@ -32,7 +35,7 @@ export default function ChangeBookingTime({ booking }: { booking: LLMP }) {
     loadData(async () => {
       setOffer(await ll.offer(booking.experience, booking.guests, { booking }));
     });
-  }, [booking, ll, loadData]);
+  }, [booking, ll, loadData, attempt]);
 
   return offer ? (
     <SelectReturnTime
@@ -49,13 +52,20 @@ export default function ChangeBookingTime({ booking }: { booking: LLMP }) {
       buttons={
         <>
           <YourDayButton />
-          <RefreshButton name="Times" onClick={() => {}} />
+          <RefreshButton name="Times" onClick={() => setAttempt(n => n + 1)} />
         </>
       }
     >
       <h2>{booking.name}</h2>
       <LandLine land={booking.land} />
-      <ReturnTime {...booking} button={<Button type="small">Keep</Button>} />
+      <ReturnTime
+        {...booking}
+        button={
+          <Button type="small" back>
+            Keep current
+          </Button>
+        }
+      />
       {loaderElem}
     </Screen>
   );

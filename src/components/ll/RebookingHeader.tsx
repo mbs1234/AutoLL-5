@@ -19,7 +19,7 @@ export default function RebookingHeader<P>({ back }: { back?: Back<P> }) {
             booking={rebooking.current}
             button={
               <Button type="small" back={back} onClick={rebooking.end}>
-                Keep
+                Keep current
               </Button>
             }
           />

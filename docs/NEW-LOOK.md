@@ -4,6 +4,9 @@ What AutoLL-5 changes about how the app looks, and the rules it keeps while
 doing it. The mockups it follows are on a private design canvas; this file is
 the part of them that lives in the repository.
 
+Changes to what the screens say and do are a separate piece of work, with its
+own rules: [USABILITY.md](USABILITY.md).
+
 ## The direction: glance, then act
 
 - **A calm, warm page.** Paper (`#f6f4ef`) and ink (`#1d1b18`) instead of white

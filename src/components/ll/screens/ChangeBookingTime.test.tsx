@@ -28,4 +28,35 @@ describe('ChangeBookingTime', () => {
       expect(goTo).toHaveBeenCalledWith(<BookNewReturnTime offer={newOffer} />)
     );
   });
+
+  // The screen shown until the offer arrives, and for good if it never does.
+  // Refresh did nothing and Keep had no action, so one failed request left
+  // this screen with no way forward but the header's back arrow.
+  describe('when the offer does not come', () => {
+    function renderFailed() {
+      ll.offer.mockClear();
+      ll.offer.mockRejectedValueOnce(new Error('no answer'));
+      renderResort(
+        <NavProvider>
+          <ChangeBookingTime booking={booking} />
+        </NavProvider>
+      );
+    }
+
+    it('asks again on Refresh', async () => {
+      renderFailed();
+      await loading();
+      expect(ll.offer).toHaveBeenCalledTimes(1);
+      click('Refresh Times');
+      await waitFor(() => expect(ll.offer).toHaveBeenCalledTimes(2));
+    });
+
+    it('goes back on Keep current', async () => {
+      renderFailed();
+      await loading();
+      nav.goBack.mockClear();
+      click('Keep current');
+      await waitFor(() => expect(nav.goBack).toHaveBeenCalled());
+    });
+  });
 });

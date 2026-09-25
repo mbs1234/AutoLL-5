@@ -16,15 +16,17 @@ import AutopilotContext, { AutopilotState } from '@/contexts/AutopilotContext';
 import BookingDateContext from '@/contexts/BookingDateContext';
 import ClientsContext, { Clients } from '@/contexts/ClientsContext';
 import ExperiencesContext from '@/contexts/ExperiencesContext';
+import NavContext from '@/contexts/NavContext';
 import ParkContext from '@/contexts/ParkContext';
 import PlansContext from '@/contexts/PlansContext';
 import TabsContext from '@/contexts/TabContext';
-import { DateTime, ParkTime } from '@/datetime';
+import { DateTime, ParkTime, formatDate } from '@/datetime';
 import kvdb from '@/kvdb';
 import { PARTY_IDS_KEY } from '@/savedParty';
 import { NEXTLL_WATCHLIST_KEY } from '@/storageNamespace';
 import { TODAY, TOMORROW } from '@/testing';
 
+import PartySelector from '../PartySelector';
 import { NEXTLL, NextLL, NextLLChooser } from './NextLL';
 
 const BZ = '80010114';
@@ -74,11 +76,13 @@ function setup({
   plans = [] as Booking[],
   chooser = false,
   bookingDate = TODAY,
+  experiences = [llExperience(BZ)],
   ...rest
 }: Partial<AutopilotState> & {
   plans?: Booking[];
   chooser?: boolean;
   bookingDate?: string;
+  experiences?: Experience[];
 } = {}) {
   const setEnabled = jest.fn();
   const addTarget = jest.fn();
@@ -86,6 +90,8 @@ function setup({
   const setPartyIds = jest.fn();
   const replaceTargets = jest.fn();
   const changeTab = jest.fn();
+  const goTo = jest.fn();
+  const refreshExperiences = jest.fn();
   const tab = (name: string) => ({ name, icon: null, component: () => null });
   const tabs = [tab('LL'), tab('Plans'), tab(NEXTLL)];
 
@@ -129,46 +135,52 @@ function setup({
     );
   }
   const view = render(
-    <ClientsContext value={{ ll: { setPartyIds } } as unknown as Clients}>
-      <TabsContext
-        value={{
-          tabs,
-          active: tabs[2]!,
-          changeTab,
-          scrollPos: { get: () => 0, set: () => {} },
-        }}
-      >
-        <ParkContext value={{ park: mk, setPark: () => {} }}>
-          <BookingDateContext value={{ bookingDate, setBookingDate: () => {} }}>
-            <PlansContext
-              value={{
-                plans,
-                plansLoaded: true,
-                refreshPlans: () => {},
-                pollPlans: async () => plans,
-                loaderElem: null,
-              }}
+    <NavContext value={{ goTo, goBack: async () => {} } as unknown as never}>
+      <ClientsContext value={{ ll: { setPartyIds } } as unknown as Clients}>
+        <TabsContext
+          value={{
+            tabs,
+            active: tabs[2]!,
+            changeTab,
+            scrollPos: { get: () => 0, set: () => {} },
+          }}
+        >
+          <ParkContext value={{ park: mk, setPark: () => {} }}>
+            <BookingDateContext
+              value={{ bookingDate, setBookingDate: () => {} }}
             >
-              <ExperiencesContext
+              <PlansContext
                 value={{
-                  experiences: [llExperience(BZ)],
-                  refreshExperiences: () => {},
-                  pollExperiences: async () => [],
+                  plans,
+                  plansLoaded: true,
+                  refreshPlans: () => {},
+                  pollPlans: async () => plans,
                   loaderElem: null,
                 }}
               >
-                <Autopilot>
-                  {chooser ? <NextLLChooser /> : <NextLL />}
-                </Autopilot>
-              </ExperiencesContext>
-            </PlansContext>
-          </BookingDateContext>
-        </ParkContext>
-      </TabsContext>
-    </ClientsContext>
+                <ExperiencesContext
+                  value={{
+                    experiences,
+                    refreshExperiences,
+                    pollExperiences: async () => [],
+                    loaderElem: null,
+                  }}
+                >
+                  <Autopilot>
+                    {chooser ? <NextLLChooser /> : <NextLL />}
+                  </Autopilot>
+                </ExperiencesContext>
+              </PlansContext>
+            </BookingDateContext>
+          </ParkContext>
+        </TabsContext>
+      </ClientsContext>
+    </NavContext>
   );
   return {
     ...view,
+    goTo,
+    refreshExperiences,
     setEnabled,
     addTarget,
     removeTarget,
@@ -239,6 +251,28 @@ describe('NextLL', () => {
     fireEvent.click(screen.getByText('Find it'));
     expect(replaceTargets).not.toHaveBeenCalled();
     expect(setEnabled).not.toHaveBeenCalled();
+  });
+
+  // Enabled with nothing chosen, it took the tap and did nothing at all.
+  it('offers Find it only once an attraction is chosen', () => {
+    setup();
+    expect(screen.getByRole('button', { name: 'Find it' })).toBeDisabled();
+    fireEvent.change(screen.getByRole('combobox'), { target: { value: BZ } });
+    expect(screen.getByRole('button', { name: 'Find it' })).toBeEnabled();
+  });
+
+  // The party is under the gear; the text used to send people to the LL tab.
+  it('opens Party Selection from the party line', () => {
+    const { goTo } = setup();
+    fireEvent.click(screen.getByRole('button', { name: 'Choose party' }));
+    expect(goTo).toHaveBeenCalledWith(<PartySelector />);
+  });
+
+  it('refreshes the list from here when nothing has loaded', () => {
+    const { refreshExperiences } = setup({ experiences: [] });
+    expect(screen.getByText(/No attractions loaded yet/)).toBeVisible();
+    fireEvent.click(screen.getByRole('button', { name: 'Refresh list' }));
+    expect(refreshExperiences).toHaveBeenCalled();
   });
 
   // `bookThenMove` is this problem already solved: take any time so something
@@ -708,5 +742,20 @@ describe('the booking date is on screen before anything is booked', () => {
   it('names the date on the search screen', () => {
     setup({ bookingDate: TOMORROW });
     expect(screen.getByText('October 2')).toBeInTheDocument();
+  });
+
+  // It printed the date in its stored form, year first.
+  it("names a running search's date in words", () => {
+    setup({
+      enabled: true,
+      status: RUNNING,
+      targets: [{ experienceId: BZ }],
+      bookingDate: TOMORROW,
+    });
+    expect(
+      screen.getByText(
+        `Working on ${formatDate(TOMORROW, 'short')}, not today.`
+      )
+    ).toBeVisible();
   });
 });

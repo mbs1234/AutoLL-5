@@ -97,6 +97,7 @@ export function renderScreen(
     togglePasskey: jest.fn(),
     requestNotifications: jest.fn(),
   };
+  const refreshExperiences = jest.fn();
   const clients = {
     ll: {
       rules: { prebook: false },
@@ -124,7 +125,7 @@ export function renderScreen(
                 <ExperiencesContext
                   value={{
                     experiences,
-                    refreshExperiences: () => {},
+                    refreshExperiences,
                     pollExperiences: async () => [],
                     unknownExperienceIds,
                     lastUpdated: experiencesUpdated,
@@ -172,5 +173,5 @@ export function renderScreen(
       </nav.Provider>
     </ResortContext>
   );
-  return mocks;
+  return { ...mocks, refreshExperiences };
 }
