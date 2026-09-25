@@ -1125,9 +1125,17 @@
         actually armed, notifications allowed, Plan Check reviewed.
       </p>
       <p>
+        It also shows on a first run, with nothing saved, whatever the date.
+        With a plan saved, a sixth line says when the last backup was, and
+        offers <span class="ui">Back up</span> once it is more than a week old;
+        with nothing saved at all, Today offers
+        <span class="ui">Restore a backup</span> instead.
+      </p>
+      <p>
         It is a local readiness summary, not a live check of Disney — it makes no
-        requests. The panel disappears the moment the booking date is today, and
-        the “Plan Check reviewed” tick is not saved across a reload.
+        requests. On the day itself its place is taken by the park-morning check
+        in the status card, and the “Plan Check reviewed” tick is not saved
+        across a reload.
       </p>
       <h4>The night before</h4>
       <ul>
@@ -1162,22 +1170,40 @@
       <p>
         <strong>The freshness line</strong> — “Plans and LL availability are
         current as of just now.” This is the line that tells you whether to
-        believe the rest of the screen. If it is climbing, tap refresh. If there
-        is <strong>no line at all</strong>, neither list has ever loaded — which
-        is not the same as fresh.
+        believe the rest of the screen. If it is climbing, tap refresh; past five
+        minutes it turns amber. If there is <strong>no line at all</strong>,
+        neither list has ever loaded — which is not the same as fresh.
+      </p>
+      <p>
+        <strong>Before you start.</strong> On the day itself, while Autopilot is
+        off, the status card is the park morning's go/no-go: whether anything is
+        armed at this park, whether dry run is on, whether the sign-in lasts past
+        5 PM, and the alert sound, with <span class="ui">Test sound</span>. Each
+        line reads its own signal. It goes once Autopilot is on.
       </p>
       <p>
         <strong>Held (N)</strong> is what you are actually holding, at every park
-        on that date. <strong>Plan (N)</strong> is what Autopilot is still after,
-        for the park in the header only. The two lists are scoped differently on
-        purpose — which is why you can see <span class="ui">Held (2)</span> above
-        “Nothing watched at Magic Kingdom on this date.”
+        on that date. Tap a pass to open it. Once its window is open, a live pass
+        counts down — “· window ends in 20 min”, amber in the last half hour.
+        That is a reminder, not a watch: nothing acts on it, and a pass tapped in
+        minutes ago may still show until Plans refreshes.
+        <strong>Plan (N)</strong> is what Autopilot is still after, for the park
+        in the header only; tap a row to open its card in Configure. The two
+        lists are scoped differently on purpose — which is why you can see
+        <span class="ui">Held (2)</span> above “Nothing watched at Magic Kingdom
+        on this date.” If this date's plan was saved at another park, Today names
+        it and offers <span class="ui">Switch to</span> that park — it never
+        switches by itself. And while Autopilot runs with nothing armed, Plan
+        says so in amber: it can only alert.
       </p>
       <p>
         <strong>The four buttons</strong> — Configure, Plan check, Timeline,
         Activity — are the screens Today deliberately does not try to be.
-        <strong>Next Lightning Lane / Next drop</strong> are the two times that
-        decide when anything can happen.
+        <strong>Next Lightning Lane / Next scheduled drop</strong> are the two
+        times that decide when anything can happen. On any other date there is
+        no drop time, because Autopilot bursts for drops only on the day itself;
+        a line says so, and that at the 7:00 opening NextLL or booking by hand is
+        faster.
       </p>
     </section>
 
@@ -1243,7 +1269,8 @@
       </p>
       <p>
         The guarded screen is also a status display. It shows the current
-        checking pace, the next drop in large type with how long until it, the
+        checking pace, the time it is checking hard at in large type with how
+        long until it, the
         number of targets that can actually act, today's booking count, a line
         such as <strong>Sound on · Screen held</strong>, and the last thing
         Autopilot did.
@@ -1279,7 +1306,8 @@
         (double-click on iOS 18 and earlier). On the Guided Access screen,
         circle the areas to disable with your finger, then tap
         <span class="ui">Start</span>. iOS remembers the regions per app, so you
-        draw them once.
+        draw them once. On an iPhone the guarded screen reminds you of this every
+        time, because a web page cannot tell whether Guided Access is on.
       </p>
       <p>What to circle:</p>
       <ul>
@@ -1317,7 +1345,7 @@
       <figure class="float">
         <img src="user-guide/today-running.png" alt="Today while autopilot bursts at a drop: a red Turn off autopilot button, a recent move, Status Checking rapidly with 57 checks, and local timing." loading="lazy">
         <figcaption>
-          Bursting at a drop. The two “Next drop” times differ on purpose — see
+          Bursting at a drop, before its two times were named apart — see
           below.
         </figcaption>
       </figure>
@@ -1350,10 +1378,11 @@
       <div class="call">
         <span class="call-label">Not a bug</span>
         <p>
-          Two things labelled “Next drop” on this screen are not the same. Inside
-          the Status block it is whatever moment the poller is chasing — which
-          can be a booking window, or a drop the app has learned by observation.
-          Lower down it is the built-in table only.
+          <span class="ui">Checking hard at</span>, in the Status block, is
+          whatever moment the poller is chasing — a drop or a booking window,
+          including a drop the app has learned by observation.
+          <span class="ui">Next scheduled drop</span>, lower down, is the
+          built-in table only. They can differ.
         </p>
       </div>
       <h4>How to tell it is working</h4>
@@ -1364,7 +1393,8 @@
         the red refusal box, then the amber “failed checks in a row” line, then
         the yellow dry-run banner, then the <span class="ui">n armed</span> count
         in Plan. A running Autopilot with <strong>0 armed</strong> will never
-        book anything.
+        book anything. The line under the latest event sums it up: “Nothing
+        booked yet. Most often, the offered time was outside the window (12×).”
       </p>
 
       <h4>Dry run</h4>

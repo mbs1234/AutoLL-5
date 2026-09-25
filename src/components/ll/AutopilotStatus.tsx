@@ -55,7 +55,7 @@ export default function AutopilotStatus({
       {status.target && (
         <div className="mt-3">
           <span className="block text-[13px] font-bold tracking-wide text-gray-600 uppercase">
-            Next drop:
+            Checking hard at:
           </span>{' '}
           <div className="flex items-baseline gap-2">
             {/* The biggest thing on the screen, as in the mockups: the one

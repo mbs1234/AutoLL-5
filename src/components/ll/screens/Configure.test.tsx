@@ -51,6 +51,18 @@ describe('Configure watch list', () => {
     expect(refreshExperiences).toHaveBeenCalled();
   });
 
+  // It opened the card where it was, often below the fold of a long screen.
+  it('brings a card opened from elsewhere into view', () => {
+    const scrolled = jest.spyOn(Element.prototype, 'scrollIntoView');
+    renderScreen(<Configure focus={{ kind: 'target', experienceId: BZ }} />, {
+      watched: [BZ],
+    });
+    const card = screen.getByText(NAME).closest('details')!;
+    expect(card).toHaveAttribute('open');
+    expect(scrolled.mock.contexts).toContain(card);
+    scrolled.mockRestore();
+  });
+
   it('adds a target', () => {
     const { addTarget } = setup();
     fireEvent.click(screen.getByTitle(`Watch ${NAME}`));

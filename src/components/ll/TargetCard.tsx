@@ -1,4 +1,4 @@
-import { use, useState } from 'react';
+import { use, useEffect, useRef, useState } from 'react';
 
 import { Experience } from '@/api/ll';
 import { describeMode } from '@/autopilot/describe';
@@ -155,6 +155,13 @@ export default function TargetCard({
   } = use(AutopilotContext);
   const { id, name } = experience;
   const t: WatchTarget = target ?? { experienceId: id };
+  // A card opened from elsewhere -- Today's plan, the Timeline, Plan Check, or
+  // just added -- is brought into view. It used to open where it was, often
+  // below the fold of a long screen.
+  const cardRef = useRef<HTMLDetailsElement>(null);
+  useEffect(() => {
+    if (defaultOpen) cardRef.current?.scrollIntoView?.({ block: 'center' });
+  }, [defaultOpen]);
   const autoBook = !!t.autoBook;
   const autoModify = !!t.autoModify;
   const bookThenMove = !!t.bookThenMove;
@@ -164,6 +171,7 @@ export default function TargetCard({
 
   return (
     <details
+      ref={cardRef}
       className="rounded-md border border-gray-300 bg-white"
       open={defaultOpen || undefined}
     >

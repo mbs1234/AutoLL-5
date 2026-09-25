@@ -1,9 +1,10 @@
 import { act, fireEvent, screen, within } from '@testing-library/react';
 import { type ReactElement, createRef } from 'react';
 
-import { createBooking, hm, wdw } from '@/__fixtures__/ll';
+import { createBooking, ep, hm, wdw } from '@/__fixtures__/ll';
 import { mk } from '@/__fixtures__/resort';
 import { primeAudio, resetAudioForTests } from '@/autopilot/alert';
+import { recordBackup } from '@/autopilot/backup';
 import { leaseKey, quarantine } from '@/autopilot/lease';
 import { savePendingSearch } from '@/autopilot/nextll';
 import { planReview } from '@/autopilot/plancheck';
@@ -14,9 +15,11 @@ import { ParkTime, parkDate } from '@/datetime';
 import { PARTY_IDS_KEY } from '@/hooks/useSavedParty';
 import kvdb from '@/kvdb';
 import { PLAN_CHECK_REVIEW_KEY } from '@/storageNamespace';
-import { TODAY, nav, setTime } from '@/testing';
+import { TODAY, TOMORROW, nav, setTime } from '@/testing';
 
 import Activity from './Activity';
+import BackupRestore from './BackupRestore';
+import BookingDetails from './BookingDetails';
 import Configure from './Configure';
 import PlanCheck from './PlanCheck';
 import Timeline from './Timeline';
@@ -367,7 +370,7 @@ describe('Today', () => {
     setup({ ll: { nextBookTime: new ParkTime(11) } });
     expect(screen.getByText('Next Lightning Lane:')).toBeVisible();
     expect(document.querySelector('time[datetime="11:00:00"]')).not.toBeNull();
-    expect(screen.getByText('Next drop:')).toBeVisible();
+    expect(screen.getByText('Next scheduled drop:')).toBeVisible();
     expect(document.querySelector('time[datetime="11:30:00"]')).not.toBeNull();
   });
 
@@ -378,6 +381,16 @@ describe('Today', () => {
       plansUpdated: now,
     });
     expect(screen.getByText(/current as of 3 min ago/)).toBeVisible();
+  });
+
+  // Small and grey whatever its age, it read the same at ten minutes stale as
+  // at none, and it is the line that says whether to believe the rest.
+  it('marks the refresh line once it is stale', () => {
+    const now = Date.now();
+    setup({ experiencesUpdated: now - 10 * 60_000, plansUpdated: now });
+    expect(screen.getByText(/current as of 10 min ago/)).toHaveClass(
+      'text-amber-800'
+    );
   });
 
   /*
@@ -432,6 +445,220 @@ describe('Today', () => {
     setup({ plans: [createBooking(hm)] });
     expect(screen.queryByText(/grace scan/i)).not.toBeInTheDocument();
     expect(document.querySelector('time[datetime="13:59:00"]')).toBeNull();
+  });
+
+  // Roadmap item 3, the half that works with Autopilot off.
+  it('counts down a live pass whose window is closing', () => {
+    // The clock is at 9:00; this window runs 8:20 to 9:20.
+    setup({ plans: [createBooking(hm, { startTime: new ParkTime(8, 20) })] });
+    const countdown = screen.getByText(/window ends in 20 min/);
+    expect(countdown).toBeVisible();
+    expect(countdown).toHaveClass('text-amber-800');
+  });
+
+  it('counts nothing down on a pass with nobody left on it', () => {
+    setup({
+      plans: [
+        createBooking(hm, {
+          startTime: new ParkTime(8, 20),
+          properties: { guests: [] },
+        }),
+      ],
+    });
+    expect(screen.getByText(hm.name)).toBeVisible();
+    expect(screen.queryByText(/window ends in/)).not.toBeInTheDocument();
+  });
+
+  it('counts nothing down before a window opens', () => {
+    setup({ plans: [createBooking(hm, { startTime: new ParkTime(10) })] });
+    expect(screen.queryByText(/window ends in/)).not.toBeInTheDocument();
+  });
+
+  // Changing a held pass used to mean the Plans tab, the date, then the row.
+  it('opens a held pass from its ticket', () => {
+    const lane = createBooking(hm);
+    setup({ plans: [lane] });
+    act(() => screen.getByText(hm.name).closest('button')!.click());
+    expect(nav.goTo).toHaveBeenCalledWith(<BookingDetails booking={lane} />);
+  });
+
+  it("opens a plan row's card in Configure", () => {
+    setup({ targets: [{ experienceId: BZ, autoBook: true }] });
+    act(() =>
+      screen.getByText(wdw.experience(BZ).name).closest('button')!.click()
+    );
+    expect(nav.goTo).toHaveBeenCalledWith(
+      <Configure focus={{ kind: 'target', experienceId: BZ }} />
+    );
+  });
+
+  // Roadmap item 13.
+  describe('the park-morning check', () => {
+    const rows = () =>
+      within(screen.getByRole('list', { name: 'Before you start' }))
+        .getAllByRole('listitem')
+        .map(li => li.textContent);
+
+    it('reads each signal while Autopilot is off on the day', () => {
+      setup({ targets: [{ experienceId: BZ, autoBook: true }], dryRun: true });
+      expect(rows()).toEqual([
+        '✓Plan: 1 armed at Magic Kingdom',
+        '!Dry run: on, so nothing will be booked',
+        expect.stringMatching(/^[✓!]Sign-in: /),
+      ]);
+    });
+
+    it('says when the plan here would only alert', () => {
+      setup({ targets: [{ experienceId: BZ }] });
+      expect(rows()[0]).toBe(
+        '!Plan: none armed at Magic Kingdom, so it would only alert'
+      );
+    });
+
+    it('goes once Autopilot is on', () => {
+      setup({ enabled: true, status: { ...OFF, mode: 'idle', polls: 1 } });
+      expect(
+        screen.queryByRole('list', { name: 'Before you start' })
+      ).not.toBeInTheDocument();
+    });
+
+    it('is not shown for another day', () => {
+      setup({ bookingDate: TOMORROW });
+      expect(
+        screen.queryByRole('list', { name: 'Before you start' })
+      ).not.toBeInTheDocument();
+    });
+  });
+
+  // Roadmap item 14.
+  describe('a plan saved at another park', () => {
+    const epcotRide = { experienceId: '80010191', parkId: ep.id, date: TODAY };
+
+    it('names it and offers to switch, never switching itself', () => {
+      const { setPark } = setup({ targets: [epcotRide] });
+      expect(
+        screen.getByText(/this date’s plan is at EPCOT \(1\)/)
+      ).toBeVisible();
+      expect(setPark).not.toHaveBeenCalled();
+      act(() =>
+        screen.getByRole('button', { name: `Switch to ${ep.name}` }).click()
+      );
+      expect(setPark).toHaveBeenCalledWith(
+        expect.objectContaining({ id: ep.id })
+      );
+    });
+
+    it('says nothing when no plan is saved elsewhere', () => {
+      setup();
+      expect(screen.queryByText(/plan is at/)).not.toBeInTheDocument();
+    });
+  });
+
+  it('says when a running Autopilot has nothing armed', () => {
+    setup({
+      enabled: true,
+      status: { ...OFF, mode: 'idle', polls: 1 },
+      targets: [{ experienceId: BZ }],
+    });
+    const notice = screen
+      .getByText('Nothing is armed, so Autopilot will only alert.')
+      .closest('div')!;
+    act(() =>
+      within(notice).getByRole('button', { name: 'Open Configure' }).click()
+    );
+    expect(nav.goTo.mock.calls[0]?.[0].type).toBe(Configure);
+  });
+
+  // Roadmap item 8's honesty half: it named the day's first drop for a date
+  // the engine never bursts for.
+  it('names no drop for a date other than today', () => {
+    setup({ bookingDate: TOMORROW });
+    expect(screen.queryByText('Next scheduled drop:')).not.toBeInTheDocument();
+    expect(screen.getByText(/checks a later date steadily/)).toBeVisible();
+  });
+
+  it("tells the engine's time from the timetable's", () => {
+    setup({
+      enabled: true,
+      status: {
+        ...OFF,
+        mode: 'approach',
+        polls: 3,
+        target: new ParkTime(9, 3),
+        secondsToTarget: 180,
+      },
+    });
+    expect(screen.getByText('Checking hard at:')).toBeVisible();
+    expect(screen.getByText('Next scheduled drop:')).toBeVisible();
+    expect(screen.queryByText('Next drop:')).not.toBeInTheDocument();
+  });
+
+  // The pre-trip list hid whenever the date was today, which is where a
+  // first run opens.
+  it('shows the pre-trip list on a first run, whatever the date', () => {
+    setup();
+    expect(
+      screen.getByRole('region', { name: 'Pre-trip checklist' })
+    ).toBeVisible();
+  });
+
+  it('keeps the pre-trip list for other days once there is a plan', () => {
+    setup({ targets: [{ experienceId: BZ, autoBook: true }] });
+    expect(
+      screen.queryByRole('region', { name: 'Pre-trip checklist' })
+    ).not.toBeInTheDocument();
+  });
+
+  it('asks for a backup when the last is more than a week old', () => {
+    recordBackup(new Date(Date.now() - 9 * 86_400_000));
+    setup({
+      bookingDate: TOMORROW,
+      targets: [{ experienceId: BZ, autoBook: true }],
+    });
+    expect(screen.getByText(/Last backup: 9 days ago/)).toBeVisible();
+    act(() => screen.getByRole('button', { name: 'Back up' }).click());
+    expect(nav.goTo).toHaveBeenCalledWith(<BackupRestore />);
+  });
+
+  it('does not ask again after a recent backup', () => {
+    recordBackup(new Date());
+    setup({
+      bookingDate: TOMORROW,
+      targets: [{ experienceId: BZ, autoBook: true }],
+    });
+    expect(screen.getByText(/Last backup: today/)).toBeVisible();
+    expect(
+      screen.queryByRole('button', { name: 'Back up' })
+    ).not.toBeInTheDocument();
+  });
+
+  it('offers a backup when nothing at all is saved', () => {
+    setup();
+    act(() => screen.getByRole('button', { name: 'Restore a backup' }).click());
+    expect(nav.goTo).toHaveBeenCalledWith(<BackupRestore />);
+  });
+
+  // "Is it working?" was eight looks across two screens.
+  it('says in one line why nothing has booked yet', () => {
+    setup({
+      enabled: true,
+      status: { ...OFF, mode: 'idle', polls: 57 },
+      skipCounts: { 'offer-outside-window': 12, 'partial-party': 2 },
+    });
+    expect(
+      screen.getByText(
+        'Nothing booked yet. Most often, the offered time was outside the window (12×).'
+      )
+    ).toBeVisible();
+  });
+
+  it('says when nothing it watches has come up', () => {
+    setup({ enabled: true, status: { ...OFF, mode: 'idle', polls: 5 } });
+    expect(
+      screen.getByText(
+        'Nothing booked yet, and nothing it watches has come up.'
+      )
+    ).toBeVisible();
   });
 
   it('says when nothing is held', () => {
