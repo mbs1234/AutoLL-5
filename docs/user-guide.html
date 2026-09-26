@@ -655,11 +655,14 @@
         <p>
           Every picture here comes from the preview harness
           (<code>npm run harness</code>), which runs the real screens against
-          fake Disney clients. The data is invented — the party is Mickey,
-          Minnie and Pluto, and the clock drifts a minute or two between
-          shots — so times do not line up from one figure to the next. Where a
-          screenshot shows text the running app would never produce, the caption
-          says so.
+          fake Disney clients, and <code>scripts/guide-shots.mjs</code> retakes
+          them all. The data is invented — the party is Mickey, Minnie and
+          Pluto, and every shot starts from the same September morning — so
+          times do not line up from one figure to the next. The harness never
+          signs in. Where a shot shows Autopilot running, the sound is armed and
+          the screen held, as turning it on does on a phone. Where a screenshot
+          shows text the running app would never produce, the caption says
+          so.
         </p>
       </div>
     </section>
@@ -785,7 +788,7 @@
     <section id="party">
       <h3><span class="num">03</span> Pick your party</h3>
       <figure class="float">
-        <img src="user-guide/settings.png" alt="The settings menu, showing Party Selection, Log Out and a session-only login switch over a dimmed Today screen." loading="lazy">
+        <img src="user-guide/settings.png" alt="The settings menu over a dimmed Today screen: Party Selection, Backup and Restore, Log Out and a Session-only login switch, with lines for the session, the last backup and the build." loading="lazy">
         <figcaption>
           The gear menu. <span class="ui">Session: missing</span> here only
           because the harness never signs in; on your phone it reads
@@ -848,7 +851,7 @@
     <section id="configure">
       <h3><span class="num">05</span> Build the watch list</h3>
       <figure class="float">
-        <img src="user-guide/configure.png" alt="The Configure screen: three safeguard chips, a filter box, and three collapsed target cards for Haunted Mansion, Jungle Cruise and Space Mountain." loading="lazy">
+        <img src="user-guide/configure.png" alt="The Configure screen: the three safeguard chips, a Why these settings? fold-out, a filter box, and collapsed cards for Haunted Mansion, Jungle Cruise, paused, and Space Mountain under Watching (3)." loading="lazy">
         <figcaption>Configure. Nothing here starts anything.</figcaption>
       </figure>
       <p>
@@ -872,10 +875,9 @@
 
       <h4>What Autopilot does for it</h4>
       <figure>
-        <img src="user-guide/configure-card.png" alt="A target card unfolded, showing Auto-book on, four other action chips, a return window of 10:03 AM to 2:33 PM, and a plan rank of 1." loading="lazy">
+        <img src="user-guide/configure-card.png" alt="Space Mountain's card unfolded: What should Autopilot do? with five choices and Auto-book chosen, Swap in and Pause chips, a return window of 9:45 AM to 2:15 PM, a plan rank of 1, and Stop watching." loading="lazy">
         <figcaption>
-          Space Mountain's card unfolded, with the earlier action chips; the
-          card now asks one question instead.
+          Space Mountain's card unfolded: one question, five answers.
         </figcaption>
       </figure>
       <p>
@@ -1034,9 +1036,9 @@
     <section id="plan-check">
       <h3><span class="num">06</span> Check it — Plan Check</h3>
       <figure class="float">
-        <img src="user-guide/plan-check.png" alt="Plan Check showing three blockers: an impossible return window, a target not on the tip board, and a window swallowed by lunch's protected time." loading="lazy">
+        <img src="user-guide/plan-check.png" alt="Plan Check with two blockers, an impossible return window and a target not on the tip board, and two review items: Whole party only is off, and Avoid clashes is off." loading="lazy">
         <figcaption>
-          Three blockers and one review item. “Retired Ride” is the harness's
+          Two blockers and two review items. “Retired Ride” is the harness's
           fake data.
         </figcaption>
       </figure>
@@ -1085,7 +1087,7 @@
     <section id="timeline">
       <h3><span class="num">07</span> See it — the timeline</h3>
       <figure class="float">
-        <img src="user-guide/timeline.png" alt="The day timeline: two blue Held bars on the left column, three Target bars on the right, on a 4am-to-4am rail." loading="lazy">
+        <img src="user-guide/timeline.png" alt="The day timeline: two Held bars on the left, and three Target bars on the right, two grey any-time windows and one amber window crossing lunch, on a 4am-to-4am rail." loading="lazy">
         <figcaption>
           Held passes left, watch windows right, one 4am-to-4am rail. Target
           names truncate — tap a bar to see which ride it is.
@@ -1128,7 +1130,7 @@
           enforce the bound you set.
         </li>
         <li>
-          <strong>Names are truncated</strong> to about three characters. Tap a
+          <strong>Names are truncated</strong> to three or four letters. Tap a
           bar to find out which attraction it is.
         </li>
       </ul>
@@ -1137,7 +1139,7 @@
     <section id="checklist">
       <h3><span class="num">08</span> The pre-trip checklist</h3>
       <figure class="float">
-        <img src="user-guide/pretrip-checklist.png" alt="Today in pre-trip mode: a Before your trip panel with five readiness items, three ticked and two outstanding." loading="lazy">
+        <img src="user-guide/pretrip-checklist.png" alt="Today with a future date on screen: the status card, and a Before your trip list with the party, targets and an armed action ticked, and notifications, Plan Check and a backup still to do." loading="lazy">
         <figcaption>
           With a future date on screen, Today becomes a readiness list.
         </figcaption>
@@ -1185,8 +1187,11 @@
     <section id="today">
       <h3><span class="num">09</span> Reading the Today tab</h3>
       <figure class="float">
-        <img src="user-guide/today-off.png" alt="The Today tab with autopilot off: a freshness line, a Turn on autopilot button, Status Off, four shortcut buttons, and Held (2) above Plan (0)." loading="lazy">
-        <figcaption>Today with Autopilot off and nothing yet watched.</figcaption>
+        <img src="user-guide/today-off.png" alt="Today with Autopilot off: the status card with its park-morning checks and Test sound, a green Turn on autopilot button, four shortcut tiles, and the Before your trip list." loading="lazy">
+        <figcaption>
+          Today with Autopilot off and nothing yet watched. The sign-in warning
+          is the harness's: it never signs in.
+        </figcaption>
       </figure>
       <p>
         Top to bottom, Today answers the questions you actually ask in a queue.
@@ -1367,10 +1372,10 @@
     <section id="status">
       <h3><span class="num">11</span> What it is doing right now</h3>
       <figure class="float">
-        <img src="user-guide/today-running.png" alt="Today while autopilot bursts at a drop: a red Turn off autopilot button, a recent move, Status Checking rapidly with 57 checks, and local timing." loading="lazy">
+        <img src="user-guide/today-running.png" alt="Today while Autopilot bursts at a drop: Checking rapidly with 57 checks, Checking hard at 10:17 AM in 2 minutes, the sound armed and the screen kept awake, a recent move, Pocket it beside Turn off autopilot, and the Book again at and Next scheduled drop tiles." loading="lazy">
         <figcaption>
-          Bursting at a drop, before its two times were named apart — see
-          below.
+          Bursting at a drop: the engine's own target at the top, the two
+          scheduled times in the tiles below.
         </figcaption>
       </figure>
       <div class="tablewrap">
@@ -1423,7 +1428,7 @@
 
       <h4>Dry run</h4>
       <figure class="float">
-        <img src="user-guide/dry-run.png" alt="Today with a yellow Dry run banner and a DRY RUN chip in the header strip." loading="lazy">
+        <img src="user-guide/dry-run.png" alt="Today with dry run on: a Dry run tag in the park chip, Dry run: on, so nothing will be booked in the status card, and a yellow banner with an Open Configure button." loading="lazy">
         <figcaption>Rehearsal mode announces itself loudly, and survives reloads.</figcaption>
       </figure>
       <div class="call rehearse">
@@ -1573,10 +1578,11 @@
     <section id="tipboard">
       <h3><span class="num">13</span> The LL tab — the tip board</h3>
       <figure class="float">
-        <img src="user-guide/tipboard.png" alt="The tip board: a Tier 1 band listing six attractions with standby waits and LL return times, then an Other band." loading="lazy">
+        <img src="user-guide/tipboard.png" alt="The LL tab: Book again at and Next scheduled drop tiles, a Sort by menu, and the Tier 1 rides, each with its standby wait and its next Lightning Lane return time." loading="lazy">
         <figcaption>
-          One row per attraction: standby on the left, the next LL return time
-          on the right.
+          One card per attraction: standby on the left, the next LL return time
+          on the right. The harness lists every attraction the build knows, so
+          Jungle Cruise appears twice; Disney lists it once.
         </figcaption>
       </figure>
       <p>
@@ -1623,7 +1629,7 @@
     <section id="by-hand">
       <h3><span class="num">14</span> Booking by hand</h3>
       <figure class="float">
-        <img src="user-guide/book-by-hand.png" alt="The Lightning Lane booking screen for Big Thunder Mountain Railroad, with existing passes, an arrive-by window, the party, and a Book Lightning Lane button." loading="lazy">
+        <img src="user-guide/book-by-hand.png" alt="The Lightning Lane booking screen for Big Thunder Mountain Railroad: the passes already held, an arrive-by window of 10:35 to 11:35 AM with Change time, the party with Edit party, and a Book Lightning Lane button." loading="lazy">
         <figcaption>
           The offer screen. The party here is the harness's fake data.
         </figcaption>
@@ -1672,7 +1678,7 @@
     <section id="plans">
       <h3><span class="num">15</span> The Plans tab</h3>
       <figure class="float">
-        <img src="user-guide/plans.png" alt="Your Plans, showing Haunted Mansion, Liberty Tree Tavern Lunch and TRON Lightcycle Run under a Today, September 17 heading." loading="lazy">
+        <img src="user-guide/plans.png" alt="Your Plans under a Today, September 17 heading: Haunted Mansion, Liberty Tree Tavern Lunch and TRON Lightcycle / Run." loading="lazy">
         <figcaption>Your itinerary as the app last read it, grouped by park day.</figcaption>
       </figure>
       <p>
@@ -1713,10 +1719,11 @@
     <section id="times">
       <h3><span class="num">16</span> The Times tab, and DAS</h3>
       <figure class="float">
-        <img src="user-guide/times.png" alt="The Times Guide, showing standby waits grouped by land: Adventureland, Frontierland, Liberty Square and Fantasyland." loading="lazy">
+        <img src="user-guide/times.png" alt="The Times Guide: standby waits grouped by land, Adventureland, Frontierland, Liberty Square and Fantasyland." loading="lazy">
         <figcaption>
           Waits grouped by land. The harness's fake clients return no show times,
-          DAS or ILL prices, so this shot is waits only.
+          DAS or ILL prices, so this shot is waits only, and it lists Jungle
+          Cruise twice, as the LL tab does.
         </figcaption>
       </figure>
       <p>
@@ -1737,7 +1744,7 @@
     <section id="nextll">
       <h3><span class="num">17</span> The NextLL tab</h3>
       <figure class="float">
-        <img src="user-guide/nextll.png" alt="The NextLL tab asking What do you want to do, with buttons to book a new Lightning Lane or modify a held one." loading="lazy">
+        <img src="user-guide/nextll.png" alt="The NextLL tab asking What do you want to do?, with Book a new Lightning Lane and Modify a held Lightning Lane, each with a line saying what it does." loading="lazy">
         <figcaption>NextLL always starts with this two-way choice.</figcaption>
       </figure>
       <p>
@@ -1798,11 +1805,11 @@
       <h3><span class="num">18</span> Time Search</h3>
       <div class="figrow">
         <figure>
-          <img src="user-guide/time-search.png" alt="Find a better time, holding 11:31 AM, with Find the earliest and an Or aim for time field." loading="lazy">
+          <img src="user-guide/time-search.png" alt="Find a better time for Haunted Mansion, holding 11:15 AM, with Find the earliest and an Or aim for time field." loading="lazy">
           <figcaption>The two ways to start a search.</figcaption>
         </figure>
         <figure>
-          <img src="user-guide/time-search-running.png" alt="The same screen running: Holding 10:17 AM, Checking with 3 checks and 1 moved." loading="lazy">
+          <img src="user-guide/time-search-running.png" alt="The same screen running: holding 9:45 AM, Checking with 2 checks and 1 moved, and a red Stop looking button." loading="lazy">
           <figcaption>Running, with one move already made.</figcaption>
         </figure>
       </div>
@@ -1872,7 +1879,7 @@
     <section id="activity">
       <h3><span class="num">19</span> The Activity screen</h3>
       <figure class="float">
-        <img src="user-guide/activity.png" alt="Activity, showing Booking activity with a move and a failure, then Why nothing was booked with three skip tallies." loading="lazy">
+        <img src="user-guide/activity.png" alt="Activity: Booking activity with a move and a failure, then Why nothing was booked with three skip tallies." loading="lazy">
         <figcaption>
           The log, and the skip counts underneath it. The fixture text in this
           shot is invented — see the note below.
@@ -1973,7 +1980,7 @@
     <section id="silent">
       <h3><span class="num">21</span> Healthy, but never booking</h3>
       <figure class="float">
-        <img src="user-guide/refused.png" alt="Today with a pink alert reading Disney is refusing these requests, while the status still says Watching." loading="lazy">
+        <img src="user-guide/refused.png" alt="Today with a pink panel reading Disney is refusing these requests, while the status still says Watching." loading="lazy">
         <figcaption>The only place this state is named.</figcaption>
       </figure>
       <p>
@@ -1991,7 +1998,7 @@
       </p>
       <h4>An attraction has vanished from the list</h4>
       <figure class="float">
-        <img src="user-guide/unknown-attraction.png" alt="Today with a red line reading Disney is listing 1 attraction this build does not recognise. Configure names it." loading="lazy">
+        <img src="user-guide/unknown-attraction.png" alt="Today with a red line reading Disney is listing 1 attraction this build does not recognise, and an Open Configure button beneath it." loading="lazy">
         <figcaption>What a re-themed ride looks like from here.</figcaption>
       </figure>
       <p>
@@ -2007,7 +2014,7 @@
     <section id="stopped">
       <h3><span class="num">22</span> Autopilot stopped</h3>
       <figure class="float">
-        <img src="user-guide/stopped.png" alt="Today reading Status: Stopped after repeated errors, with a red line saying it stopped after failed checks and to turn it back on." loading="lazy">
+        <img src="user-guide/stopped.png" alt="Today reading Stopped after repeated errors, with a red line saying it stopped after 5 failed checks and how to retry." loading="lazy">
         <figcaption>
           The screenshot says 5 failed checks because that is a harness fixture.
           The real app always stops at 8.
@@ -2043,7 +2050,7 @@
     <section id="unresolved">
       <h3><span class="num">23</span> A change that never came back</h3>
       <figure class="float">
-        <img src="user-guide/time-search-unresolved.png" alt="Find a better time showing a red panel: A move to 10:17 AM did not come back, with an Open Plans button." loading="lazy">
+        <img src="user-guide/time-search-unresolved.png" alt="Find a better time with a red panel: A move to 9:45 AM did not come back, with an Open Plans button." loading="lazy">
         <figcaption>The reservation is held until you or Disney settle it.</figcaption>
       </figure>
       <p>

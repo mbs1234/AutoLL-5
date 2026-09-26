@@ -20,11 +20,14 @@ Two things are true of the whole app and worth reading first:
   the two disagree about what you hold, Disney is right.
 
 > **About the screenshots.** Every picture here comes from the preview harness
-> (`npm run harness`), which runs the real screens against fake Disney clients.
-> The data is invented: the party is Mickey, Minnie and Pluto, and the clock
-> drifts a minute or two between shots, so times do not line up from one figure
-> to the next. Where a screenshot shows text the running app would never
-> produce, the caption says so.
+> (`npm run harness`), which runs the real screens against fake Disney clients,
+> and `scripts/guide-shots.mjs` retakes them all. The data is invented: the
+> party is Mickey, Minnie and Pluto, and every shot starts from the same
+> September morning, so times do not line up from one figure to the next. The
+> harness never signs in. Where a shot shows Autopilot running, the sound is
+> armed and the screen held, as turning it on does on a phone. Where a
+> screenshot shows text the running app would never produce, the caption says
+> so.
 
 ---
 
@@ -180,8 +183,6 @@ Three chips under it combine with any choice:
 | **Swap in** | When all three slots are full, gives up the held pass the app ranks lowest to take this one. While it is on, the card says which pass that would be now |
 | **Pause** | Keeps it watched and alerting while nothing is booked or moved for it |
 
-(The screenshot shows the earlier chips.)
-
 Things worth knowing:
 
 - **Book then move ignores your window for the first booking.** If a bad return
@@ -294,10 +295,9 @@ offer and cannot spend an entitlement.
 > Lightning Lane exists. Eligibility, inventory and the offer's real return time
 > are checked again immediately before every action.
 
-> Two rough edges visible in the screenshot: with exactly one blocker the bar
-> reads "1 blocker need attention." (the verb is not pluralised), and the
-> **Open Configure** buttons sit inline inside the sentence, so text wraps around
-> them. "Retired Ride" is the harness's fake data, not a real attraction.
+> "Retired Ride" is the harness's fake data, not a real attraction. The harness
+> also leaves Avoid clashes off, so a window inside lunch's protected time is
+> not a blocker here; Plan Check says instead that clashes are allowed.
 
 ## 7. See it — the Timeline
 
@@ -330,8 +330,8 @@ Three limits worth knowing:
 - **A half-set window reads as no window.** Set only an earliest time (or only a
   latest) and the bar is drawn grey across the whole day, uncoloured and
   unflagged — even though Autopilot does enforce the bound you set.
-- **Names are truncated.** In the screenshot above every Targets label reads as
-  three characters. Tap a bar to find out which attraction it is. This is a
+- **Names are truncated.** In the screenshot above every Targets label is cut
+  to three or four letters. Tap a bar to find out which attraction it is. This is a
   known rough edge, recorded in `docs/FUTURE.md` §2.1.
 
 ## 8. The pre-trip checklist
@@ -382,6 +382,8 @@ That asymmetry is what makes persisting per-attraction Auto-book safe.
 ## 11. Reading the Today tab
 
 ![Today, autopilot off](user-guide/today-off.png)
+
+> The sign-in warning in the status card is the harness's: it never signs in.
 
 Top to bottom, Today answers the questions you actually ask in a queue.
 
@@ -543,8 +545,7 @@ because the day's log is saved. Only the Status block is live.
 > **Checking hard at**, in the Status block, is whatever moment the poller is
 > chasing — a drop or a booking window, including a drop the app has learned by
 > observation. **Next scheduled drop**, lower down, is the built-in table only.
-> They can differ; that is not a bug. (The screenshot, taken before they were
-> named apart, shows both as "Next drop".)
+> They can differ; that is not a bug.
 
 **How to tell it is working.** Freshness line recent → button red → Status not
 "Off" or "Stopped" → check counter rising. If all four look healthy and nothing
@@ -627,6 +628,9 @@ the one-Tier-1 rule has actually lifted for everyone in your party.
 One row per attraction: a ☆ favourite, the name, a tier badge, the current
 **STANDBY** wait, and an **LL** button showing the next return time. Tap that
 button to start booking.
+
+> The harness lists every attraction this build knows, so Jungle Cruise appears
+> twice in the screenshot. Disney's list has it once.
 
 The banner under the header reads `BOOK AGAIN AT:` and `NEXT SCHEDULED DROP:` —
 the next moment you may book, and the park's next drop from the built-in table.
@@ -724,7 +728,8 @@ appears in the header if Disney reports at least one registered party on your
 account. (An existing DAS selection also opens from Plans and the Timeline.)
 
 > The harness cannot show show-times, DAS or ILL prices — its fake clients
-> return nothing for those — so the screenshot above is waits only.
+> return nothing for those — so the screenshot above is waits only. It lists
+> Jungle Cruise twice, as on the LL tab.
 
 ## 19. The NextLL tab
 
