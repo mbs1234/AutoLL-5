@@ -832,7 +832,7 @@
       <p>
         Autopilot follows those two controls too, on every tab. So while it runs
         with something armed, switching park or day — or tapping
-        <span class="ui">Modify</span> on a pass for another park or day — asks
+        <span class="ui">Swap ride</span> on a pass for another park or day — asks
         first: “It is
         watching 3 armed at Magic Kingdom for today…”
         <span class="ui">Stay</span> keeps it where it is;
@@ -1211,19 +1211,19 @@
         counts down — “· window ends in 20 min”, amber in the last half hour.
         That is a reminder, not a watch: nothing acts on it, and a pass tapped in
         minutes ago may still show until Plans refreshes.
-        <strong>Plan (N)</strong> is what Autopilot is still after, for the park
+        <strong>Watching (N)</strong> is what Autopilot is still after, for the park
         in the header only; tap a row to open its card in Configure. The two
         lists are scoped differently on purpose — which is why you can see
         <span class="ui">Held (2)</span> above “Nothing watched at Magic Kingdom
         on this date.” If this date's plan was saved at another park, Today names
         it and offers <span class="ui">Switch to</span> that park — it never
-        switches by itself. And while Autopilot runs with nothing armed, Plan
+        switches by itself. And while Autopilot runs with nothing armed, it
         says so in amber: it can only alert.
       </p>
       <p>
         <strong>The four buttons</strong> — Configure, Plan check, Timeline,
         Activity — are the screens Today deliberately does not try to be.
-        <strong>Next Lightning Lane / Next scheduled drop</strong> are the two
+        <strong>Book again at / Next scheduled drop</strong> are the two
         times that decide when anything can happen. On any other date there is
         no drop time, because Autopilot bursts for drops only on the day itself;
         a line says so, and that at the 7:00 opening NextLL or booking by hand is
@@ -1416,7 +1416,7 @@
         counter rising. If all four look healthy and nothing is booking, look for
         the red refusal box, then the amber “failed checks in a row” line, then
         the yellow dry-run banner, then the <span class="ui">n armed</span> count
-        in Plan. A running Autopilot with <strong>0 armed</strong> will never
+        under Watching. A running Autopilot with <strong>0 armed</strong> will never
         book anything. The line under the latest event sums it up: “Nothing
         booked yet. Most often, the offered time was outside the window (12×).”
       </p>
@@ -1584,7 +1584,9 @@
         current <span class="ui">STANDBY</span> wait, and an
         <span class="ui">LL</span> button showing the next return time. Tap that
         button to start booking. The banner under the header gives the next
-        moment you may book and the park's next drop.
+        moment you may book (<span class="ui">Book again at</span>) and the
+        park's next drop from the built-in table
+        (<span class="ui">Next scheduled drop</span>).
       </p>
       <p>
         <strong>Sorting</strong> — <span class="ui">Sort by</span>, at the top of
@@ -1630,20 +1632,21 @@
         Tap any LL time on the tip board. You get the attraction, its land and
         park, a box listing the passes you already hold that day, the offered
         window as <span class="ui">Arrive by:</span> with a
-        <span class="ui">Change</span> button, and
-        <span class="ui">Your Party</span> with a
-        <span class="ui">Modify</span> button. The button at the bottom commits.
+        <span class="ui">Change time</span> button, and
+        <span class="ui">Your Party</span> with an
+        <span class="ui">Edit party</span> button. The button at the bottom
+        commits.
       </p>
       <ul>
         <li>
-          <strong>Change</strong> opens a grid of return times by hour. Tick
+          <strong>Change time</strong> opens a grid of return times by hour. Tick
           <span class="ui">Show all</span> to see ten-minute slots across the
           whole day — those are the app's educated guesses, not Disney's real
           inventory, and picking one that does not exist gets you the nearest one
           that does.
         </li>
         <li>
-          <strong>Modify</strong> trims the party. Adding someone who was not
+          <strong>Edit party</strong> trims the party. Adding someone who was not
           previously selected fetches a fresh offer, so the return time can
           change; removing guests leaves the offer alone.
         </li>
@@ -1680,8 +1683,8 @@
         Only <strong>Multi Pass Lightning Lanes</strong> can be changed here.
         Dining, park passes, boarding groups and Multiple Experiences passes are
         read-only however they look. On a Multi Pass's details screen:
-        <span class="ui">Change</span> gives a different return time for the same
-        attraction; <span class="ui">Modify</span> hands the pass back to the
+        <span class="ui">Change time</span> gives a different return time for the
+        same attraction; <span class="ui">Swap ride</span> hands the pass back to the
         booking flow to trade it for a different attraction, keeping it held
         until the replacement is booked; <span class="ui">Cancel</span> removes
         chosen guests, or the whole reservation when you remove everyone. Until
@@ -1805,9 +1808,9 @@
       </div>
       <p>
         NextLL → Modify a held Lightning Lane → pick one →
-        <span class="ui">Improve return time</span>. Also reachable from a held
-        pass: Plans → the row → <span class="ui">Change</span> → “Search for a
-        better time”. It works on the pass you opened it from, even when
+        <span class="ui">Find a better time</span>. Also reachable from a held
+        pass: Plans → the row → <span class="ui">Change time</span> →
+        <span class="ui">Find a better time</span>. It works on the pass you opened it from, even when
         someone else in your party holds the same ride at another time.
       </p>
       <p>

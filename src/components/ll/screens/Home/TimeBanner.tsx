@@ -10,8 +10,8 @@ export default function TimeBanner({
 }) {
   return bookTime || dropTime ? (
     <div className="flex gap-2">
-      <LabeledTime label="Book" time={bookTime} />
-      <LabeledTime label="Drop" time={dropTime} />
+      <LabeledTime label="Book again at" time={bookTime} />
+      <LabeledTime label="Next scheduled drop" time={dropTime} />
     </div>
   ) : null;
 }

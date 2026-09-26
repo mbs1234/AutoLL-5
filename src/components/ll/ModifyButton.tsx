@@ -68,7 +68,7 @@ export default function ModifyButton({ booking, ...buttonProps }: Props) {
           }
         }}
       >
-        Modify
+        Swap ride
       </Button>
       {dialog}
     </>

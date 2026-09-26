@@ -720,7 +720,7 @@ export default function Today({ ref }: HomeTabProps) {
           {ll.nextBookTime && (
             <p className="my-0 flex-1 rounded-2xl border border-gray-300 bg-white px-3.5 py-2.5">
               <span className="block text-xs font-bold tracking-wide text-gray-600 uppercase">
-                Next Lightning Lane:
+                Book again at:
               </span>{' '}
               <Time
                 time={ll.nextBookTime}
@@ -823,7 +823,9 @@ export default function Today({ ref }: HomeTabProps) {
       </section>
 
       <section aria-label="Plan">
-        <h3 className="mt-5 mb-0 font-bold">Plan ({targetsHere.length})</h3>
+        {/* "Watching", as Configure says: "Plan" beside the Plans tab named
+            Autopilot's list and Disney's itinerary alike. */}
+        <h3 className="mt-5 mb-0 font-bold">Watching ({targetsHere.length})</h3>
         {targetsHere.length === 0 && elsewhere.length > 0 ? (
           <div className="mt-2 rounded-2xl border border-gray-300 bg-white p-3.5 text-sm">
             <p className="my-0">

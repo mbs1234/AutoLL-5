@@ -76,7 +76,7 @@ describe('ModifyButton', () => {
 
   it('goes back to BookExperience if booking in current park', async () => {
     renderResort(<ModifyButtonTest />);
-    click('Modify');
+    click('Swap ride');
     expect(rebooking.begin).toHaveBeenCalledWith(booking);
     expect(nav.goBack).toHaveBeenCalledWith(bookExp);
   });
@@ -84,7 +84,7 @@ describe('ModifyButton', () => {
   it('goes Home if no previous BookExperience screen', async () => {
     nav.goBack.mockRejectedValueOnce(new NavError());
     renderResort(<ModifyButtonTest />);
-    click('Modify');
+    click('Swap ride');
     expect(nav.goBack).toHaveBeenCalledWith(bookExp);
     await waitFor(() => expect(nav.goBack).toHaveBeenLastCalledWith(home));
   });
@@ -100,7 +100,7 @@ describe('ModifyButton', () => {
         park={ak}
       />
     );
-    click('Modify');
+    click('Swap ride');
     expect(setBookingDate).toHaveBeenCalledWith(TOMORROW);
     expect(setPark).toHaveBeenCalledWith(booking.park);
     expect(nav.goBack).toHaveBeenCalledWith(home);
@@ -109,17 +109,17 @@ describe('ModifyButton', () => {
   it('goes Home if booking not in current park and no parkModify', async () => {
     ll.rules.parkModify = false;
     renderResort(<ModifyButtonTest park={ak} />);
-    click('Modify');
+    click('Swap ride');
     expect(setPark).toHaveBeenCalledWith(booking.park);
     expect(nav.goBack).toHaveBeenCalledWith(home);
   });
 
   it("doesn't show Modify button when auto rebooking or not a modifiable LL", async () => {
     renderResort(<ModifyButtonTest auto />);
-    see.no('Modify');
+    see.no('Swap ride');
     renderResort(<ModifyButtonTest booking={bg} />);
-    see.no('Modify');
+    see.no('Swap ride');
     renderResort(<ModifyButtonTest booking={multiExp} />);
-    see.no('Modify');
+    see.no('Swap ride');
   });
 });

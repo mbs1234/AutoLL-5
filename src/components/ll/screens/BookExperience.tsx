@@ -358,9 +358,11 @@ export default function BookExperience({
                   action={rebooking.current ? 'change' : 'booking'}
                 />
               ) : (
-                <FloatingButton onClick={book}>{`${
-                  rebooking.current ? 'Modify' : 'Book'
-                } Lightning Lane`}</FloatingButton>
+                <FloatingButton onClick={book}>
+                  {rebooking.current
+                    ? `Replace ${rebooking.current.name}`
+                    : 'Book Lightning Lane'}
+                </FloatingButton>
               )}
             </>
           )}

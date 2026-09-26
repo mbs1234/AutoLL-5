@@ -35,7 +35,7 @@ export default function PartyList() {
               onClick={() => goTo(<ModifyParty party={party} />)}
               className="ml-3"
             >
-              Modify
+              Edit party
             </Button>
           </div>
           <GuestList guests={selected} />

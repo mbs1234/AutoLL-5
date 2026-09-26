@@ -12,6 +12,7 @@ import NavContext from '@/contexts/NavContext';
 import PlansContext from '@/contexts/PlansContext';
 import RebookingContext from '@/contexts/RebookingContext';
 import ResortContext from '@/contexts/ResortContext';
+import { formatTime } from '@/datetime';
 import useDataLoader from '@/hooks/useDataLoader';
 import { ping } from '@/ping';
 
@@ -90,7 +91,7 @@ export default function BookNewReturnTime({
               goTo(<SelectReturnTime offer={offer} onOfferChange={setOffer} />);
             }}
           >
-            Change
+            Change time
           </Button>
         }
       />
@@ -101,7 +102,11 @@ export default function BookNewReturnTime({
       {unanswered ? (
         <UnansweredNotice action="change" />
       ) : (
-        <FloatingButton onClick={book}>Modify Lightning Lane</FloatingButton>
+        <FloatingButton onClick={book}>
+          {offer.start.time
+            ? `Move to ${formatTime(offer.start.time)}`
+            : 'Move Lightning Lane'}
+        </FloatingButton>
       )}
     </Screen>
   );

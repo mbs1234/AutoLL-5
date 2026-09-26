@@ -11,8 +11,10 @@ describe('TimeBanner', () => {
     render(
       <TimeBanner bookTime={new ParkTime(7)} dropTime={new ParkTime(11, 30)} />
     );
-    expect(see('Book:')).toHaveTextContent('Book: 7:00 AM');
-    expect(see('Drop:')).toHaveTextContent('Drop: 11:30 AM');
+    expect(see('Book again at:')).toHaveTextContent('Book again at: 7:00 AM');
+    expect(see('Next scheduled drop:')).toHaveTextContent(
+      'Next scheduled drop: 11:30 AM'
+    );
   });
 
   it('shows "now" if time is not in the future', () => {
@@ -23,8 +25,10 @@ describe('TimeBanner', () => {
         dropTime={new ParkTime(10, 30)}
       />
     );
-    expect(see('Book:')).toHaveTextContent('Book: now');
-    expect(see('Drop:')).toHaveTextContent('Drop: now');
+    expect(see('Book again at:')).toHaveTextContent('Book again at: now');
+    expect(see('Next scheduled drop:')).toHaveTextContent(
+      'Next scheduled drop: now'
+    );
   });
 
   it('shows nothing if no times', async () => {

@@ -77,8 +77,8 @@ function mockExperienceLimitReached() {
 }
 
 async function clickModify() {
-  click('Modify');
-  await see.screen('Modify Party');
+  click('Edit party');
+  await see.screen('Edit Party');
 }
 
 async function clickConfirm() {
@@ -174,7 +174,7 @@ describe('BookExperience', () => {
     click('More Info');
     await see.screen('Your Lightning Lane');
     mockOffer({ ...offer, id: 'offer2' });
-    click('Change');
+    click('Change time');
     await see.screen('Select Return Time');
     await goBack('Your Lightning Lane');
     await goBack('Your Day');

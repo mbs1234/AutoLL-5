@@ -118,7 +118,7 @@ export function NextLLModifyActions({ booking }: { booking: LLMP }) {
         className="mt-4"
         onClick={() => goTo(<TimeSearch booking={booking} />)}
       >
-        Improve return time
+        Find a better time
       </Button>
       <p className="mt-1 text-sm text-gray-600">
         Searches every available return time for this same attraction.

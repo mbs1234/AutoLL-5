@@ -38,7 +38,7 @@ export default function OfferDetails({
                   )
                 }
               >
-                Change
+                Change time
               </Button>
             )
           }
