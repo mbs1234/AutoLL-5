@@ -331,8 +331,8 @@ Three limits worth knowing:
   latest) and the bar is drawn grey across the whole day, uncoloured and
   unflagged — even though Autopilot does enforce the bound you set.
 - **Names are truncated.** In the screenshot above every Targets label is cut
-  to three or four letters. Tap a bar to find out which attraction it is. This is a
-  known rough edge, recorded in `docs/FUTURE.md` §2.1.
+  to three or four letters. Tap a bar to find out which attraction it is. This
+  is a known rough edge, recorded in `docs/FUTURE.md` §2.1.
 
 ## 8. The pre-trip checklist
 
