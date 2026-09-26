@@ -5,6 +5,7 @@ import TabsContext from '@/contexts/TabContext';
 import Screen, { ScreenProps } from './Screen';
 import TabButton from './TabButton';
 import AutopilotStatusRow from './ll/AutopilotStatusRow';
+import RebookingStrip from './ll/RebookingStrip';
 
 export default function Tab({
   title,
@@ -35,6 +36,7 @@ export default function Tab({
               Autopilot ran and only off Today, so the tabs rode 28 px higher
               on every other tab and a thumb aimed at them met this row --
               which on NextLL ended the search. */}
+          <RebookingStrip />
           <AutopilotStatusRow />
           {/* The gear is the row's last item rather than laid over its end,
               where it covered part of NextLL. Five tabs and the gear fit a

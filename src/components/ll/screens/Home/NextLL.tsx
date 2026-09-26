@@ -1,4 +1,4 @@
-import { ReactNode, use, useEffect, useRef, useState } from 'react';
+import { ReactNode, use, useEffect, useId, useRef, useState } from 'react';
 
 import { Booking, LLMP, isLLMP } from '@/api/itinerary';
 import { Experience } from '@/api/ll';
@@ -18,6 +18,7 @@ import {
   saveWatchList,
 } from '@/autopilot/watchlist';
 import Button from '@/components/Button';
+import Overlay from '@/components/Overlay';
 import Tab from '@/components/Tab';
 import { Time } from '@/components/Time';
 import ContextStrip from '@/components/ll/ContextStrip';
@@ -26,6 +27,7 @@ import BookingDateContext from '@/contexts/BookingDateContext';
 import ExperiencesContext from '@/contexts/ExperiencesContext';
 import NavContext from '@/contexts/NavContext';
 import PlansContext from '@/contexts/PlansContext';
+import TabsContext from '@/contexts/TabContext';
 import { formatDate, parkDate } from '@/datetime';
 import useSavedParty from '@/hooks/useSavedParty';
 import AutopilotProvider from '@/providers/AutopilotProvider';
@@ -35,7 +37,7 @@ import { HomeTabProps } from '../Home';
 import { NextLLBookingActivity } from '../NextLLActivity';
 import PartySelector from '../PartySelector';
 import RefreshButton from '../RefreshButton';
-import { NextLLModifyPicker } from './NextLLModify';
+import { NextLLModifyActions, NextLLModifyPicker } from './NextLLModify';
 import ParkSelect from './ParkSelect';
 
 export const NEXTLL = 'NextLL';
@@ -99,6 +101,7 @@ function SeveralHeld({
   experienceId: string;
   date: string;
 }) {
+  const { goTo } = use(NavContext);
   const reservations = plans.filter(
     (booking): booking is LLMP =>
       isLLMP(booking) &&
@@ -116,16 +119,31 @@ function SeveralHeld({
       </p>
       <ul className="mt-1">
         {reservations.map(booking => (
-          <li key={booking.id}>
-            <Time time={booking.start.time} /> &mdash;{' '}
-            {booking.guests.map(guest => guest.name).join(', ')}
+          <li
+            key={booking.id}
+            className="mt-1 flex flex-wrap items-center justify-between gap-2"
+          >
+            <span>
+              <Time time={booking.start.time} /> &mdash;{' '}
+              {booking.guests.map(guest => guest.name).join(', ')}
+            </span>
+            {/* The reservation itself, picked here: a Time Search or a swap
+                follows the one it was opened on. */}
+            {booking.modifiable && (
+              <Button
+                type="small"
+                onClick={() => goTo(<NextLLModifyActions booking={booking} />)}
+              >
+                Move this one
+              </Button>
+            )}
           </li>
         ))}
       </ul>
-      <p className="mt-1 mb-0 text-sm">
-        NextLL moves the one your saved party holds. Save a party of only the
-        people whose reservation should move &mdash; the gear menu, then Party
-        Selection &mdash; and start again.
+      <p className="mt-2 mb-0 text-sm">
+        Pick the one to move, or save a party of only the people whose
+        reservation should move &mdash; the gear menu, then Party Selection
+        &mdash; and start again.
       </p>
     </div>
   );
@@ -219,7 +237,21 @@ export function NextLL({
     sessionLog,
     skipCounts,
     lastSkip,
+    dryRun,
   } = use(AutopilotContext);
+  // Leaving the tab ends the search, and a tap on a tab or on the footer row
+  // used to do it with no word. While one runs, leaving asks first.
+  const { setLeaveGuard } = use(TabsContext);
+  const [leaving, setLeaving] = useState<() => void>();
+  const leaveTitleId = useId();
+  useEffect(() => {
+    if (!enabled || !setLeaveGuard) return;
+    setLeaveGuard((_to, leave) => {
+      setLeaving(() => leave);
+      return true;
+    });
+    return () => setLeaveGuard(undefined);
+  }, [enabled, setLeaveGuard]);
 
   const [choice, setChoice] = useState('');
   const [after, setAfter] = useState('');
@@ -440,6 +472,14 @@ export function NextLL({
             </span>
           </label>
 
+          {/* The same setting as Autopilot's, and the chip under the title was
+              the only sign of it here. */}
+          {dryRun && (
+            <p className="mt-4 mb-0 rounded-2xl bg-yellow-100 p-3 text-sm font-semibold text-yellow-900">
+              Dry run is on, so this books nothing either. It is the same
+              setting as Autopilot&rsquo;s, in Configure.
+            </p>
+          )}
           <div className="mt-4">
             <Button type="full" onClick={start} disabled={!choice}>
               Find it
@@ -499,10 +539,15 @@ export function NextLL({
                   className="my-1 block font-display text-5xl leading-none font-bold tracking-tight text-ink [&_span_span]:text-lg"
                 />
                 {goalMet ? (
-                  <span className="font-bold text-green-700">
-                    {' '}
-                    &mdash; that will do.
-                  </span>
+                  <>
+                    <span className="font-bold text-green-700">
+                      {' '}
+                      &mdash; that will do.
+                    </span>
+                    <span className="mt-1 block text-xs font-normal">
+                      It keeps looking for an earlier time until you tap Done.
+                    </span>
+                  </>
                 ) : (
                   <> &mdash; still looking for a time inside your window.</>
                 )}
@@ -576,6 +621,37 @@ export function NextLL({
         skipCounts={skipCounts}
         lastSkip={lastSkip}
       />
+      {leaving && (
+        <Overlay>
+          <div
+            role="alertdialog"
+            aria-labelledby={leaveTitleId}
+            className="max-w-sm rounded-lg bg-white p-4 text-black"
+          >
+            <h3 id={leaveTitleId} className="mt-0 font-semibold">
+              Leave NextLL?
+            </h3>
+            <p className="mt-2 mb-0">
+              Leaving stops the search for {chosen?.name ?? 'this attraction'}.
+              Today will offer to pick it up again.
+            </p>
+            <div className="mt-4 flex justify-end gap-2">
+              <Button onClick={() => setLeaving(undefined)}>Stay</Button>
+              <Button
+                color="bg-red-700 text-white"
+                border="border border-transparent"
+                onClick={() => {
+                  const leave = leaving;
+                  setLeaving(undefined);
+                  leave();
+                }}
+              >
+                Leave
+              </Button>
+            </div>
+          </div>
+        </Overlay>
+      )}
     </Tab>
   );
 }

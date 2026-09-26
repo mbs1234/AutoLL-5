@@ -55,6 +55,11 @@ export function NextLLModifyPicker({
               className="rounded-sm border border-gray-300 p-2"
             >
               <BookingListing booking={booking} />
+              {/* Whose it is: with two people holding one ride at different
+                  times, the time alone did not say which to pick. */}
+              <p className="mt-1 mb-0 text-sm text-gray-600">
+                {booking.guests.map(guest => guest.name).join(', ')}
+              </p>
               <Button
                 type="small"
                 className="mt-2"
@@ -92,8 +97,12 @@ export function NextLLModifyPicker({
   );
 }
 
+/**
+ * Its way back is the header's arrow, which a second "back" button beside the
+ * two choices only duplicated.
+ */
 export function NextLLModifyActions({ booking }: { booking: LLMP }) {
-  const { goBack, goTo } = use(NavContext);
+  const { goTo } = use(NavContext);
   return (
     <Screen
       title="Modify Lightning Lane"
@@ -125,9 +134,6 @@ export function NextLLModifyActions({ booking }: { booking: LLMP }) {
         Searches for a replacement attraction, then asks before replacing your
         held Lightning Lane.
       </p>
-      <Button type="small" className="mt-5" onClick={() => void goBack()}>
-        Back to held Lightning Lanes
-      </Button>
     </Screen>
   );
 }

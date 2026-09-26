@@ -404,6 +404,15 @@ describe('BookExperience', () => {
     expectModifying(booking);
   });
 
+  // In modify mode the commit books over a pass you hold, and the mode can
+  // have been left on from much earlier; the button alone did not say so.
+  it('says what a modify replaces, beside the button', async () => {
+    await renderComponent({ rebook: booking });
+    expect(
+      screen.getByText(new RegExp(`This replaces your ${booking.name}`))
+    ).toBeVisible();
+  });
+
   it('can modify same experience even if rebooking not started', async () => {
     function StartScreen() {
       const { goTo } = use(NavContext);

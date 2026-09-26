@@ -338,6 +338,21 @@ export default function BookExperience({
           ) : (
             <>
               <OfferDetails offer={offer} onOfferChange={setOffer} />
+              {/* What the commit gives up, said beside it: in modify mode the
+                  button books over a pass you hold, and that mode can have
+                  been left on from much earlier. */}
+              {rebooking.current && !unanswered && (
+                <p className="mt-4 mb-0 rounded-sm bg-amber-100 p-2 text-sm font-semibold text-amber-900">
+                  This replaces your {rebooking.current.name}
+                  {rebooking.current.start?.time && (
+                    <>
+                      {' '}
+                      at <Time time={rebooking.current.start.time} />
+                    </>
+                  )}
+                  , given up only once the new one is secured.
+                </p>
+              )}
               {unanswered ? (
                 <UnansweredNotice
                   action={rebooking.current ? 'change' : 'booking'}

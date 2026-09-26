@@ -1,7 +1,7 @@
 import { use, useCallback, useRef } from 'react';
 
 import NavContext from '@/contexts/NavContext';
-import TabsContext, { TabDef } from '@/contexts/TabContext';
+import TabsContext, { LeaveGuard, TabDef } from '@/contexts/TabContext';
 
 export default function withTabs<N extends string>(
   { tabs, footer }: { tabs: TabDef<N>[]; footer: React.ReactNode },
@@ -9,11 +9,19 @@ export default function withTabs<N extends string>(
 ) {
   return function Tabbed({ tabName }: { tabName: N }) {
     const { goTo } = use(NavContext);
+    // A running NextLL search stops when its tab is left, and a thumb aimed
+    // at a tab, or at the footer row, left it with no word. A screen with work
+    // to lose sets a guard, and the change waits on the person's answer.
+    const leaveGuard = useRef<LeaveGuard>(undefined);
+    const setLeaveGuard = useCallback((guard: LeaveGuard | undefined) => {
+      leaveGuard.current = guard;
+    }, []);
     const changeTab = useCallback(
       (name: N) => {
-        if (name !== tabName) {
-          goTo(<Tabbed tabName={name} />, { replace: true });
-        }
+        if (name === tabName) return;
+        const leave = () => goTo(<Tabbed tabName={name} />, { replace: true });
+        if (leaveGuard.current?.(name, leave)) return;
+        leave();
       },
       [tabName, goTo]
     );
@@ -28,6 +36,7 @@ export default function withTabs<N extends string>(
           tabs,
           active,
           changeTab: changeTab as (tab: string) => void,
+          setLeaveGuard,
           scrollPos: {
             get: () => {
               return scrollPos.current[active.name] ?? 0;

@@ -691,7 +691,9 @@ On a Multi Pass's details screen:
 
 - **Change** — a different return time for the same attraction
 - **Modify** — hand the pass back to the booking flow to trade it for a
-  different attraction, keeping it held until the replacement is booked
+  different attraction, keeping it held until the replacement is booked. Until
+  you book or tap **Keep current**, every tab carries a "Modifying …" strip, and
+  the booking screen says what the new booking replaces.
 - **Cancel** — remove chosen guests, or the whole reservation when you remove
   everyone
 
@@ -748,20 +750,26 @@ Two traps worth knowing:
   refusing everything earlier than your bound and holding nothing at all. For a
   later return use Time Search instead.
 
-**Leaving the tab stops the search.** It is remembered: come back, tap "Book a
-new Lightning Lane" again, and a card offers to resume. Today also shows a
-reminder card with an "Open NextLL" button.
+**Leaving the tab stops the search,** so while one runs, a tap on another tab —
+or on the footer row — asks first: **Stay** or **Leave**. It is remembered: come
+back, tap "Book a new Lightning Lane" again, and a card offers to resume. Today
+also shows a reminder card with an "Open NextLL" button.
 
 **It never stops itself when it succeeds.** Once the goal is met the button
-reads "Done" but it keeps checking until you tap it.
+reads "Done", and the screen says it keeps checking for an earlier time until you
+tap it.
 
-**Modify a held Lightning Lane** lists the passes you hold and leads to the two
-search screens below.
+**Dry run stops it too.** It is the same setting as Autopilot's, and the search
+screen says so while it is on.
+
+**Modify a held Lightning Lane** lists the passes you hold, with who holds each,
+and leads to the two search screens below.
 
 **When two people hold the same ride.** If more than one person holds the
 attraction at different times, NextLL works on the reservation your **saved
 party** holds. With no party saved, or a party that includes both, it cannot tell
-which you mean, so it says so and lists who holds what: save a party of only the
+which you mean, so it says so and lists who holds what, each with **Move this
+one**, which opens the search on that reservation. Or save a party of only the
 people whose reservation should move — the gear, then **Party Selection** — and
 start again. Autopilot follows the same rule, and Plan Check warns about it
 ahead of time.
