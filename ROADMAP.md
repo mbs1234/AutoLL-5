@@ -216,6 +216,10 @@ end of this file.
 
 ## New items
 
+> **In AutoLL-5,** the usability work ([docs/USABILITY.md](docs/USABILITY.md))
+> has built items 13 and 14, item 3's countdown and item 8's honesty half. Their
+> text here is AutoLL-3's, where they are still open.
+
 ### 12. Back up the plan and what the learner has seen — _small, then medium_
 
 > **Status, 2026-09-23 — built: export in 1.3.0, restore in 1.4.0.** **Backup

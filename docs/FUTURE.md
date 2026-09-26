@@ -82,6 +82,11 @@ fix to prove it fails without it.
 
 From `UX-PLAN.md` §9 and the gaps its phase notes record.
 
+> **In AutoLL-5,** the usability work ([USABILITY.md](USABILITY.md)) has fixed
+> §2.3 and §2.4, built §2.8 and §2.9, and given §2.5's red paragraph its button.
+> §3.1's countdown is built too; its chime is not. The text below is AutoLL-3's,
+> where each of these is still open.
+
 ### 2.1 The timeline truncates every target name
 
 At 360 px the Targets column is split again for every simultaneous bar, so

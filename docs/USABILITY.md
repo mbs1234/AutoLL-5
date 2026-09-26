@@ -77,6 +77,24 @@ frozen for the trip). The sign-in's real end time on the readiness list, which
 needs the auth store to expose it. Refreshes that do not cover the screen: the spinner
 that blocks every refresh is the providers', not a screen's.
 
+**Suggested by the review and not built yet**, none of them decided against:
+
+- The timeline: every name cut at 360 px, bars too small to tap, tooltips in
+  24-hour time, and no dining ([FUTURE.md](FUTURE.md) §2.1, §2.2, §2.7).
+- "Watch with Autopilot" on the booking screen and on "No Reservations
+  Available".
+- A refresh on the LL tab within reach of a thumb; it is still in the header.
+- Screen titles that match their tabs: "Times Guide" on Times, "Your Plans" on
+  Plans.
+- Restore offered straight after Accept, when the app starts empty.
+- A one-tap "Test connection" in Plan Check.
+- A reminder to end Guided Access when Pocket mode is lifted.
+- In `src/autopilot`, so AutoLL-3 first: on an iPhone the readiness list ticks
+  "Browser notifications unavailable" as done, though the sound it relies on
+  instead is never checked; it has no "windows set where wanted" step, and a
+  finished step cannot be reopened (FUTURE §2.5); and nothing says where to tap
+  in to lift the Tier 1 limit.
+
 **After the rehearsal's booking morning:** the booking-morning screen. The
 roadmap holds it until that morning has shown what is hard about it, and that
 reasoning stands here too.

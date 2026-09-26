@@ -989,11 +989,8 @@ empty next time.
 
 - The day timeline truncates every target name at 360 px, and its bars are
   14–20 px tall, which is a small tap target.
-- Undoing two target removals in a row loses the first one's window and rank.
-- A Plan Check item that names a setting opens Configure at the top of a long
-  screen rather than at the setting.
 
-These and everything else outstanding are in [docs/FUTURE.md](FUTURE.md), with
+Everything outstanding, this included, is in [docs/FUTURE.md](FUTURE.md), with
 what each would cost to fix.
 
 ---
@@ -1026,7 +1023,7 @@ further out than tomorrow gets no drop times at all and sits at 45 s.
 | Time Search minimum gain | 5 minutes |
 | Tier 1 hold horizon | 90 minutes |
 | Protected span around a plan | 40 min before; 60 after with no end time, 40 with one; 20 before a show ends |
-| Undo after Stop watching | 8 seconds, most recent removal only |
+| Undo after Stop watching | 8 seconds, for every removal made in that time |
 | Activity log | 20 rows |
 | Drop learning | 2 distinct park days before a time is used |
 | Party cap | 20 guests |
