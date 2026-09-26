@@ -84,8 +84,10 @@ header keeps its separate controls until that is built as behaviour.
 Plans list, Configure, Plan Check, Activity, Timeline, the booking screens and
 Settings. They already have the palette, type, header, tab bar and buttons.
 
-**The user guide's screenshots** still show the old look. They are retaken once
-the slices have landed, together, rather than screen by screen.
+**The user guide's screenshots** show the new look. All 21 were retaken
+together once the new look's slices and the usability work had landed, from the
+harness at 390 × 844, by `scripts/guide-shots.mjs`. Run it again, with the
+harness running, after any change a screenshot shows.
 
 Each is its own pull request, checked in the harness at phone width before it
 merges. When AutoLL-3 changes a screen a slice has redrawn, the fix is re-made

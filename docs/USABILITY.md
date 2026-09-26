@@ -86,7 +86,6 @@ that blocks every refresh is the providers', not a screen's.
 - A refresh on the LL tab within reach of a thumb; it is still in the header.
 - Screen titles that match their tabs: "Times Guide" on Times, "Your Plans" on
   Plans.
-- Restore offered straight after Accept, when the app starts empty.
 - A one-tap "Test connection" in Plan Check.
 - A reminder to end Guided Access when Pocket mode is lifted.
 - In `src/autopilot`, so AutoLL-3 first: on an iPhone the readiness list ticks
