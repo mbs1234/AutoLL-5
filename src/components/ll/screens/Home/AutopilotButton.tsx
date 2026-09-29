@@ -1,5 +1,6 @@
 import { use } from 'react';
 
+import { modeText } from '@/autopilot/status';
 import { targetActs } from '@/autopilot/watchlist';
 import Button from '@/components/Button';
 import { AUTOPILOT } from '@/components/ll/AutopilotStatus';
@@ -23,16 +24,20 @@ export default function AutopilotButton() {
   const { enabled, status, targetsHere, dryRun } = use(AutopilotContext);
   const running = enabled && status.mode !== 'stopped';
   const attention = enabled && status.mode === 'stopped';
+  // Still on and still armed, but sitting out a wait Disney asked for.
+  const waiting = enabled && status.mode === 'waiting';
   const armed = targetsHere.filter(t => targetActs(t) && !t.paused).length;
 
   return (
     <Button
       title={
-        running
-          ? `${AUTOPILOT} on${dryRun ? ' (dry run)' : ''}, ${armed} armed`
-          : attention
-            ? `${AUTOPILOT} stopped after errors`
-            : `${AUTOPILOT} off`
+        waiting
+          ? `${AUTOPILOT} waiting: Disney asked to slow down`
+          : running
+            ? `${AUTOPILOT} on${dryRun ? ' (dry run)' : ''}, ${armed} armed`
+            : attention
+              ? `${AUTOPILOT} ${lowerFirst(modeText(status))}`
+              : `${AUTOPILOT} off`
       }
       onClick={() => changeTab('Today')}
       // Yellow while rehearsing, so a forgotten dry run is visible from the
@@ -40,7 +45,7 @@ export default function AutopilotButton() {
       color={
         attention
           ? 'bg-red-700 text-white'
-          : running && armed === 0
+          : waiting || (running && armed === 0)
             ? 'bg-amber-600 text-white'
             : running && dryRun
               ? 'bg-yellow-600 text-white'
@@ -56,4 +61,9 @@ export default function AutopilotButton() {
       {running && <span className="ml-1.5 text-sm font-bold">{armed}</span>}
     </Button>
   );
+}
+
+/** "Stopped: ..." reads as "Autopilot stopped: ..." after the name. */
+function lowerFirst(text: string) {
+  return text.charAt(0).toLowerCase() + text.slice(1);
 }

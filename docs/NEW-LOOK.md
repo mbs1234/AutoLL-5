@@ -104,3 +104,12 @@ the merge that brought it:
   dialog that asks before a park or day switch moves a running Autopilot,
   **Switch** is drawn in ink: with both buttons quiet, nothing said which one
   acts.
+- **1.4.5.** Disney pushing back has its own states in the new screens. While
+  Autopilot waits after a 429, the status card's pill and the footer dot are
+  amber, and the card says when it checks again. The pocket screen's pill turns
+  amber too, with the time beneath it, and is a rounded box rather than a
+  capsule, since its words run to two lines on a narrow phone. The refusal box
+  is gone, as in AutoLL-3: a refusal stops everything, and the red pill and the
+  stop line say so. The "user beware" note beside each start button is an amber
+  card, like this build's other notices. The two tests of the old refusal box
+  and the old stop line now read the new ones.

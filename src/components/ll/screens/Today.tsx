@@ -14,7 +14,6 @@ import { describeMode } from '@/autopilot/describe';
 import { SKIP_TEXT, latestActivity } from '@/autopilot/events';
 import { loadPendingSearch } from '@/autopilot/nextll';
 import { PlanReview, checkPlan, planReview } from '@/autopilot/plancheck';
-import { NO_REFUSALS } from '@/autopilot/refusal';
 import { secondsUntil, syncedParkTime } from '@/autopilot/schedule';
 import useQuarantine from '@/autopilot/useQuarantine';
 import {
@@ -29,6 +28,7 @@ import AutopilotStatus from '@/components/ll/AutopilotStatus';
 import ContextStrip from '@/components/ll/ContextStrip';
 import LatestEvent from '@/components/ll/LatestEvent';
 import NotLoaded from '@/components/ll/NotLoaded';
+import PushbackWarning from '@/components/ll/PushbackWarning';
 import TargetWindow from '@/components/ll/TargetWindow';
 import { clearSignInStop, signInStopAt } from '@/components/ll/signInStop';
 import AutopilotContext from '@/contexts/AutopilotContext';
@@ -131,7 +131,6 @@ export default function Today({ ref }: HomeTabProps) {
     dryRun,
     requireWholeParty,
     avoidOverlaps,
-    refusals,
     passkeyStatus,
     skipCounts,
     bookedCount,
@@ -372,7 +371,7 @@ export default function Today({ ref }: HomeTabProps) {
         aria-label="Autopilot status"
         className="mt-3 rounded-[20px] border border-gray-300 bg-white p-4"
       >
-        <AutopilotStatus status={status} refusals={refusals ?? NO_REFUSALS} />
+        <AutopilotStatus status={status} />
         {/* The park morning's go/no-go, while it is still off: each line
             reads its own signal, and the sound row and the switch below
             finish it. It goes once Autopilot is on. */}
@@ -535,6 +534,9 @@ export default function Today({ ref }: HomeTabProps) {
               : 'Turn off autopilot'}
         </Button>
       </div>
+      {/* Disney pushed back within the last half hour: starting again is
+          allowed, and this says what it risks. */}
+      {!enabled && <PushbackWarning />}
 
       <div className="mt-3 grid grid-cols-4 gap-2">
         <Button

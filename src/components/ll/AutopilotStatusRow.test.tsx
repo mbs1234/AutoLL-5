@@ -1,7 +1,6 @@
 import '@testing-library/jest-dom';
 import { fireEvent, render, screen } from '@testing-library/react';
 
-import { syncedParkTime } from '@/autopilot/schedule';
 import { AutopilotState } from '@/contexts/AutopilotContext';
 import TabsContext from '@/contexts/TabContext';
 import TopAutopilotContext from '@/contexts/TopAutopilotContext';
@@ -82,12 +81,36 @@ describe('AutopilotStatusRow', () => {
     expect(row.querySelector('[aria-hidden]')).toHaveClass('bg-red-700');
   });
 
-  it('says when Disney is refusing its calls', () => {
-    const since = syncedParkTime().add({ minutes: -5 });
-    setup('LL', { refusals: { book: { count: 5, since } } });
+  // Still on and still armed, so not the red of a stop: amber, and saying
+  // why it has gone quiet.
+  it('says when it is waiting because Disney asked it to slow down', () => {
+    setup('LL', {
+      status: {
+        mode: 'waiting',
+        waitUntil: Date.now() + 5 * 60_000,
+        consecutiveFailures: 0,
+        polls: 12,
+      },
+    });
     const row = screen.getByRole('button', { name: /Autopilot:/ });
-    expect(row).toHaveTextContent('Disney refusing');
+    expect(row).toHaveTextContent('Waiting: Disney asked to slow down');
+    expect(row).not.toHaveClass('text-red-700');
     expect(row.querySelector('[aria-hidden]')).toHaveClass('bg-amber-600');
+  });
+
+  // A refusal stops everything, and the row says that was why.
+  it('names a refusal when that is why it stopped', () => {
+    setup('LL', {
+      status: {
+        mode: 'stopped',
+        stopReason: 'refused',
+        consecutiveFailures: 0,
+        polls: 12,
+      },
+    });
+    const row = screen.getByRole('button', { name: /Autopilot:/ });
+    expect(row).toHaveTextContent('Stopped: Disney refused a request');
+    expect(row.querySelector('[aria-hidden]')).toHaveClass('bg-red-700');
   });
 
   it('marks nothing armed, since then it can only alert', () => {
