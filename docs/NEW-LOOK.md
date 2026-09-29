@@ -113,3 +113,8 @@ the merge that brought it:
   stop line say so. The "user beware" note beside each start button is an amber
   card, like this build's other notices. The two tests of the old refusal box
   and the old stop line now read the new ones.
+- **1.4.6.** NextLL's green "stopped checking" line sits in the search card
+  like its other lines. The card's own "It keeps looking for an earlier time
+  until you tap Done" now shows only while a search with no time set is
+  running, since a search with a time stops at its window; its test now covers
+  both cases.

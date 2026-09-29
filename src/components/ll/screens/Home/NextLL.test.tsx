@@ -544,18 +544,34 @@ describe('NextLL', () => {
     ).toBeVisible();
   });
 
-  it('says a met goal keeps looking until Done', () => {
+  // With no time set, anything held will do, and moving it earlier is what
+  // the search is for.
+  it('says a search with no time keeps looking until Done', () => {
     setup({
       enabled: true,
       status: RUNNING,
       plans: [heldAt(10)],
-      targets: [{ experienceId: BZ, before: new ParkTime(13) }],
+      targets: [{ experienceId: BZ }],
     });
     expect(
       screen.getByText(
         'It keeps looking for an earlier time until you tap Done.'
       )
     ).toBeVisible();
+  });
+
+  // With a time set it stops at the window, so it must not promise more.
+  it('does not say a search with a time keeps looking', () => {
+    setup({
+      enabled: true,
+      status: RUNNING,
+      plans: [heldAt(10)],
+      targets: [{ experienceId: BZ, before: new ParkTime(13) }],
+    });
+    expect(screen.getByText(/that will do/)).toBeVisible();
+    expect(
+      screen.queryByText(/keeps looking for an earlier time/)
+    ).not.toBeInTheDocument();
   });
 
   it('stops and clears its target', () => {
@@ -614,6 +630,31 @@ describe('NextLL when its tab goes away', () => {
     const { unmount } = setup();
     unmount();
     expect(kvdb.getDaily(NEXTLL_PENDING_KEY)).toBeUndefined();
+  });
+
+  // Finished, so there is nothing to resume.
+  it('forgets a search that stopped at its goal', () => {
+    const { unmount } = setup({
+      enabled: true,
+      status: { ...RUNNING, mode: 'stopped', stopReason: 'goal' },
+      plans: [heldAt(16)],
+      targets: [{ experienceId: BZ, after: new ParkTime(15) }],
+    });
+    unmount();
+    expect(kvdb.getDaily(NEXTLL_PENDING_KEY)).toBeUndefined();
+  });
+
+  // Starting again is the person's call after any other stop.
+  it('still remembers a search that stopped for another reason', () => {
+    const { unmount } = setup({
+      enabled: true,
+      status: { ...RUNNING, mode: 'stopped', stopReason: 'session' },
+      targets: [{ experienceId: BZ }],
+    });
+    unmount();
+    expect(kvdb.getDaily<PendingSearch>(NEXTLL_PENDING_KEY)).toMatchObject({
+      experienceId: BZ,
+    });
   });
 
   it('forgets it once the search is stopped by hand', () => {
@@ -801,6 +842,23 @@ describe('NextLL aiming at a particular time', () => {
       targets: [{ experienceId: BZ, after: new ParkTime(15) }],
     });
     expect(screen.getByText(/that will do/)).toBeVisible();
+    expect(screen.getByText('Done')).toBeVisible();
+  });
+
+  // The one stop that is good news, so it must not read like the others.
+  it('says it has stopped because the time will do', () => {
+    setup({
+      enabled: true,
+      status: { ...RUNNING, mode: 'stopped', stopReason: 'goal' },
+      plans: [heldAt(16)],
+      targets: [{ experienceId: BZ, after: new ParkTime(15) }],
+    });
+    expect(screen.getByText(/NextLL has stopped checking/)).toHaveClass(
+      'text-green-700'
+    );
+    expect(
+      screen.queryByText(/start it again to retry/)
+    ).not.toBeInTheDocument();
     expect(screen.getByText('Done')).toBeVisible();
   });
 
