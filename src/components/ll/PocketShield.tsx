@@ -6,7 +6,8 @@ import {
   subscribeAudioStatus,
 } from '@/autopilot/alert';
 import { AutopilotEvent, latestActivity } from '@/autopilot/events';
-import { MODE_TEXT } from '@/autopilot/status';
+import { syncedParkTimeAt } from '@/autopilot/schedule';
+import { modeText } from '@/autopilot/status';
 import {
   ScreenAwakeStatus,
   screenAwakeStatus,
@@ -331,21 +332,36 @@ export default function PocketShield({
                 {stopped ? 'Stopped' : 'Off'}
               </div>
               <p className="mx-auto mt-3 mb-0 max-w-xs text-base text-red-100">
-                {stopped
-                  ? 'Autopilot stopped after repeated errors and is no longer checking.'
-                  : 'Autopilot is off and is no longer checking.'}{' '}
+                {!stopped
+                  ? 'Autopilot is off and is no longer checking.'
+                  : autopilot?.status.stopReason === 'refused'
+                    ? 'Disney refused a request, so Autopilot and any search have stopped.'
+                    : 'Autopilot stopped after repeated errors and is no longer checking.'}{' '}
                 Lift the shield and start it again.
               </p>
             </>
           ) : (
             <>
-              <span className="inline-flex min-h-9 items-center gap-2 rounded-full bg-green-950 px-3.5 text-base font-bold text-green-300">
+              <span
+                // The waiting words run to two lines on a narrow phone, so
+                // that pill is a rounded box rather than a capsule.
+                className={`inline-flex min-h-9 items-center gap-2 px-3.5 text-base font-bold ${mode === 'waiting' ? 'rounded-2xl bg-amber-950 py-1.5 text-amber-300' : 'rounded-full bg-green-950 text-green-300'}`}
+              >
                 <span
                   aria-hidden
                   className="size-2.5 shrink-0 rounded-full bg-current"
                 />
-                {MODE_TEXT[mode]}
+                {autopilot ? modeText(autopilot.status) : modeText({ mode })}
               </span>
+              {/* Still running, so not the alarm above: Disney asked it to
+                  wait, and it carries on by itself at this time. */}
+              {mode === 'waiting' &&
+                autopilot?.status.waitUntil !== undefined && (
+                  <div className="mt-3 text-lg font-bold text-amber-300">
+                    Checking again at{' '}
+                    <Time time={syncedParkTimeAt(autopilot.status.waitUntil)} />
+                  </div>
+                )}
               {target && (
                 <div className="mt-4">
                   <div className="text-xs font-bold tracking-widest text-gray-400 uppercase">

@@ -284,8 +284,9 @@ const SHOTS = {
   },
   refused: async () => {
     await open('refused');
-    await waitForText('refusing');
-    await likeAPhone({ holdScreen: true });
+    await waitForText('Stopped: Disney refused a request');
+    // A refusal stops everything, and a stop gives the screen back.
+    await likeAPhone({ holdScreen: false });
   },
   'dry-run': async () => {
     await open('dry-run');

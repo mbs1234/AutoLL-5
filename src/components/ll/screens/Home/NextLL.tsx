@@ -22,6 +22,7 @@ import Overlay from '@/components/Overlay';
 import Tab from '@/components/Tab';
 import { Time } from '@/components/Time';
 import ContextStrip from '@/components/ll/ContextStrip';
+import PushbackWarning from '@/components/ll/PushbackWarning';
 import AutopilotContext from '@/contexts/AutopilotContext';
 import BookingDateContext from '@/contexts/BookingDateContext';
 import ExperiencesContext from '@/contexts/ExperiencesContext';
@@ -166,7 +167,12 @@ export function NextLLChooser({ ref }: Partial<HomeTabProps> = {}) {
   const [mode, setMode] = useState<'choose' | 'book' | 'modify'>('choose');
   if (mode === 'book') {
     return (
-      <AutopilotProvider watchListKey={NEXTLL_WATCHLIST_KEY} rapid repeatMoves>
+      <AutopilotProvider
+        watchListKey={NEXTLL_WATCHLIST_KEY}
+        rapid
+        repeatMoves
+        handStarted
+      >
         <NextLL ref={ref} onBack={() => setMode('choose')} />
       </AutopilotProvider>
     );
@@ -484,6 +490,7 @@ export function NextLL({
             <Button type="full" onClick={start} disabled={!choice}>
               Find it
             </Button>
+            <PushbackWarning />
           </div>
 
           <div className="mt-3 flex flex-wrap items-center gap-2 text-sm text-gray-600">
@@ -577,9 +584,15 @@ export function NextLL({
               Autopilot's screen has said this since it had one. */}
             {status.mode === 'stopped' && (
               <p className="mt-3 mb-0 font-semibold text-red-700">
-                Stopped after {status.consecutiveFailures} failed checks
-                {status.lastError ? `: ${status.lastError}` : ''}. Tap{' '}
-                {goalMet ? 'Done' : 'Stop looking'} and start it again to retry.
+                {status.stopReason === 'refused'
+                  ? 'Stopped: Disney refused a request, so everything has stopped. You can start again, but the next refusal stops everything again.'
+                  : status.stopReason === 'throttled'
+                    ? 'Stopped: Disney asked to slow down. You can start again early, but it may ask again.'
+                    : status.stopReason === 'session'
+                      ? 'Stopped after ten minutes with nothing booked. Take a break before starting again: long searches can make Disney pause the account.'
+                      : `Stopped after ${status.consecutiveFailures} failed checks${status.lastError ? `: ${status.lastError}` : ''}.`}{' '}
+                Tap {goalMet ? 'Done' : 'Stop looking'} and start it again to
+                retry.
               </p>
             )}
 
