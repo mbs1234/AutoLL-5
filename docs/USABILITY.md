@@ -75,8 +75,11 @@ unavailable" as done; where to tap in to lift the Tier 1 limit; "Why nothing was
 booked" counts that survive a reload; and the sign-in's real end time, which
 the park-morning check now names.
 
-**Needs the engine, so AutoLL-3 first:** a one-tap "Restart autopilot" (the
-poller restarts only when `enabled` changes); naming the ride the Tier 1 hold is
+**Brought by AutoLL-3 1.6.0:** a one-tap "Restart autopilot" under the stopped
+line; a "windows set where wanted" step in the readiness list, which you
+confirm; and a way back into a finished step.
+
+**Needs the engine, so AutoLL-3 first:** naming the ride the Tier 1 hold is
 waiting for; Pocket mode for a NextLL search; a chime before a held pass lapses
 (`alert.ts` is frozen for the trip). Refreshes that do not cover the screen: the
 spinner that blocks every refresh is the providers', not a screen's.
@@ -92,8 +95,6 @@ spinner that blocks every refresh is the providers', not a screen's.
   Plans.
 - A one-tap "Test connection" in Plan Check.
 - A reminder to end Guided Access when Pocket mode is lifted.
-- In `src/autopilot`, so AutoLL-3 first: the readiness list has no "windows
-  set where wanted" step, and a finished step cannot be reopened (FUTURE §2.5).
 
 **After the rehearsal's booking morning:** the booking-morning screen. The
 roadmap holds it until that morning has shown what is hard about it, and that

@@ -125,3 +125,11 @@ the merge that brought it:
   line on what session-only login does stays beneath AutoLL-3's new session
   line. The readiness list's sound line with its **Test** button, and the
   passkey line naming where to tap in, merged into this build's Today unchanged.
+- **1.6.0.** **Restart autopilot** is a small button under the stop line in the
+  status card, which keeps this build's spacing. The stop's own paragraph no
+  longer ends with the two taps a restart took, and its test of them is replaced
+  by AutoLL-3's tests of the button. The readiness list's return-windows step and
+  kept buttons merged into this build's Today unchanged, and the guide points at
+  **Watching** for each window, where AutoLL-3's says the plan. This build's own
+  backup line still offers **Back up** only once the last backup is a week old,
+  as slice 3 chose.
