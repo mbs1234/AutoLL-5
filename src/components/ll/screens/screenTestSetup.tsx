@@ -85,6 +85,7 @@ export function renderScreen(
     targets ?? watched.map(experienceId => ({ experienceId }));
   const mocks = {
     setEnabled: jest.fn(),
+    restart: jest.fn(),
     addTarget: jest.fn(),
     removeTarget: jest.fn(),
     toggleAutoBook: jest.fn(),
