@@ -118,3 +118,10 @@ the merge that brought it:
   until you tap Done" now shows only while a search with no time set is
   running, since a search with a time stops at its window; its test now covers
   both cases.
+- **1.5.1.** The park-morning check in the status card names when the sign-in
+  ends, "Sign-in: lasts until 6:42 PM", from the auth store's new `expiresAt()`,
+  where it could say only "lasts past 5 PM today". One that ends before 5 PM
+  says when, and asks for a new sign-in. In the settings menu, this build's
+  line on what session-only login does stays beneath AutoLL-3's new session
+  line. The readiness list's sound line with its **Test** button, and the
+  passkey line naming where to tap in, merged into this build's Today unchanged.

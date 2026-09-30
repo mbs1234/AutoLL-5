@@ -3,6 +3,7 @@ import { type ReactElement, createRef } from 'react';
 
 import { createBooking, ep, hm, wdw } from '@/__fixtures__/ll';
 import { mk } from '@/__fixtures__/resort';
+import { authStore } from '@/api/auth';
 import { primeAudio, resetAudioForTests } from '@/autopilot/alert';
 import { recordBackup } from '@/autopilot/backup';
 import { leaseKey, quarantine } from '@/autopilot/lease';
@@ -532,6 +533,46 @@ describe('Today', () => {
         screen.queryByRole('list', { name: 'Before you start' })
       ).not.toBeInTheDocument();
     });
+
+    // It said only "lasts past 5 PM today", all the store's status tells.
+    describe('its sign-in line', () => {
+      const signIn = (iso: string) =>
+        authStore.setData({
+          swid: '{SWID}',
+          accessToken: 'token',
+          expires: new Date(iso).getTime(),
+          resortId: 'WDW',
+          version: 1,
+          receivedAt: Date.now(),
+        });
+
+      it('says when a good sign-in ends', () => {
+        signIn(`${TODAY}T18:42:00-0400`);
+        setup();
+        expect(rows()[2]).toBe('✓Sign-in: lasts until 6:42 PM');
+      });
+
+      it('names the day when it ends on another', () => {
+        signIn(`${TOMORROW}T06:05:00-0400`);
+        setup();
+        expect(rows()[2]).toMatch(
+          /^✓Sign-in: lasts until 6:05 AM, [A-Z][a-z]+ \d+$/
+        );
+      });
+
+      it('flags one that ends before park close', () => {
+        signIn(`${TODAY}T15:10:00-0400`);
+        setup();
+        expect(rows()[2]).toBe(
+          '!Sign-in: ends at 3:10 PM, so sign in again before starting'
+        );
+      });
+
+      it('asks for a sign-in when there is none', () => {
+        setup();
+        expect(rows()[2]).toBe('!Sign-in: sign in again before starting');
+      });
+    });
   });
 
   // Roadmap item 14.
@@ -919,6 +960,21 @@ describe('Today alert sound', () => {
     delete g.AudioContext;
   });
 
+  // An iPhone in Safari has no notifications, so the pre-trip list asks for
+  // the one alert it does have to be heard, rather than ticking it off.
+  it('has the pre-trip list test the sound where there are no notifications', async () => {
+    const ctx = fakeAudio('suspended');
+    setup({ bookingDate: TOMORROW, notifications: 'unsupported' });
+    expect(
+      screen.getByText(/○ Test the alert sound: it is the only alert here/)
+    ).toBeVisible();
+    await act(async () => {
+      screen.getByRole('button', { name: 'Test' }).click();
+    });
+    expect(ctx.createOscillator).toHaveBeenCalled();
+    expect(screen.getByText(/✓ Alert sound works/)).toBeVisible();
+  });
+
   // Offering a sound test on a browser that cannot make one is a row that can
   // only ever report failure.
   it('says nothing where the browser has no audio at all', () => {
@@ -1060,5 +1116,27 @@ describe('Today context strip', () => {
     const strip = screen.getByText('Party of 2').parentElement!;
     expect(within(strip).getByText('Magic Kingdom')).toBeInTheDocument();
     expect(within(strip).getByText('Today')).toBeInTheDocument();
+  });
+});
+
+// It said what was being waited for, and not where to go to end the wait.
+describe('Today with a passkey', () => {
+  const passkey = { experienceId: DB, autoBook: true, passkey: true };
+
+  it('says where to tap in to lift the Tier 1 hold', () => {
+    setup({ targets: [passkey], passkeyStatus: 'waiting' });
+    expect(
+      screen.getByText(
+        new RegExp(
+          `Tap in at ${wdw.experience(DB).name} with every selected guest`
+        )
+      )
+    ).toBeVisible();
+  });
+
+  it('says it is lifted once Disney confirms it', () => {
+    setup({ targets: [passkey], passkeyStatus: 'unlocked' });
+    expect(screen.getByText(/Tier 1 hold is unlocked/)).toBeVisible();
+    expect(screen.queryByText(/Tap in at/)).not.toBeInTheDocument();
   });
 });

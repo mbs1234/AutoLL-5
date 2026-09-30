@@ -1,6 +1,6 @@
 import { use, useEffect, useMemo, useState, useSyncExternalStore } from 'react';
 
-import { authStore } from '@/api/auth';
+import { AuthStatus, authStore } from '@/api/auth';
 import { LLMP, isLLMP } from '@/api/itinerary';
 import {
   audioStatus,
@@ -41,7 +41,13 @@ import PlansContext from '@/contexts/PlansContext';
 import PocketShieldContext from '@/contexts/PocketShieldContext';
 import ResortContext from '@/contexts/ResortContext';
 import TabsContext from '@/contexts/TabContext';
-import { DateTime, formatTime, parkDate, upcomingTimes } from '@/datetime';
+import {
+  DateTime,
+  formatDate,
+  formatTime,
+  parkDate,
+  upcomingTimes,
+} from '@/datetime';
 import { PARTY_IDS_KEY } from '@/hooks/useSavedParty';
 import {
   CheckCircleIcon,
@@ -100,6 +106,27 @@ function Ready({ ok, children }: { ok: boolean; children: React.ReactNode }) {
       </span>
     </li>
   );
+}
+
+/**
+ * The park morning's sign-in line. It names when the sign-in ends: the store's
+ * status says only whether that is past 5 PM, which left a day planned into
+ * the evening guessing.
+ */
+function signInLine(status: AuthStatus, expires: number | undefined): string {
+  const at = expires === undefined ? undefined : DateTime.from(expires);
+  const when =
+    at &&
+    `${formatTime(at.time)}${at.date === parkDate() ? '' : `, ${formatDate(at.date, 'short')}`}`;
+  if (status === 'valid') {
+    return when
+      ? `Sign-in: lasts until ${when}`
+      : 'Sign-in: lasts past 5 PM today';
+  }
+  if (status === 'expires-before-park-close' && when) {
+    return `Sign-in: ends at ${when}, so sign in again before starting`;
+  }
+  return 'Sign-in: sign in again before starting';
 }
 
 /**
@@ -223,6 +250,9 @@ export default function Today({ ref }: HomeTabProps) {
     experiences.find(e => e.id === target.experienceId)?.name ??
     target.name ??
     target.experienceId;
+  // The attractions marked as the passkey: tapping in at one is what lifts
+  // the Tier 1 hold.
+  const passkeyNames = targetsHere.filter(t => t.passkey).map(nameOf);
   const plan = [...targetsHere].sort(
     (a, b) => (a.rank ?? Infinity) - (b.rank ?? Infinity)
   );
@@ -307,6 +337,7 @@ export default function Today({ ref }: HomeTabProps) {
     partySize: kvdb.get<string[]>(PARTY_IDS_KEY)?.length ?? 0,
     targets: targetsHere,
     notifications,
+    sound: soundStatus,
     planReviewed: reviewedPlan?.key === currentReview.key,
     planBlockers: currentReview.blockers,
   });
@@ -393,9 +424,7 @@ export default function Today({ ref }: HomeTabProps) {
                 : 'Dry run: off, so it will book'}
             </Ready>
             <Ready ok={authStore.getStatus() === 'valid'}>
-              {authStore.getStatus() === 'valid'
-                ? 'Sign-in: lasts past 5 PM today'
-                : 'Sign-in: sign in again before starting'}
+              {signInLine(authStore.getStatus(), authStore.expiresAt())}
             </Ready>
           </ul>
         )}
@@ -611,28 +640,37 @@ export default function Today({ ref }: HomeTabProps) {
                 <span className={item.done ? '' : 'font-semibold'}>
                   {item.done ? '✓' : '○'} {item.text}
                 </span>
-                {(!item.done || item.subject === 'plan-check') && (
-                  <Button
-                    type="small"
-                    onClick={() => {
-                      if (item.subject === 'party') goTo(<PartySelector />);
-                      else if (
-                        item.subject === 'targets' ||
-                        item.subject === 'settings'
-                      ) {
-                        goTo(<Configure />);
-                      } else if (item.subject === 'plan-check') {
-                        openPlanCheck();
-                      } else requestNotifications();
-                    }}
-                  >
-                    {item.subject === 'notifications'
-                      ? 'Enable'
-                      : item.done
-                        ? 'Review'
-                        : 'Open'}
-                  </Button>
-                )}
+                {(!item.done || item.subject === 'plan-check') &&
+                  // Nothing a tap could fix on a browser with no sound.
+                  !(
+                    item.subject === 'sound' && soundStatus === 'unsupported'
+                  ) && (
+                    <Button
+                      type="small"
+                      onClick={() => {
+                        if (item.subject === 'party') goTo(<PartySelector />);
+                        else if (
+                          item.subject === 'targets' ||
+                          item.subject === 'settings'
+                        ) {
+                          goTo(<Configure />);
+                        } else if (item.subject === 'plan-check') {
+                          openPlanCheck();
+                        } else if (item.subject === 'sound') {
+                          // Inside the tap: iOS plays sound only from one.
+                          checkSound();
+                        } else requestNotifications();
+                      }}
+                    >
+                      {item.subject === 'notifications'
+                        ? 'Enable'
+                        : item.subject === 'sound'
+                          ? 'Test'
+                          : item.done
+                            ? 'Review'
+                            : 'Open'}
+                    </Button>
+                  )}
               </li>
             ))}
             {/* The one protection against Safari clearing the plan. Backup is
@@ -960,7 +998,11 @@ export default function Today({ ref }: HomeTabProps) {
           <span className="font-semibold">Passkey:</span>{' '}
           {passkeyStatus === 'unlocked'
             ? 'Disney confirmed the Tier 1 hold is unlocked for the selected party.'
-            : 'Waiting for Disney to confirm every selected guest cleared the Tier 1 hold.'}
+            : passkeyNames.length > 0
+              ? // Where to go, not only what is being waited for: the hold
+                // lifts at a tap-in, and the line used to say neither.
+                `Tap in at ${passkeyNames.join(' or ')} with every selected guest. The party's first redemption of the day lifts the Tier 1 hold, once Disney confirms it.`
+              : 'Waiting for Disney to confirm every selected guest cleared the Tier 1 hold.'}
         </p>
       )}
       {loaderElem}
