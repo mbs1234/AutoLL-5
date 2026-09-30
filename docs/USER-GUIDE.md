@@ -113,12 +113,14 @@ actually want, then **Save**. After that, anyone outside your saved party is
 shown on booking screens under Ineligible Guests marked `NOT IN PARTY`.
 
 The same menu carries **Backup and Restore** (see *It cannot protect its own
-storage*, below), **Log Out** (it asks first), a **Session-only login** switch for a borrowed
-phone (the token then lives only as long as the tab), a `Session:` line telling
-you whether you are signed in, a `Last backup:` line, and the build name.
+storage*, below), **Log Out** (it asks first), a **Session-only login** switch
+for a borrowed phone (the token then lives only as long as the tab), a line
+saying whether you are signed in and until when, a `Last backup:` line, and the
+build name.
 
-> In the harness screenshot above, `Session: missing` is simply because the
-> harness never signs in; on your phone it will read `Session: valid`.
+> In the harness screenshot above, **Not signed in** is simply because the
+> harness never signs in; on your phone it will read, say, **Signed in until
+> 6:42 PM**, or warn when the sign-in ends before park close.
 
 ## 4. Choose the park and the day
 
@@ -344,12 +346,17 @@ of five items:
 - Party saved
 - At least one target selected
 - An action actually armed
-- Notifications allowed
+- Notifications allowed — or, where there are none, the alert sound tested
 - Plan Check reviewed
 
 Each item still to do has a button: **Open** goes to the screen that fixes it,
-and **Enable** asks the browser for notification permission. A finished item
-has no button, except Plan Check, which keeps **Review** so you can look again.
+**Enable** asks the browser for notification permission, and **Test** plays the
+alert sound. A finished item has no button, except Plan Check, which keeps
+**Review** so you can look again.
+
+On an iPhone, Safari has no notifications, so the chime is the only alert. The
+line then asks you to **test the alert sound**, and ticks only once you have
+heard it.
 
 It also shows on a first run, with nothing saved, whatever the date. With a
 plan saved, a sixth line says when the last backup was, and offers **Back up**
@@ -403,8 +410,9 @@ not the same as fresh.
 
 **Before you start.** On the day itself, while Autopilot is off, the status card
 is the park morning's go/no-go: whether anything is armed at this park, whether
-dry run is on, whether the sign-in lasts past 5 PM, and the alert sound, with
-**Test sound**. Each line reads its own signal. It goes once Autopilot is on.
+dry run is on, when the sign-in ends ("Sign-in: lasts until 6:42 PM", flagged
+if that is before 5 PM), and the alert sound, with **Test sound**. Each line
+reads its own signal. It goes once Autopilot is on.
 
 **Held (N)** is what you are actually holding, at every park on that date. Tap a
 pass to open it. Once its window is open, a live pass counts down — "· window
@@ -629,6 +637,10 @@ Mark one easy, high-availability, **non-Tier-1** attraction as the day's
 passkey, in its Configure card. Autopilot books it first; once Disney's own
 tracker says that entitlement is spent, it asks the eligibility endpoint whether
 the one-Tier-1 rule has actually lifted for everyone in your party.
+
+**Tap in at the passkey's Lightning Lane entrance with everyone in the party**:
+the party's first redemption of the day is what lifts the hold. While it waits,
+Today's **Passkey** line names the ride to tap in at.
 
 > Booking the passkey does nothing. It unlocks only when the pass is actually
 > *spent* — and Disney counts a window you let lapse the same as one you rode,
@@ -884,8 +896,9 @@ to join the times it bursts for. A red "never seen in 3 watched days" is
 evidence for you, not an action it took: removing a built-in time is switched
 off in this build.
 
-> The log survives a reload; the skip counts do not — they are per-run and in
-> memory. At 4am both reset and Autopilot switches itself off.
+> The log and the skip counts both survive a reload. Turning Autopilot on
+> starts the counts over, and at 4am both reset and Autopilot switches itself
+> off.
 
 > In the screenshot above, "forty minutes sooner, inside the window" and
 > "Network request failed (403 offer)" are harness fixture text. The running app
@@ -1052,7 +1065,7 @@ included, stay as they are. Reload the page afterwards.
 **Between trips, open AutoLL-5 at least once a week** as well, or it may start
 empty next time.
 
-**Rough edges, as of 1.5.0.** Known, recorded, and not fixed yet:
+**Rough edges, as of 1.5.1.** Known, recorded, and not fixed yet:
 
 - The day timeline truncates every target name at 360 px, and its bars are
   14–20 px tall, which is a small tap target.
@@ -1108,7 +1121,7 @@ further out than tomorrow gets no drop times at all and sits at 45 s.
 |---|---|
 | Turning Autopilot on | Clears session log, skip counts, locks, cache, passkey status, drop baseline; re-alerts anything available. A refusal before it does not stop the new run; the next one does |
 | Turning Autopilot off | Leaves skip counts and the log alone |
-| Page reload | Autopilot off; skip counts lost; log and watch list survive |
+| Page reload | Autopilot off; skip counts, log and watch list survive |
 | 4am park-day rollover | Autopilot off; screen wake lock released; log emptied; skip counts zeroed |
 
 ## Glossary

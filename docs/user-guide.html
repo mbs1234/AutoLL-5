@@ -552,7 +552,7 @@
       stops working.
     </p>
     <div class="masthead-meta">
-      <span>Version 1.5.0</span>
+      <span>Version 1.5.1</span>
       <span>Three parts · 23 sections</span>
       <span>Unofficial · not endorsed by Disney</span>
     </div>
@@ -792,11 +792,12 @@
     <section id="party">
       <h3><span class="num">03</span> Pick your party</h3>
       <figure class="float">
-        <img src="user-guide/settings.png" alt="The settings menu over a dimmed Today screen: Party Selection, Backup and Restore, Log Out and a Session-only login switch, with lines for the session, the last backup and the build." loading="lazy">
+        <img src="user-guide/settings.png" alt="The settings menu over a dimmed Today screen: Party Selection, Backup and Restore, Log Out and a Session-only login switch, with lines for the session, reading Not signed in, the last backup and the build." loading="lazy">
         <figcaption>
-          The gear menu. <span class="ui">Session: missing</span> here only
-          because the harness never signs in; on your phone it reads
-          <span class="ui">Session: valid</span>.
+          The gear menu. <span class="ui">Not signed in</span> here only
+          because the harness never signs in; on your phone it reads, say,
+          <span class="ui">Signed in until 6:42 PM</span>, or warns when the
+          sign-in ends before park close.
         </figcaption>
       </figure>
       <p>
@@ -812,9 +813,9 @@
         <em>It cannot protect its own storage</em>, below),
         <span class="ui">Log Out</span> (it asks first), a
         <strong>Session-only login</strong> switch for a borrowed phone (the
-        token then lives only as long as the tab), a
-        <span class="ui">Session:</span> line telling you whether you are signed
-        in, a <span class="ui">Last backup:</span> line, and the build name.
+        token then lives only as long as the tab), a line saying whether you are
+        signed in and until when, a <span class="ui">Last backup:</span> line,
+        and the build name.
       </p>
     </section>
 
@@ -1151,12 +1152,18 @@
       <p>
         When the day on screen is <strong>not today</strong>, the Today tab
         becomes a readiness list of five items: party saved, at least one
-        target, an action actually armed, notifications allowed, Plan Check
-        reviewed. Each item still to do has a button:
-        <span class="ui">Open</span> goes to the screen that fixes it, and
-        <span class="ui">Enable</span> asks the browser for notification
-        permission. A finished item has no button, except Plan Check, which
+        target, an action actually armed, notifications allowed (or, where
+        there are none, the alert sound tested), Plan Check reviewed. Each item
+        still to do has a button: <span class="ui">Open</span> goes to the
+        screen that fixes it, <span class="ui">Enable</span> asks the browser
+        for notification permission, and <span class="ui">Test</span> plays the
+        alert sound. A finished item has no button, except Plan Check, which
         keeps <span class="ui">Review</span> so you can look again.
+      </p>
+      <p>
+        On an iPhone, Safari has no notifications, so the chime is the only
+        alert. The line then asks you to <strong>test the alert sound</strong>,
+        and ticks only once you have heard it.
       </p>
       <p>
         It also shows on a first run, with nothing saved, whatever the date.
@@ -1217,9 +1224,11 @@
       <p>
         <strong>Before you start.</strong> On the day itself, while Autopilot is
         off, the status card is the park morning's go/no-go: whether anything is
-        armed at this park, whether dry run is on, whether the sign-in lasts past
-        5 PM, and the alert sound, with <span class="ui">Test sound</span>. Each
-        line reads its own signal. It goes once Autopilot is on.
+        armed at this park, whether dry run is on, when the sign-in ends
+        (<span class="ui">Sign-in: lasts until 6:42 PM</span>, flagged if that
+        is before 5 PM), and the alert sound, with
+        <span class="ui">Test sound</span>. Each line reads its own signal. It
+        goes once Autopilot is on.
       </p>
       <p>
         <strong>Held (N)</strong> is what you are actually holding, at every park
@@ -1581,6 +1590,12 @@
         once Disney's own tracker says that entitlement is spent, it asks the
         eligibility endpoint whether the one-Tier-1 rule has actually lifted for
         everyone in your party.
+      </p>
+      <p>
+        <strong>Tap in at the passkey's Lightning Lane entrance with everyone in
+        the party</strong>: the party's first redemption of the day is what lifts
+        the hold. While it waits, Today's <span class="ui">Passkey</span> line
+        names the ride to tap in at.
       </p>
       <div class="call">
         <span class="call-label">Booking it is not enough</span>
@@ -1968,8 +1983,9 @@
         </p>
       </div>
       <p>
-        The log survives a reload; the skip counts do not — they are per-run and
-        in memory. At 4am both reset and Autopilot switches itself off.
+        The log and the skip counts both survive a reload. Turning Autopilot on
+        starts the counts over, and at 4am both reset and Autopilot switches
+        itself off.
       </p>
     </section>
 
@@ -2225,7 +2241,7 @@
         well, or it may start empty next time.
       </p>
       <p>
-        <strong>Rough edges, as of 1.5.0.</strong> Known, recorded, and not
+        <strong>Rough edges, as of 1.5.1.</strong> Known, recorded, and not
         fixed yet:
       </p>
       <ul>
@@ -2309,7 +2325,7 @@
             </tr>
             <tr>
               <td>Page reload</td>
-              <td>Autopilot off; skip counts lost; log and watch list survive</td>
+              <td>Autopilot off; skip counts, log and watch list survive</td>
             </tr>
             <tr>
               <td>4am park-day rollover</td>
