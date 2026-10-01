@@ -68,6 +68,7 @@ park. Each slice keeps all of them.
 | 3 | Pocket mode | the next drop at full size, the checks and the latest event, laid out in the gaps of the target's ring | merged (#3) |
 | 4 | NextLL | the search as a card with the held time at full size; Done green, Stop looking red; collapsible sections as cards | merged (#4) |
 | 5 | Tip board | Book and Drop as cards, quiet section labels, the attractions as a card, return times as chips in the park's colour | merged (#5) |
+| 6 | Times | each land as a card under a quiet label in its own colour, its kinds as small labels; waits and show times in soft boxes in the display face, with digits that keep their width; the show-times screen as a card | in review |
 
 **One deliberate departure from the mockups.** They put Today's main actions in
 a bar along the bottom. The switch stays in the page instead: a bar there sits
@@ -80,9 +81,8 @@ switch would be a new filter, not a new look, so it is not part of these
 slices. The mockups' single tappable park, date and party chip likewise: the
 header keeps its separate controls until that is built as behaviour.
 
-**Not yet redrawn** beyond what the foundation gave them: the Times guide, the
-Plans list, Configure, Plan Check, Activity, Timeline, the booking screens and
-Settings. They already have the palette, type, header, tab bar and buttons.
+**Not yet redrawn** beyond what the foundation gave them: the Plans list,
+Configure, Plan Check, Activity, Timeline, the booking screens and Settings. They already have the palette, type, header, tab bar and buttons.
 
 **The user guide's screenshots** show the new look. All 21 were retaken
 together once the new look's slices and the usability work had landed, from the
