@@ -3,6 +3,7 @@ import { act } from 'react';
 
 import { hm, jc } from '@/__fixtures__/ll';
 import { mk } from '@/__fixtures__/resort';
+import { RequestError } from '@/api/client';
 import { Guest, Guests } from '@/api/ll';
 import { leaseKey, quarantine } from '@/autopilot/lease';
 import { WatchTarget } from '@/autopilot/watchlist';
@@ -90,9 +91,14 @@ function setup({
 
 const tapCheck = async () => {
   await act(async () => {
-    screen.getByText('Check current party').click();
+    screen.getByText('Test connection').click();
   });
 };
+
+const failing = (status: number) =>
+  jest.fn(async (): Promise<Guests> => {
+    throw new RequestError({ ok: false, status, data: {} });
+  });
 
 function installWebLocks() {
   Object.defineProperty(navigator, 'locks', {
@@ -286,6 +292,70 @@ describe('PlanCheck', () => {
     await waitFor(() =>
       expect(screen.getByText(/eligible from/)).toBeVisible()
     );
+  });
+
+  // The one diagnostic was a booking by hand and a banner with a status code,
+  // "Network request failed (403 guests)", decoded from a table in the guide.
+  describe('Test connection', () => {
+    it('says Disney answered, and when', async () => {
+      setup({
+        guests: jest.fn(async () => ({
+          eligible: [guest('g1', 'Ana')],
+          ineligible: [],
+        })),
+      });
+      await tapCheck();
+      await waitFor(() =>
+        expect(screen.getByRole('status')).toHaveTextContent(
+          /^Connected at .+: Disney answered\.$/
+        )
+      );
+      expect(screen.getByText(/All 1 guest/)).toBeVisible();
+    });
+
+    it('says a refusal in words, with what to do', async () => {
+      setup({ guests: failing(403) });
+      await tapCheck();
+      await waitFor(() =>
+        expect(screen.getByRole('status')).toHaveTextContent(/^Refused at/)
+      );
+      expect(screen.getByRole('status')).toHaveTextContent(
+        /Book in Disney.s app for now/
+      );
+      expect(
+        screen.queryByText(/Network request failed/)
+      ).not.toBeInTheDocument();
+    });
+
+    it('says when Disney asked to slow down', async () => {
+      setup({ guests: failing(429) });
+      await tapCheck();
+      await waitFor(() =>
+        expect(screen.getByRole('status')).toHaveTextContent(
+          /Disney asked to slow down at .+ \(429\)\. Wait a few minutes/
+        )
+      );
+    });
+
+    it('tells no answer from a refusal', async () => {
+      setup({ guests: failing(0) });
+      await tapCheck();
+      await waitFor(() =>
+        expect(screen.getByRole('status')).toHaveTextContent(
+          /^No answer at .+\. The request timed out or the signal dropped/
+        )
+      );
+    });
+
+    it('names any other failure with its status', async () => {
+      setup({ guests: failing(500) });
+      await tapCheck();
+      await waitFor(() =>
+        expect(screen.getByRole('status')).toHaveTextContent(
+          /^Failed at .+ \(500\)\./
+        )
+      );
+    });
   });
 
   // The limiter is shared with the poller and throws rather than throttling.

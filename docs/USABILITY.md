@@ -87,8 +87,9 @@ spinner that blocks every refresh is the providers', not a screen's.
 **Suggested by the review and not built yet**, none of them decided against:
 
 - The timeline: every name cut at 360 px, bars too small to tap, tooltips in
-  24-hour time, and no dining ([FUTURE.md](FUTURE.md) §2.1, §2.2, §2.7).
-- A one-tap "Test connection" in Plan Check.
+  24-hour time, and no dining ([FUTURE.md](FUTURE.md) §2.1, §2.2, §2.7). Being
+  made in AutoLL-3 first, as 1.8.0, since the component is shared; it arrives
+  here by merge.
 
 **Built since the review:** screen titles that match their tabs ("Times" and
 "Plans", which read "Times Guide" and "Your Plans"), and a reminder to end
@@ -103,7 +104,9 @@ puts the ride on Autopilot's list alert-only, with the existing add, and opens
 its card in Configure marked just added, so arming it stays Configure's. The LL
 tab has a row above the tabs saying how old its times are ("Updated 3 min ago",
 amber past five minutes), with a **Refresh** within reach of a thumb; the
-header keeps its own.
+header keeps its own. Plan Check's party check is a one-tap **Test
+connection**: the same harmless request, which now says in words what came
+back and when, with what to do, where it flashed a status code.
 
 **After the rehearsal's booking morning:** the booking-morning screen. The
 roadmap holds it until that morning has shown what is hard about it, and that

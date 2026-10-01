@@ -9,6 +9,8 @@ import {
   checkPlan,
   planReview,
 } from '@/autopilot/plancheck';
+import { REFUSED_STATUS, THROTTLED_STATUS } from '@/autopilot/pushback';
+import { syncedParkTime } from '@/autopilot/schedule';
 import useQuarantine from '@/autopilot/useQuarantine';
 import Button from '@/components/Button';
 import Screen from '@/components/Screen';
@@ -21,7 +23,7 @@ import ExperiencesContext from '@/contexts/ExperiencesContext';
 import NavContext from '@/contexts/NavContext';
 import ParkContext from '@/contexts/ParkContext';
 import PlansContext from '@/contexts/PlansContext';
-import { formatDate } from '@/datetime';
+import { ParkTime, formatDate } from '@/datetime';
 import useDataLoader from '@/hooks/useDataLoader';
 import { RATE_LIMIT_EXCEEDED } from '@/ratelimit';
 import { loadSavedPartyIds } from '@/savedParty';
@@ -52,6 +54,92 @@ const LABEL: Record<PlanCheckLevel, string> = {
   review: 'Review',
   ready: 'Ready',
 };
+
+/**
+ * What Test connection found. It used to be a banner with a status code,
+ * "Network request failed (403 guests)", to be decoded from a table in the
+ * guide; this is said in words, with what to do next.
+ */
+type Connection =
+  | {
+      kind: 'answered' | 'refused' | 'throttled' | 'unanswered' | 'busy';
+      at: ParkTime;
+    }
+  | { kind: 'failed'; at: ParkTime; status?: number };
+
+function connectionFailure(error: unknown, at: ParkTime): Connection {
+  // The constant, not `RateLimitExceeded.name`: that is the class's name,
+  // which minification rewrites, while the thrown instance still reports
+  // "RateLimitExceeded". The app's own limiter, shared with the poller and
+  // every other tap, and it throws rather than throttling.
+  if (error instanceof Error && error.name === RATE_LIMIT_EXCEEDED) {
+    return { kind: 'busy', at };
+  }
+  const status = (error as { response?: { status?: number } } | undefined)
+    ?.response?.status;
+  if (status === REFUSED_STATUS) return { kind: 'refused', at };
+  if (status === THROTTLED_STATUS) return { kind: 'throttled', at };
+  // 0 is `fetchJson`'s word for no response at all: a timeout or no signal.
+  if (status === 0) return { kind: 'unanswered', at };
+  return { kind: 'failed', at, status };
+}
+
+const RESULT = 'mt-2 mb-0 rounded-sm p-2 text-sm';
+
+function ConnectionResult({ connection }: { connection: Connection }) {
+  const at = <Time time={connection.at} />;
+  switch (connection.kind) {
+    case 'answered':
+      return (
+        <p role="status" className={`${RESULT} ${STYLE.ready}`}>
+          Connected at {at}: Disney answered.
+        </p>
+      );
+    case 'refused':
+      return (
+        <p role="status" className={`${RESULT} ${STYLE.blocker}`}>
+          <span className="font-semibold">Refused at {at}.</span> Disney&rsquo;s
+          filter is refusing this app&rsquo;s requests (403). Book in
+          Disney&rsquo;s app for now, and leave this test for a while: knocking
+          again is what keeps an account paused.
+        </p>
+      );
+    case 'throttled':
+      return (
+        <p role="status" className={`${RESULT} ${STYLE.review}`}>
+          <span className="font-semibold">
+            Disney asked to slow down at {at}
+          </span>{' '}
+          (429). Wait a few minutes before testing again.
+        </p>
+      );
+    case 'unanswered':
+      return (
+        <p role="status" className={`${RESULT} ${STYLE.review}`}>
+          <span className="font-semibold">No answer at {at}.</span> The request
+          timed out or the signal dropped. Move, or switch Wi-Fi off, and test
+          again.
+        </p>
+      );
+    case 'busy':
+      return (
+        <p role="status" className={`${RESULT} ${STYLE.review}`}>
+          Too many requests just now. Wait a few seconds and test again.
+        </p>
+      );
+    case 'failed':
+      return (
+        <p role="status" className={`${RESULT} ${STYLE.blocker}`}>
+          <span className="font-semibold">
+            Failed at {at}
+            {connection.status ? ` (${connection.status})` : ''}.
+          </span>{' '}
+          Test again in a minute; if it keeps failing, book in Disney&rsquo;s
+          app.
+        </p>
+      );
+  }
+}
 
 /** A no-request review of the current Autopilot configuration. */
 export default function PlanCheck({
@@ -130,6 +218,7 @@ export default function PlanCheck({
   }
 
   const [party, setParty] = useState<Guests>();
+  const [connection, setConnection] = useState<Connection>();
   const [checking, setChecking] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -162,7 +251,10 @@ export default function PlanCheck({
   }
   // A party answer is about one park and one date. This screen stays mounted
   // in the nav stack, so without this it could outlive both.
-  useEffect(() => setParty(undefined), [park.id, bookingDate]);
+  useEffect(() => {
+    setParty(undefined);
+    setConnection(undefined);
+  }, [park.id, bookingDate]);
 
   const ineligible =
     party?.ineligible.filter(g => g.ineligibleReason !== 'NOT_IN_PARTY') ?? [];
@@ -174,33 +266,23 @@ export default function PlanCheck({
   const allEligible = !!party && eligibleCount > 0 && !ineligible.length;
   const nobodyEligible = !!party && eligibleCount === 0;
 
-  function checkParty() {
+  function testConnection() {
     if (checking) return;
     setChecking(true);
-    loadData(
-      async () => {
-        // This asks only for current party eligibility, scoped to the park
-        // and date on screen. It never creates an offer and it cannot spend
-        // an entitlement.
+    loadData(async () => {
+      // One harmless request: current party eligibility, scoped to the park
+      // and date on screen. It never creates an offer and it cannot spend an
+      // entitlement. It is the call a refusal usually lands on, so an answer
+      // is the plainest sign Disney is answering this phone. Every outcome is
+      // caught and said below, rather than flashed as a status code.
+      try {
         setParty(await ll.guests(undefined, bookingDate, park));
-      },
-      {
-        // Keyed by error name, which `useDataLoader` already supports. The
-        // limiter is shared with the poller and with every other tap in the
-        // app, and it throws rather than throttling -- left unmapped this
-        // surfaced as "Unknown error occurred", which says nothing about the
-        // one thing the user can act on.
-        //
-        // The constant, not `RateLimitExceeded.name`: that is the class's name,
-        // which minification rewrites, so the key was "Kr" in the shipped
-        // bundle while the thrown instance still reported "RateLimitExceeded".
-        // The branch passed in jest and was dead in the only build anyone runs.
-        messages: {
-          [RATE_LIMIT_EXCEEDED]:
-            'Too many requests just now. Wait a few seconds and try again.',
-        },
+        setConnection({ kind: 'answered', at: syncedParkTime() });
+      } catch (error) {
+        setParty(undefined);
+        setConnection(connectionFailure(error, syncedParkTime()));
       }
-    ).finally(() => setChecking(false));
+    }).finally(() => setChecking(false));
   }
 
   return (
@@ -262,21 +344,24 @@ export default function PlanCheck({
           </li>
         ))}
       </ul>
-      <h3>Current party</h3>
+      <h3>Connection and party</h3>
       <p className="text-sm text-gray-600">
-        Check whether the guests {APP_NAME} currently sees are eligible in
-        general, at {park.name} on this date. Attraction-specific eligibility,
-        inventory, and the actual offered time can change and remain protected
-        by the final action checks.
+        One harmless request: whether the guests {APP_NAME} sees are eligible in
+        general at {park.name} on this date. It never creates an offer and
+        cannot spend an entitlement. It is the call a refusal usually lands on,
+        so an answer means Disney is answering this phone now. Attraction
+        eligibility, inventory and the offered time are still checked before
+        every action.
       </p>
       <Button
         type="small"
         className="mt-2"
         disabled={checking}
-        onClick={checkParty}
+        onClick={testConnection}
       >
-        {checking ? 'Checking…' : 'Check current party'}
+        {checking ? 'Testing…' : 'Test connection'}
       </Button>
+      {connection && <ConnectionResult connection={connection} />}
       {allEligible && (
         <p className="mt-2 rounded-sm bg-green-100 p-2 text-sm text-green-900">
           All {eligibleCount} guest{eligibleCount === 1 ? '' : 's'} in the

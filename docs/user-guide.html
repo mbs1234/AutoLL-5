@@ -1074,9 +1074,13 @@
         Most items carry an <span class="ui">Open Configure</span> button. Items
         about the tip board carry <span class="ui">Refresh LL list</span>, one of
         only two things here that go to the network. The other is
-        <span class="ui">Check current party</span>, which asks Disney whether
-        your saved guests are generally eligible — it cannot create an offer and
-        cannot spend an entitlement.
+        <span class="ui">Test connection</span>: one request asking Disney
+        whether your saved guests are generally eligible, which cannot create an
+        offer or spend an entitlement. It says in words what came back, and
+        when — <span class="ui">Connected</span>,
+        <span class="ui">Refused</span> (403), asked to slow down (429),
+        <span class="ui">No answer</span>, or <span class="ui">Failed</span>
+        with its status — each with what to do.
       </p>
       <div class="call safe">
         <span class="call-label">What “Ready” means</span>
@@ -2051,9 +2055,12 @@
     <section id="diagnostic">
       <h3><span class="num">20</span> The one diagnostic</h3>
       <p>
-        <strong>Book a single Lightning Lane by hand and read the banner at the
-        bottom of the screen.</strong> Everything else in this part is a
-        variation on that one test.
+        <strong>Tap Test connection at the bottom of Plan Check.</strong> It
+        sends the request a refusal usually lands on, harmlessly, and says in
+        words what came back, with what to do. Booking a single Lightning Lane
+        by hand tests the rest of the way; read the banner at the bottom of the
+        screen. Everything else in this part is a variation on these two
+        tests.
       </p>
       <div class="tablewrap">
         <table class="free">
