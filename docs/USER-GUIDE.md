@@ -289,9 +289,11 @@ Reviews ("Review:"):
 
 Most items carry an **Open Configure** button; items about the tip board carry
 **Refresh LL list**, which is one of only two things on this screen that go to
-the network. The other is **Check current party** at the bottom, which asks
-Disney whether your saved guests are generally eligible — it cannot create an
-offer and cannot spend an entitlement.
+the network. The other is **Test connection** at the bottom: one request asking
+Disney whether your saved guests are generally eligible, which cannot create an
+offer or spend an entitlement. It says in words what came back, and when:
+**Connected**, **Refused** (403), **asked to slow down** (429), **No answer**,
+or **Failed** with its status, each with what to do.
 
 > A green "Ready" means the plan is internally *consistent*, not that a
 > Lightning Lane exists. Eligibility, inventory and the offer's real return time
@@ -941,8 +943,11 @@ off in this build.
 
 ## The one diagnostic
 
-**Book a single Lightning Lane by hand and read the banner at the bottom of the
-screen.** Everything else in this section is a variation on that one test.
+**Tap Test connection at the bottom of Plan Check.** It sends the request a
+refusal usually lands on, harmlessly, and says in words what came back, with
+what to do. Booking a single Lightning Lane by hand tests the rest of the way;
+read the banner at the bottom of the screen. Everything else in this section is
+a variation on these two tests.
 
 | Banner | Meaning | What to do |
 |---|---|---|
