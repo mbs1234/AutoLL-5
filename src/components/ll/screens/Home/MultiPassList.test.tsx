@@ -22,6 +22,7 @@ import { STARRED_KEY } from '@/storageNamespace';
 import {
   TODAY,
   TOMORROW,
+  act,
   click,
   loading,
   screen,
@@ -249,5 +250,41 @@ describe('MultiPassList', () => {
     await loading();
     see(`Disney lists no Lightning Lanes at ${mk.name} for this day.`);
     see.no('Lightning Lanes have not loaded yet.');
+  });
+
+  // The only refresh was in the header, out of a thumb's reach, and nothing on
+  // the tab said how old the times were.
+  it('says how old the list is, with a refresh within reach', async () => {
+    setTime('09:00');
+    renderList();
+    await loading();
+    see('Updated just now');
+    act(() => jest.advanceTimersByTime(3 * 60_000));
+    see('Updated 3 min ago');
+    const calls = ll.experiences.mock.calls.length;
+    click('Refresh');
+    await loading();
+    expect(ll.experiences).toHaveBeenCalledTimes(calls + 1);
+    see('Updated just now');
+  });
+
+  it('turns the freshness amber once the list is stale', async () => {
+    setTime('09:00');
+    renderList();
+    await loading();
+    expect(see('Updated just now')).not.toHaveClass('text-amber-800');
+    act(() => jest.advanceTimersByTime(6 * 60_000));
+    expect(see('Updated 6 min ago')).toHaveClass('text-amber-800');
+  });
+
+  // Before the list has loaded there is no age to give, and the page offers
+  // its own Try again.
+  it('shows no freshness before the list has loaded', async () => {
+    setTime('09:00');
+    ll.experiences.mockRejectedValueOnce(new Error('offline'));
+    renderList();
+    await loading();
+    see('Lightning Lanes have not loaded yet.');
+    expect(screen.queryByText(/^Updated/)).not.toBeInTheDocument();
   });
 });

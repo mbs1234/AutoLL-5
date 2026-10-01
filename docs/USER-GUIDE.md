@@ -679,6 +679,10 @@ button to start booking.
 The banner under the header reads `BOOK AGAIN AT:` and `NEXT SCHEDULED DROP:` —
 the next moment you may book, and the park's next drop from the built-in table.
 
+**Freshness.** Just above the tabs, **Updated 3 min ago** says how old the times
+on this tab are, amber past five minutes, and **Refresh** beside it fetches them
+again: the header's refresh, within reach of a thumb.
+
 **Sorting.** **Sort by**, at the top of the list, offers Priority (the app's own ranking),
 Nearby (closest first, today only), Standby, Soonest, and A to Z. Whatever you
 choose, attractions with no availability sink to the bottom, and sorting never

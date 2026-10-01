@@ -3,6 +3,7 @@ import { memo, use, useEffect, useRef, useState } from 'react';
 import { isLLMP } from '@/api/itinerary';
 import { Experience, FlexExperience } from '@/api/ll';
 import { Park } from '@/api/resort';
+import Button from '@/components/Button';
 import Screen from '@/components/Screen';
 import Tab from '@/components/Tab';
 import { Time } from '@/components/Time';
@@ -39,6 +40,8 @@ import StandbyTime from './StandbyTime';
 import TimeBanner from './TimeBanner';
 import useSort, { Sorter } from './useSort';
 
+/** Past this many minutes the freshness row turns amber, as Today's does. */
+const STALE_MINUTES = 5;
 const LP_MIN_STANDBY = 30;
 const LP_MAX_LL_WAIT = 60;
 const LIGHTNING_PICK = 'Lightning Pick';
@@ -93,6 +96,11 @@ export default function MultiPassList({ ref }: HomeTabProps) {
           )}
         </>
       }
+      bottomRow={
+        lastUpdated !== undefined && (
+          <Freshness lastUpdated={lastUpdated} onRefresh={refreshExperiences} />
+        )
+      }
       ref={ref}
     >
       {experiences.length > 0 && (
@@ -111,6 +119,38 @@ export default function MultiPassList({ ref }: HomeTabProps) {
       )}
       {loaderElem}
     </Tab>
+  );
+}
+
+/**
+ * How old the list is, and a refresh, at the bottom of the tab. The header's
+ * refresh is out of a thumb's reach on a phone held in one hand, and nothing
+ * on this tab said how old the times were. Reads "just now" until a minute has
+ * passed, and is amber past `STALE_MINUTES`, with the minutes in words so
+ * colour never carries it alone.
+ */
+function Freshness({
+  lastUpdated,
+  onRefresh,
+}: {
+  lastUpdated: number;
+  onRefresh: () => void;
+}) {
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    const timer = setInterval(() => setNow(Date.now()), 60_000);
+    return () => clearInterval(timer);
+  }, []);
+  const minutes = Math.max(0, Math.floor((now - lastUpdated) / 60_000));
+  return (
+    <div className="flex min-h-11 items-center justify-between gap-2 border-b border-gray-200 px-3 text-sm">
+      <span className={minutes > STALE_MINUTES ? 'text-amber-800' : ''}>
+        Updated {minutes === 0 ? 'just now' : `${minutes} min ago`}
+      </span>
+      <Button type="small" title="Refresh the LL list" onClick={onRefresh}>
+        Refresh
+      </Button>
+    </div>
   );
 }
 

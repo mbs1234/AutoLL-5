@@ -88,7 +88,6 @@ spinner that blocks every refresh is the providers', not a screen's.
 
 - The timeline: every name cut at 360 px, bars too small to tap, tooltips in
   24-hour time, and no dining ([FUTURE.md](FUTURE.md) §2.1, §2.2, §2.7).
-- A refresh on the LL tab within reach of a thumb; it is still in the header.
 - A one-tap "Test connection" in Plan Check.
 
 **Built since the review:** screen titles that match their tabs ("Times" and
@@ -101,7 +100,10 @@ every finished step keeps its button, where slice 3 hid it while the last
 backup was under a week old (owner, 2026-10-01). **Watch with Autopilot** is on
 the booking screen, beside an offer and under "No Reservations Available": it
 puts the ride on Autopilot's list alert-only, with the existing add, and opens
-its card in Configure marked just added, so arming it stays Configure's.
+its card in Configure marked just added, so arming it stays Configure's. The LL
+tab has a row above the tabs saying how old its times are ("Updated 3 min ago",
+amber past five minutes), with a **Refresh** within reach of a thumb; the
+header keeps its own.
 
 **After the rehearsal's booking morning:** the booking-morning screen. The
 roadmap holds it until that morning has shown what is hard about it, and that
