@@ -132,7 +132,7 @@ export default function BackupRestore({
   const now = new Date();
   return (
     <Screen title="Backup and Restore">
-      <h3>On this phone</h3>
+      <h3 className="font-bold">On this phone</h3>
       <p>{summary}</p>
       <p className="text-sm text-gray-600">
         Last backup: {describeLastBackup(lastAt, now)}
@@ -160,7 +160,7 @@ export default function BackupRestore({
         only copy that survives that.
       </p>
 
-      <h3 className="mt-8">Restore</h3>
+      <h3 className="mt-8 font-bold">Restore</h3>
       <p className="text-sm text-gray-600">
         Replaces this phone’s plan — the watch list, Time Search’s list, the
         party and starred attractions — with the file’s, and adds the drops the
@@ -182,7 +182,7 @@ export default function BackupRestore({
         onChange={onPick}
       />
       {picked ? (
-        <div className="mt-3 rounded-lg border border-gray-300 p-3">
+        <div className="mt-3 rounded-2xl border border-gray-300 bg-white p-4">
           <p className="font-semibold break-all">{picked.name}</p>
           <p className="text-sm text-gray-600">
             {describeExport(picked.backup)}
