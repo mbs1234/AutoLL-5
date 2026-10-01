@@ -256,7 +256,7 @@ export default function TargetCard({
   return (
     <details
       ref={cardRef}
-      className="group rounded-md border border-gray-300 bg-white"
+      className="group rounded-2xl border border-gray-300 bg-white"
       open={defaultOpen || undefined}
     >
       <summary className="flex cursor-pointer list-none items-center gap-2 px-3 py-2 [&::-webkit-details-marker]:hidden">
