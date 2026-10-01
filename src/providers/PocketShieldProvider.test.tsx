@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { use, useState } from 'react';
@@ -13,7 +13,9 @@ import NavContext from '@/contexts/NavContext';
 import PocketShieldContext from '@/contexts/PocketShieldContext';
 import NavProvider from '@/providers/NavProvider';
 
-import PocketShieldProvider from './PocketShieldProvider';
+import PocketShieldProvider, {
+  END_GUIDED_ACCESS_MS,
+} from './PocketShieldProvider';
 
 function Raiser() {
   const { setShielded } = use(PocketShieldContext);
@@ -312,4 +314,72 @@ describe('the two provider trees', () => {
       expect(source(path)).toContain('<TopAutopilotProvider>');
     }
   );
+});
+
+// Guided Access keeps Safari's toolbar out of a pocket's reach, and an iPhone
+// left in it has no emergency calls and no Crash Detection. The page cannot
+// tell whether it is on, so lifting the shield is when to say so.
+describe('ending Guided Access', () => {
+  function asIPhone() {
+    Object.defineProperty(navigator, 'userAgent', {
+      configurable: true,
+      value: 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X)',
+    });
+  }
+  afterEach(() => {
+    Reflect.deleteProperty(navigator, 'userAgent');
+    jest.useRealTimers();
+    jest.restoreAllMocks();
+  });
+
+  function pocketAndLift() {
+    let now = 1000;
+    jest.spyOn(Date, 'now').mockImplementation(() => now);
+    render(
+      <PocketShieldProvider>
+        <Raiser />
+      </PocketShieldProvider>
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Pocket it' }));
+    for (let tap = 0; tap < TAPS_REQUIRED; ++tap) {
+      now += MIN_TAP_GAP_MS;
+      fireEvent.click(
+        screen.getByRole('button', { name: /unlock the screen/i })
+      );
+    }
+    expect(screen.queryByTestId('pocket-shield')).not.toBeInTheDocument();
+  }
+  const reminder = () =>
+    screen.queryByText(/triple-click the side button to end it/);
+
+  it('reminds an iPhone to end it once the shield is lifted', () => {
+    asIPhone();
+    pocketAndLift();
+    expect(reminder()).toBeVisible();
+    fireEvent.click(screen.getByRole('button', { name: 'Dismiss' }));
+    expect(reminder()).not.toBeInTheDocument();
+  });
+
+  it('goes by itself after a while', () => {
+    jest.useFakeTimers();
+    asIPhone();
+    pocketAndLift();
+    expect(reminder()).toBeVisible();
+    act(() => {
+      jest.advanceTimersByTime(END_GUIDED_ACCESS_MS);
+    });
+    expect(reminder()).not.toBeInTheDocument();
+  });
+
+  it('goes when the phone is pocketed again', () => {
+    asIPhone();
+    pocketAndLift();
+    fireEvent.click(screen.getByRole('button', { name: 'Pocket it' }));
+    expect(reminder()).not.toBeInTheDocument();
+  });
+
+  it('says nothing on a phone that has no Guided Access', () => {
+    pocketAndLift();
+    expect(reminder()).not.toBeInTheDocument();
+  });
 });

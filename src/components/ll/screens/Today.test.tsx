@@ -1126,7 +1126,10 @@ describe('Today context strip', () => {
   it('names the park, the day and the party under the title', () => {
     localStorage.setItem(PARTY_IDS_KEY, JSON.stringify(['a', 'b']));
     setup();
-    const strip = screen.getByText('Party of 2').parentElement!;
+    // The chip itself: each part is now its own group, so as not to wrap
+    // apart, and a part's parent is no longer the chip.
+    const strip = screen.getByTitle('Park, day and party');
+    expect(within(strip).getByText('Party of 2')).toBeInTheDocument();
     expect(within(strip).getByText('Magic Kingdom')).toBeInTheDocument();
     expect(within(strip).getByText('Today')).toBeInTheDocument();
   });

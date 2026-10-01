@@ -94,6 +94,7 @@ separate hand-made copy.
 | the new look | whatever the redesign has changed so far — the reason this build exists. [NEW-LOOK.md](NEW-LOOK.md) lists it slice by slice |
 | `docs/user-guide/*.png`, `scripts/guide-shots.mjs` | this build's own screenshots, in the new look, and the script that takes them. A sync that brings a new or changed screenshot from AutoLL-3 keeps this build's, and the shot is retaken here |
 | the usability work | what the screens say and do, in `src/components` and screen-only hooks. [USABILITY.md](USABILITY.md) lists it slice by slice |
+| `src/providers/PocketShieldProvider.tsx`, **in part** | the usability work's one line outside `src/components`: the note that reminds an iPhone to end Guided Access once Pocket mode is lifted, which has to outlive the shield, so it sits with the shield's owner. The rest is AutoLL-3's, and no other provider differs |
 
 Everything else should be identical to AutoLL-3's. When it is not, one of them
 is wrong.

@@ -27,7 +27,7 @@ export default function TimesGuide({ ref }: HomeTabProps) {
 
   return (
     <Tab
-      title="Times Guide"
+      title="Times"
       buttons={
         <>
           {parties.length > 0 && (

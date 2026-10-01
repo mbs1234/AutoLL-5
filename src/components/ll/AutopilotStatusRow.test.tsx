@@ -83,8 +83,9 @@ describe('AutopilotStatusRow', () => {
   });
 
   // Still on and still armed, so not the red of a stop: amber, and saying
-  // why it has gone quiet.
-  it('says when it is waiting because Disney asked it to slow down', () => {
+  // when it checks again. The reason, "Disney asked to slow down", ran the
+  // row to two lines at 360 px and moved the tabs; Today gives it.
+  it('says until when it is waiting, on one line', () => {
     setup('LL', {
       status: {
         mode: 'waiting',
@@ -94,7 +95,9 @@ describe('AutopilotStatusRow', () => {
       },
     });
     const row = screen.getByRole('button', { name: /Autopilot:/ });
-    expect(row).toHaveTextContent('Waiting: Disney asked to slow down');
+    expect(row).toHaveTextContent(/Autopilot: Waiting until \d{1,2}:\d{2}/);
+    expect(row).not.toHaveTextContent('Disney asked to slow down');
+    expect(row).toHaveClass('whitespace-nowrap');
     expect(row).not.toHaveClass('text-red-700');
     expect(row.querySelector('[aria-hidden]')).toHaveClass('bg-amber-600');
   });

@@ -91,10 +91,14 @@ spinner that blocks every refresh is the providers', not a screen's.
 - "Watch with Autopilot" on the booking screen and on "No Reservations
   Available".
 - A refresh on the LL tab within reach of a thumb; it is still in the header.
-- Screen titles that match their tabs: "Times Guide" on Times, "Your Plans" on
-  Plans.
 - A one-tap "Test connection" in Plan Check.
-- A reminder to end Guided Access when Pocket mode is lifted.
+
+**Built since the review:** screen titles that match their tabs ("Times" and
+"Plans", which read "Times Guide" and "Your Plans"), and a reminder to end
+Guided Access when Pocket mode is lifted on an iPhone. Two layout faults found
+at 360 px went with them: with dry run on, the park chip's ▾ wrapped onto a
+line of its own, and while Autopilot waited after a 429 the footer row ran to
+two lines.
 
 **After the rehearsal's booking morning:** the booking-morning screen. The
 roadmap holds it until that morning has shown what is hard about it, and that

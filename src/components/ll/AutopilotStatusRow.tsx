@@ -1,7 +1,9 @@
 import { use } from 'react';
 
+import { syncedParkTimeAt } from '@/autopilot/schedule';
 import { modeText } from '@/autopilot/status';
 import { targetActs } from '@/autopilot/watchlist';
+import { Time } from '@/components/Time';
 import TabsContext from '@/contexts/TabContext';
 import TopAutopilotContext from '@/contexts/TopAutopilotContext';
 
@@ -35,9 +37,11 @@ export default function AutopilotStatusRow() {
       : autopilot.dryRun
         ? 'bg-yellow-600'
         : 'bg-green-700';
+  const { waitUntil } = autopilot.status;
   return (
+    // One line, always: it sits above the tabs, and wrapping to two moved them.
     <button
-      className={`w-full border-t border-gray-200 bg-gray-50 px-3 py-1.5 text-center text-xs ${stopped ? 'font-semibold text-red-700' : 'text-gray-700'}`}
+      className={`w-full truncate border-t border-gray-200 bg-gray-50 px-3 py-1.5 text-center text-xs whitespace-nowrap ${stopped ? 'font-semibold text-red-700' : 'text-gray-700'}`}
       onClick={() => changeTab('Today')}
     >
       <span
@@ -45,7 +49,15 @@ export default function AutopilotStatusRow() {
         className={`mr-1.5 inline-block size-2 rounded-full align-middle ${dot}`}
       />
       <span className="font-semibold">Autopilot:</span>{' '}
-      {modeText(autopilot.status)}
+      {/* The wait's own reason ran this row to two lines at 360 px. When it
+          checks again says more in less, and Today says why. */}
+      {waiting && waitUntil !== undefined ? (
+        <>
+          Waiting until <Time time={syncedParkTimeAt(waitUntil)} />
+        </>
+      ) : (
+        modeText(autopilot.status)
+      )}
       {autopilot.dryRun && ' · Dry run'} ·{' '}
       <span className={armed === 0 ? 'font-semibold text-amber-800' : ''}>
         {armed} armed

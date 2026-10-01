@@ -91,6 +91,27 @@ describe('ContextStrip, as the control for park, day and party', () => {
     return { setPark };
   }
 
+  // At 360 px with dry run on, the chip ran past the screen's width and its
+  // ▾ wrapped onto a line of its own. jsdom lays nothing out, so what is
+  // asserted is the grouping that keeps a part whole and the ▾ with the last.
+  it('wraps only between whole parts, and keeps the ▾ with the last', () => {
+    renderResort(
+      <DryRun>
+        <ParkContext value={{ park: wdwMk, setPark: () => undefined }}>
+          <BookingDateContext
+            value={{ bookingDate: today, setBookingDate: () => undefined }}
+          >
+            <ContextStrip interactive />
+          </BookingDateContext>
+        </ParkContext>
+      </DryRun>
+    );
+    const dryRun = screen.getByText('Dry run').parentElement!;
+    expect(dryRun).toHaveClass('whitespace-nowrap');
+    expect(dryRun).toHaveTextContent('Dry run▾');
+    expect(screen.getByText('Today').parentElement).toHaveTextContent('Today·');
+  });
+
   it('opens the park, the day and the party together', () => {
     renderControl();
     click(screen.getByTitle('Park, day and party'));

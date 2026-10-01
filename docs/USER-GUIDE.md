@@ -541,7 +541,9 @@ screen, and you triple-click to end Guided Access when you want to interact.
 The first is more convenient, the second is airtight. They are alternatives,
 not layers: with Touch off, the three-tap unlock cannot work either.
 
-**To end it,** triple-click the side button, authenticate, then **End**.
+**To end it,** triple-click the side button, authenticate, then **End**. When
+you lift the guard on an iPhone, a note at the top reminds you of this for a
+few seconds, because a web page cannot tell whether Guided Access is on.
 
 > **Crash Detection and emergency calls do not work during a Guided Access
 > session.** Apple states this outright. End the session rather than leaving it
@@ -725,7 +727,7 @@ it and check again).
 
 ## 17. The Plans tab
 
-![Your Plans](user-guide/plans.png)
+![Plans](user-guide/plans.png)
 
 Your whole itinerary as the app last read it: Lightning Lanes, DAS selections,
 dining, boarding groups, grouped by park day. Tap any row for details.
@@ -967,9 +969,9 @@ it asked:
 - **Autopilot waits.** It raises an alert saying when it will check again, and
   stays on and armed while it sits out the wait. The wait is Disney's own
   suggested time when it sends one; otherwise 2 minutes, doubling with each
-  429 in a row, to 30. Today, the footer strip and the pocket screen say
-  **Waiting: Disney asked to slow down**, and until when. It carries on by
-  itself.
+  429 in a row, to 30. Today and the pocket screen say **Waiting: Disney
+  asked to slow down**, and until when; the footer strip on other tabs, short
+  of room, says **Waiting until** that time. It carries on by itself.
 - **A search stops**, whether NextLL, Time Search or Change attraction, and
   says why. You may start it again early. The note beside its start button
   says when Disney asked, and until when it suggested waiting.
