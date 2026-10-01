@@ -208,7 +208,7 @@ export default function Configure({
         />
       </div>
       {dryRun && (
-        <p className="mt-2 rounded-sm bg-yellow-100 p-2 text-sm font-semibold text-yellow-900">
+        <p className="mt-2 rounded-2xl bg-yellow-100 p-3.5 text-sm font-semibold text-yellow-900">
           Dry run is on: every check runs and the log says what would have
           happened, but nothing is booked, moved or swapped.
         </p>
@@ -234,17 +234,19 @@ export default function Configure({
 
       {absentTargets.length > 0 && (
         <>
-          <h3>Not on today&rsquo;s list ({absentTargets.length})</h3>
+          <h3 className="mt-5 mb-2 font-bold">
+            Not on today&rsquo;s list ({absentTargets.length})
+          </h3>
           <p className="text-sm text-gray-600">
             These saved targets are not in the current tipboard, so Autopilot
             cannot watch or book them today. Disney can use a seasonal version
             or change an attraction ID.
           </p>
-          <ul>
+          <ul className="mt-2 divide-y divide-gray-200 overflow-hidden rounded-[18px] border border-gray-300 bg-white px-3">
             {absentTargets.map(target => (
               <li
                 key={target.experienceId}
-                className="flex items-center gap-2 py-1"
+                className="flex items-center gap-2 py-2"
               >
                 <span className="flex-1">
                   {target.name ?? target.experienceId}
@@ -266,7 +268,7 @@ export default function Configure({
       )}
 
       {unknownExperienceIds && unknownExperienceIds.length > 0 && (
-        <p className="mt-3 rounded-sm bg-red-100 p-2 text-sm font-semibold text-red-900">
+        <p className="mt-3 rounded-2xl bg-red-100 p-3.5 text-sm font-semibold text-red-900">
           Disney is listing {unknownExperienceIds.length} attraction
           {unknownExperienceIds.length === 1 ? '' : 's'} this build does not
           recognise ({unknownExperienceIds.join(', ')}). They cannot be watched,
@@ -275,11 +277,11 @@ export default function Configure({
         </p>
       )}
 
-      <h3>Watching ({targetsHere.length})</h3>
+      <h3 className="mt-5 mb-2 font-bold">Watching ({targetsHere.length})</h3>
       <label className="mt-2 block text-sm">
         <span className="font-semibold">Filter attractions</span>
         <input
-          className="mt-1 block w-full rounded-sm border border-gray-300 p-2"
+          className="mt-1 block w-full rounded-xl border border-gray-300 bg-white px-3 py-2.5"
           value={filterText}
           onChange={event => setFilterText(event.target.value)}
           placeholder="Type an attraction name"
@@ -319,7 +321,7 @@ export default function Configure({
       {removed.length > 0 && (
         <div
           role="status"
-          className="mt-2 flex flex-col gap-1 rounded-sm bg-gray-100 p-2 text-sm"
+          className="mt-2 flex flex-col gap-1 rounded-2xl bg-gray-100 p-3 text-sm"
         >
           {removed.map(entry => (
             <div
@@ -419,7 +421,7 @@ export default function Configure({
         </Disclosure>
       )}
 
-      <h3>Lightning Lane attractions</h3>
+      <h3 className="mt-5 mb-2 font-bold">Lightning Lane attractions</h3>
       {watchable.length === 0 ? (
         <div className="text-sm text-gray-600">
           <p className="my-0">No attractions loaded yet for this park.</p>
@@ -430,14 +432,17 @@ export default function Configure({
           </div>
         </div>
       ) : (
-        <ul>
+        <ul className="divide-y divide-gray-200 overflow-hidden rounded-[18px] border border-gray-300 bg-white">
           {unwatched.map(exp => (
-            <li key={exp.id} className="py-0.5">
+            <li key={exp.id}>
               {/* The whole row adds, with a plus: the star here meant Watch,
-                  on the LL tab Favourite, and in the list above Remove. */}
+                  on the LL tab Favourite, and in the list above Remove. One
+                  card of rows, as the tip board lists its attractions. */}
               <Button
                 title={`Watch ${exp.name}`}
-                className="w-full justify-start! gap-2 text-left"
+                color="bg-white text-ink"
+                border="border-0"
+                className="min-h-11 w-full justify-start! gap-2 rounded-none! px-3! text-left"
                 onClick={() => {
                   addTarget({ experienceId: exp.id });
                   setJustAdded(exp.id);
