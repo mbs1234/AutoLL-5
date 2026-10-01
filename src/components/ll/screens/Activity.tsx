@@ -157,16 +157,19 @@ export default function Activity() {
   return (
     <Screen title={ACTIVITY} theme={park.theme} subhead={<ContextStrip />}>
       <QuarantinePanel doubts={doubts} />
-      <h3>Booking activity ({bookingLog.length})</h3>
+      <h3 className="mt-5 mb-2 font-bold">
+        Booking activity ({bookingLog.length})
+      </h3>
       {bookingLog.length === 0 ? (
         <p className="text-sm text-gray-600">
           Nothing booked, moved or swapped yet today.
         </p>
       ) : (
-        <ul className="text-sm">
+        <ul className="divide-y divide-gray-200 overflow-hidden rounded-[18px] border border-gray-300 bg-white px-3 text-sm [&>li]:py-2">
           {bookingLog.map((entry, i) => (
-            <li key={`${entry.name}-${i}`} className="py-0.5">
-              <Time time={entry.at} /> <BookingAction entry={entry} />
+            <li key={`${entry.name}-${i}`}>
+              <Time time={entry.at} className="font-semibold" />{' '}
+              <BookingAction entry={entry} />
               {entry.reason && (
                 <span className="text-gray-600"> &mdash; {entry.reason}</span>
               )}
@@ -177,12 +180,12 @@ export default function Activity() {
 
       {Object.keys(skipCounts).length > 0 && (
         <>
-          <h3>Why nothing was booked</h3>
-          <ul className="text-sm">
+          <h3 className="mt-5 mb-2 font-bold">Why nothing was booked</h3>
+          <ul className="divide-y divide-gray-200 overflow-hidden rounded-[18px] border border-gray-300 bg-white px-3 text-sm [&>li]:py-2">
             {Object.entries(skipCounts)
               .sort((a, b) => b[1] - a[1])
               .map(([reason, count]) => (
-                <li key={reason} className="py-0.5">
+                <li key={reason}>
                   <span className="font-semibold">{count}&times;</span>{' '}
                   {SKIP_TEXT[reason] ?? reason}
                 </li>
@@ -193,7 +196,9 @@ export default function Activity() {
 
       {learned.length > 0 && (
         <>
-          <h3>Learned drop times ({learned.length})</h3>
+          <h3 className="mt-5 mb-2 font-bold">
+            Learned drop times ({learned.length})
+          </h3>
           <p className="text-xs text-gray-600">
             Autopilot records when availability actually appears while it runs,
             and compares that with the built-in drop schedule. A drop seen on{' '}
@@ -202,9 +207,9 @@ export default function Activity() {
             watching. {observationCount} observation
             {observationCount === 1 ? '' : 's'} so far.
           </p>
-          <ul className="text-sm">
+          <ul className="mt-2 divide-y divide-gray-200 overflow-hidden rounded-[18px] border border-gray-300 bg-white px-3 text-sm [&>li]:py-2.5">
             {learned.map(d => (
-              <li key={d.experienceId} className="py-1">
+              <li key={d.experienceId}>
                 <div className="font-semibold">{nameOf(d.experienceId)}</div>
                 {d.observed.length > 0 && (
                   <div>
