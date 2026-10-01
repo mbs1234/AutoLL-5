@@ -240,12 +240,14 @@ export default function TargetCard({
   // now. It changes as they do, so it is a statement about now, not a plan.
   const held = heldMPToday(plans, bookingDate);
   const victim = chooseSwapVictim(held, experience);
-  // A card opened from elsewhere -- Today's plan, the Timeline, Plan Check, or
-  // just added -- is brought into view. It used to open where it was, often
-  // below the fold of a long screen.
+  // A card opened from elsewhere -- Today's plan, the Timeline, Plan Check, the
+  // booking screen, or just added -- is brought into view. It used to open
+  // where it was, often below the fold of a long screen. Its top, not its
+  // middle: unfolded, a card is taller than a phone's screen, and centring it
+  // put its name out of sight.
   const cardRef = useRef<HTMLDetailsElement>(null);
   useEffect(() => {
-    if (defaultOpen) cardRef.current?.scrollIntoView?.({ block: 'center' });
+    if (defaultOpen) cardRef.current?.scrollIntoView?.({ block: 'start' });
   }, [defaultOpen]);
   const autoSwap = !!t.autoSwap;
   const paused = !!t.paused;

@@ -52,6 +52,25 @@ describe('Configure watch list', () => {
     expect(refreshExperiences).toHaveBeenCalled();
   });
 
+  // Watch with Autopilot, on the booking screen, adds the ride and opens its
+  // card here, which says it only alerts until a choice is made.
+  it('opens a ride added from the booking screen as just added', () => {
+    renderScreen(
+      <Configure focus={{ kind: 'target', experienceId: BZ, added: true }} />,
+      { watched: [BZ] }
+    );
+    expect(screen.getByText(NAME).closest('details')).toHaveAttribute('open');
+    expect(screen.getByText(/Just added\. It will only alert/)).toBeVisible();
+  });
+
+  it('does not call a card opened from elsewhere just added', () => {
+    renderScreen(<Configure focus={{ kind: 'target', experienceId: BZ }} />, {
+      watched: [BZ],
+    });
+    expect(screen.getByText(NAME).closest('details')).toHaveAttribute('open');
+    expect(screen.queryByText(/Just added/)).not.toBeInTheDocument();
+  });
+
   // It opened the card where it was, often below the fold of a long screen.
   it('brings a card opened from elsewhere into view', () => {
     const scrolled = jest.spyOn(Element.prototype, 'scrollIntoView');
@@ -61,6 +80,9 @@ describe('Configure watch list', () => {
     const card = screen.getByText(NAME).closest('details')!;
     expect(card).toHaveAttribute('open');
     expect(scrolled.mock.contexts).toContain(card);
+    // By its top: unfolded, a card is taller than a phone's screen, and
+    // centring it put its name out of sight.
+    expect(scrolled).toHaveBeenCalledWith({ block: 'start' });
     scrolled.mockRestore();
   });
 
