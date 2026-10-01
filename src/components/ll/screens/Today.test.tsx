@@ -672,16 +672,17 @@ describe('Today', () => {
     expect(nav.goTo).toHaveBeenCalledWith(<BackupRestore />);
   });
 
-  it('does not ask again after a recent backup', () => {
+  // A finished step keeps its button, and a plan changed since the last
+  // backup is worth another. It used to go until the backup was a week old.
+  it('ticks a recent backup and still offers another', () => {
     recordBackup(new Date());
     setup({
       bookingDate: TOMORROW,
       targets: [{ experienceId: BZ, autoBook: true }],
     });
-    expect(screen.getByText(/Last backup: today/)).toBeVisible();
-    expect(
-      screen.queryByRole('button', { name: 'Back up' })
-    ).not.toBeInTheDocument();
+    expect(screen.getByText(/✓ Last backup: today/)).toBeVisible();
+    act(() => screen.getByRole('button', { name: 'Back up' }).click());
+    expect(nav.goTo).toHaveBeenCalledWith(<BackupRestore />);
   });
 
   it('offers a backup when nothing at all is saved', () => {

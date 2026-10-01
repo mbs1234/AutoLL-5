@@ -98,7 +98,9 @@ spinner that blocks every refresh is the providers', not a screen's.
 Guided Access when Pocket mode is lifted on an iPhone. Two layout faults found
 at 360 px went with them: with dry run on, the park chip's ▾ wrapped onto a
 line of its own, and while Autopilot waited after a 429 the footer row ran to
-two lines.
+two lines. The readiness list's backup line now offers **Back up** always, as
+every finished step keeps its button, where slice 3 hid it while the last
+backup was under a week old (owner, 2026-10-01).
 
 **After the rehearsal's booking morning:** the booking-morning screen. The
 roadmap holds it until that morning has shown what is hard about it, and that
