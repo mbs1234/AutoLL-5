@@ -132,4 +132,5 @@ the merge that brought it:
   kept buttons merged into this build's Today unchanged, and the guide points at
   **Watching** for each window, where AutoLL-3's says the plan. This build's own
   backup line still offers **Back up** only once the last backup is a week old,
-  as slice 3 chose.
+  as slice 3 chose. (Since changed: it offers it always, as the owner chose on
+  2026-10-01; see USABILITY.md.)

@@ -368,9 +368,9 @@ line then asks you to **test the alert sound**, and ticks only once you have
 heard it.
 
 It also shows on a first run, with nothing saved, whatever the date. With a
-plan saved, a last line says when the last backup was, and offers **Back up**
-once it is more than a week old; with nothing saved at all, Today offers
-**Restore a backup** instead.
+plan saved, a last line says when the last backup was, ticked while it is less
+than a week old, and always offers **Back up**; with nothing saved at all, Today
+offers **Restore a backup** instead.
 
 It is a local readiness summary, not a live check of Disney — it makes no
 requests. On the day itself its place is taken by the park-morning check in the

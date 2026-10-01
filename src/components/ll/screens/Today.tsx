@@ -86,7 +86,7 @@ export const TODAY = 'Today';
 export const LAPSE_WARNING_MINUTES = 30;
 
 /**
- * A backup older than this is asked for again. Safari may clear a site's data
+ * A backup older than this is no longer ticked. Safari may clear a site's data
  * after about a week unvisited, which is the loss a backup is for.
  */
 const BACKUP_STALE_DAYS = 7;
@@ -697,18 +697,18 @@ export default function Today({ ref }: HomeTabProps) {
             ))}
             {/* The one protection against Safari clearing the plan. Backup is
                 its own screen because the share sheet opens only from a tap
-                made there. */}
+                made there. Back up stays once the last backup is recent, as
+                every finished step keeps its button: a plan changed since is
+                worth one more. */}
             {targets.length > 0 && (
               <li className="flex min-h-11 items-center justify-between gap-2 py-1.5">
                 <span className={backupCurrent ? '' : 'font-semibold'}>
                   {backupCurrent ? '✓' : '○'} Last backup:{' '}
                   {describeLastBackup(lastBackup)}
                 </span>
-                {!backupCurrent && (
-                  <Button type="small" onClick={() => goTo(<BackupRestore />)}>
-                    Back up
-                  </Button>
-                )}
+                <Button type="small" onClick={() => goTo(<BackupRestore />)}>
+                  Back up
+                </Button>
               </li>
             )}
           </ul>
