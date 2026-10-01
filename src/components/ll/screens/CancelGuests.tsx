@@ -138,7 +138,7 @@ export default function CancelGuests<B extends LightningLane | DasBooking>({
           <div
             role="alertdialog"
             aria-labelledby={confirmTitleId}
-            className="max-w-sm rounded-lg bg-white p-4 text-black"
+            className="max-w-sm rounded-2xl bg-white p-5 text-black"
           >
             <h3 id={confirmTitleId} className="mt-0 font-semibold">
               {cancelingAll

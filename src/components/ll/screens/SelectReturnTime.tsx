@@ -99,8 +99,8 @@ export default function SelectReturnTime<B extends Offer['booking']>({
       <h2>{offer.experience.name}</h2>
       <LandLine land={offer.experience.land} />
       {booking && !rebooking.current && (
-        <div className="mt-2 rounded-sm bg-gray-100 p-2 text-sm">
-          <p>
+        <div className="mt-2 rounded-2xl bg-gray-100 p-3.5 text-sm">
+          <p className="my-0">
             Nothing here yet? A search can keep checking every time on offer and
             take a better one the moment it appears.
           </p>
@@ -123,7 +123,7 @@ export default function SelectReturnTime<B extends Offer['booking']>({
         <>
           {fullAvailabilityAllowed && (
             <div className="flex items-center gap-x-4 mt-4">
-              <h3 className="mt-0">Available Times</h3>
+              <h3 className="mt-0 font-bold">Available Times</h3>
               <label className="flex items-center gap-x-2">
                 <input
                   type="checkbox"

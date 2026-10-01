@@ -29,7 +29,7 @@ export default function PartyList() {
       {selected.length > 0 ? (
         <>
           <div className="mt-4">
-            <h3 className="inline mt-0">Your Party</h3>
+            <h3 className="mt-0 inline font-bold">Your Party</h3>
             <Button
               type="small"
               onClick={() => goTo(<ModifyParty party={party} />)}
@@ -42,7 +42,7 @@ export default function PartyList() {
         </>
       ) : (
         <>
-          <h3>Ineligible Guests</h3>
+          <h3 className="font-bold">Ineligible Guests</h3>
           <IneligibleGuestList />
         </>
       )}

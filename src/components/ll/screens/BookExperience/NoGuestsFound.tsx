@@ -7,7 +7,7 @@ export default function NoGuestsFound({
 }) {
   return (
     <>
-      <h3>No Guests Found</h3>
+      <h3 className="font-bold">No Guests Found</h3>
       <p>
         Your party could not be loaded. This is probably just a temporary
         network error. Wait a few seconds and try again.

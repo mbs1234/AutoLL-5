@@ -84,7 +84,7 @@ export default function BookingDetails({
       {warning && (
         <p
           role="alert"
-          className="mt-3 rounded-sm bg-amber-100 p-2 text-amber-900"
+          className="mt-3 rounded-2xl bg-amber-100 p-3.5 text-amber-900"
         >
           {warning}
         </p>
@@ -156,7 +156,7 @@ export default function BookingDetails({
         </>
       )}
       <div className="flex mt-4">
-        <h3 className="inline mt-0">Your Party</h3>
+        <h3 className="mt-0 inline font-bold">Your Party</h3>
         {booking.cancellable && guests && (
           <Button
             type="small"
