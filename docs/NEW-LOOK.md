@@ -74,6 +74,7 @@ park. Each slice keeps all of them.
 | 9 | Plan Check | its headings in bold, as Today's are; the summary, each item, the connection result, the party result and the doubts panel as rounded boxes, as Today's notices are | in review |
 | 10 | Activity | its headings in bold, as Today's are; the log, the skip counts and the learned drop times each as a card with hairline rules; each log line's time in semibold | in review |
 | 11 | Booking screens | the return window as the biggest thing on them, in the display face, under a small label, still one element that reads "Arrive by: 10:35 AM – 11:35 AM"; Your Lightning Lanes as a card; their headings in bold; rounder notices and the cancel dialog | in review |
+| 12 | Settings | the menu rounder, with hairline rules and a shadow; Party Selection's choice as a card of rows; its and Backup and Restore's headings in bold; the picked backup file as a card | in review |
 
 **One deliberate departure from the mockups.** They put Today's main actions in
 a bar along the bottom. The switch stays in the page instead: a bar there sits
@@ -86,8 +87,9 @@ switch would be a new filter, not a new look, so it is not part of these
 slices. The mockups' single tappable park, date and party chip likewise: the
 header keeps its separate controls until that is built as behaviour.
 
-**Not yet redrawn** beyond what the foundation gave them: Timeline and
-Settings. They already have the palette, type, header, tab bar and buttons.
+**Not yet redrawn** beyond what the foundation gave them: the Timeline, which
+waits for AutoLL-3's 1.8.0 (the timeline's names and dining) to arrive by
+merge, since that release redraws the same component. They already have the palette, type, header, tab bar and buttons.
 
 **The user guide's screenshots** show the new look. All 21 were retaken
 together once the new look's slices and the usability work had landed, from the

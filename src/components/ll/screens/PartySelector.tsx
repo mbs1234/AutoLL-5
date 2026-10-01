@@ -36,7 +36,7 @@ export default function PartySelector() {
 
   const Mode = (props: { auto: boolean; children: string }) => (
     <li>
-      <label className="flex items-center mt-2">
+      <label className="flex min-h-11 items-center px-3">
         <input
           type="radio"
           name="auto"
@@ -56,7 +56,7 @@ export default function PartySelector() {
         automatically selected when you book a Lightning Lane. If you would like
         to limit who you book for, you can manually select your party here.
       </p>
-      <ul>
+      <ul className="mt-3 divide-y divide-gray-200 overflow-hidden rounded-[18px] border border-gray-300 bg-white">
         <Mode auto={true}>Book for all eligible guests</Mode>
         <Mode auto={false}>Only book for selected guests</Mode>
       </ul>
@@ -67,7 +67,7 @@ export default function PartySelector() {
         <>
           {partyGuests.length > 0 && (
             <>
-              <h3>Your Party</h3>
+              <h3 className="font-bold">Your Party</h3>
               <GuestList
                 guests={partyGuests}
                 selectable={{
@@ -83,7 +83,7 @@ export default function PartySelector() {
           )}
           {nonpartyGuests.length > 0 && (
             <>
-              <h3>Add to Your Party</h3>
+              <h3 className="font-bold">Add to Your Party</h3>
               <GuestList
                 guests={nonpartyGuests}
                 selectable={{

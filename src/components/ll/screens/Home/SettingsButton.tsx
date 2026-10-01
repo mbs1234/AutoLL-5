@@ -85,7 +85,7 @@ export default function SettingsButton() {
           data-testid="shade"
         >
           <ul
-            className="dividers overflow-auto min-w-[50%] max-h-[90%] rounded-lg bg-white text-black text-lg font-normal"
+            className="divide-y divide-gray-200 overflow-auto min-w-[50%] max-h-[90%] rounded-[20px] bg-white text-black text-lg font-normal shadow-xl"
             ref={listRef}
           >
             {options.map(opt => {
@@ -109,7 +109,7 @@ export default function SettingsButton() {
               );
             })}
             <li
-              className="px-4 text-center text-sm text-gray-500"
+              className="px-4 py-3 text-center text-sm text-gray-500"
               aria-label="Session status"
             >
               {describeSession(sessionStatus, sessionEnds)}
@@ -121,7 +121,7 @@ export default function SettingsButton() {
                 having to notify it. Here rather than on Today, which is for the
                 park day; a reminder to back up belongs with the backup. */}
             <li
-              className="px-4 text-center text-sm text-gray-500"
+              className="px-4 py-3 text-center text-sm text-gray-500"
               aria-label="Last backup"
             >
               Last backup: {describeLastBackup(lastBackupAt())}
@@ -130,7 +130,7 @@ export default function SettingsButton() {
                 installed on the same phone; this used to sit in the tab bar,
                 where five tabs no longer leave it room. */}
             <li
-              className="px-4 text-center text-sm text-gray-500"
+              className="px-4 py-3 text-center text-sm text-gray-500"
               aria-label={`Build: ${APP_NAME} ${BUILD_REV}`}
             >
               {APP_NAME} · {BUILD_REV}
