@@ -71,6 +71,7 @@ park. Each slice keeps all of them.
 | 6 | Times | each land as a card under a quiet label in its own colour, its kinds as small labels; waits and show times in soft boxes in the display face, with digits that keep their width; the show-times screen as a card | in review |
 | 7 | Plans | each day as a quiet label that stays on screen while its plans scroll, on the page's own paper; the day's plans as one card with hairline rules | in review |
 | 8 | Configure | its section headings in bold, as Today's are; the add list and the not-on-today's-list list as cards of rows, the add rows the same buttons without their borders; rounder target cards, filter box, notices and undo strip | in review |
+| 9 | Plan Check | its headings in bold, as Today's are; the summary, each item, the connection result, the party result and the doubts panel as rounded boxes, as Today's notices are | in review |
 
 **One deliberate departure from the mockups.** They put Today's main actions in
 a bar along the bottom. The switch stays in the page instead: a bar there sits
@@ -83,8 +84,8 @@ switch would be a new filter, not a new look, so it is not part of these
 slices. The mockups' single tappable park, date and party chip likewise: the
 header keeps its separate controls until that is built as behaviour.
 
-**Not yet redrawn** beyond what the foundation gave them: Plan Check, Activity,
-Timeline, the booking screens and Settings. They already have the palette, type, header, tab bar and buttons.
+**Not yet redrawn** beyond what the foundation gave them: Activity, Timeline, the
+booking screens and Settings. They already have the palette, type, header, tab bar and buttons.
 
 **The user guide's screenshots** show the new look. All 21 were retaken
 together once the new look's slices and the usability work had landed, from the

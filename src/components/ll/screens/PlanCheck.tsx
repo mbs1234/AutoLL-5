@@ -84,7 +84,7 @@ function connectionFailure(error: unknown, at: ParkTime): Connection {
   return { kind: 'failed', at, status };
 }
 
-const RESULT = 'mt-2 mb-0 rounded-sm p-2 text-sm';
+const RESULT = 'mt-2 mb-0 rounded-2xl p-3.5 text-sm';
 
 function ConnectionResult({ connection }: { connection: Connection }) {
   const at = <Time time={connection.at} />;
@@ -295,13 +295,13 @@ export default function PlanCheck({
         or make a booking. Live eligibility is checked only if you ask below,
         and is always checked again immediately before every Autopilot action.
       </p>
-      <h3>
+      <h3 className="mt-5 mb-2 font-bold">
         {blockers > 0
           ? `${blockers} item${blockers === 1 ? '' : 's'} to fix`
           : 'Plan review'}
       </h3>
       <p
-        className={`mb-2 rounded-sm p-2 text-sm ${
+        className={`mb-2 rounded-2xl p-3.5 text-sm font-semibold ${
           blockers ? STYLE.blocker : reviews ? STYLE.review : STYLE.ready
         }`}
       >
@@ -316,7 +316,7 @@ export default function PlanCheck({
       <QuarantinePanel doubts={relevantDoubts} />
       <ul className="space-y-2">
         {!coordinated && (
-          <li className={`rounded-sm p-2 text-sm ${STYLE.review}`}>
+          <li className={`rounded-2xl p-3.5 text-sm ${STYLE.review}`}>
             <span className="font-semibold">Review:</span> This browser cannot
             coordinate reservation locks across tabs. Keep only one {APP_NAME}{' '}
             tab open, and do not run a foreground Time Search while Autopilot is
@@ -325,7 +325,7 @@ export default function PlanCheck({
         )}
         {items.map(item => (
           <li
-            className={`rounded-sm p-2 text-sm ${STYLE[item.level]}`}
+            className={`rounded-2xl p-3.5 text-sm ${STYLE[item.level]}`}
             key={item.text}
           >
             <span className="font-semibold">{LABEL[item.level]}:</span>{' '}
@@ -344,7 +344,7 @@ export default function PlanCheck({
           </li>
         ))}
       </ul>
-      <h3>Connection and party</h3>
+      <h3 className="mt-5 mb-2 font-bold">Connection and party</h3>
       <p className="text-sm text-gray-600">
         One harmless request: whether the guests {APP_NAME} sees are eligible in
         general at {park.name} on this date. It never creates an offer and
@@ -363,13 +363,13 @@ export default function PlanCheck({
       </Button>
       {connection && <ConnectionResult connection={connection} />}
       {allEligible && (
-        <p className="mt-2 rounded-sm bg-green-100 p-2 text-sm text-green-900">
+        <p className="mt-2 rounded-2xl bg-green-100 p-3.5 text-sm text-green-900">
           All {eligibleCount} guest{eligibleCount === 1 ? '' : 's'} in the
           current party are generally eligible.
         </p>
       )}
       {nobodyEligible && (
-        <div className="mt-2 rounded-sm bg-red-100 p-2 text-sm text-red-900">
+        <div className="mt-2 rounded-2xl bg-red-100 p-3.5 text-sm text-red-900">
           <p className="my-0">
             No guests came back eligible. The saved party may no longer be on
             this account.
@@ -382,8 +382,8 @@ export default function PlanCheck({
         </div>
       )}
       {ineligible.length > 0 && (
-        <div className="mt-2 rounded-sm bg-amber-100 p-2 text-sm text-amber-900">
-          <p className="font-semibold">
+        <div className="mt-2 rounded-2xl bg-amber-100 p-3.5 text-sm text-amber-900">
+          <p className="my-0 font-semibold">
             {ineligible.length} party member
             {ineligible.length === 1 ? '' : 's'} currently ineligible.
           </p>

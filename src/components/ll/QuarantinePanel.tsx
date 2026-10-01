@@ -89,7 +89,7 @@ export default function QuarantinePanel({
   return (
     <section
       aria-labelledby={headingId}
-      className="mt-3 rounded-sm bg-red-100 p-2 text-sm text-red-900"
+      className="mt-3 rounded-2xl bg-red-100 p-3.5 text-sm text-red-900"
     >
       <h3 id={headingId} className="font-semibold">
         {doubts.length} unresolved Lightning Lane change
@@ -116,7 +116,7 @@ export default function QuarantinePanel({
       </div>
       <ul className="mt-2 space-y-2">
         {doubts.map(doubt => (
-          <li className="rounded-sm bg-white/60 p-2" key={identity(doubt)}>
+          <li className="rounded-xl bg-white/60 p-2.5" key={identity(doubt)}>
             <p>{description(doubt, nameOf)}</p>
             {!doubt.reservationIds?.length && (
               <p className="mt-1 font-semibold" role="status">
