@@ -22,8 +22,8 @@ export default function ExistingBookings({
   if (bookings.length === 0) return null;
 
   return (
-    <div className="mt-3 rounded-sm border border-gray-300 bg-gray-50 text-sm">
-      <div className="px-2 py-1 bg-gray-200 font-semibold text-xs uppercase">
+    <div className="mt-3 overflow-hidden rounded-[18px] border border-gray-300 bg-white text-sm">
+      <div className="px-3 pt-2.5 pb-1 text-[11px] font-bold tracking-wide text-gray-500 uppercase">
         Your Lightning Lanes
       </div>
       <ul className="divide-y divide-gray-200">
@@ -34,7 +34,7 @@ export default function ExistingBookings({
           return (
             <li
               key={b.id}
-              className={`px-2 py-1 flex justify-between items-center ${sameTier ? 'bg-yellow-50' : ''}`}
+              className={`flex items-center justify-between px-3 py-2 ${sameTier ? 'bg-yellow-50' : ''}`}
             >
               <span className={sameTier ? 'font-semibold' : ''}>
                 {b.name}

@@ -15,7 +15,7 @@ export default function NoEligibleGuests() {
     <>
       {rebooking.current ? (
         <>
-          <h3>Unable to Modify</h3>
+          <h3 className="font-bold">Unable to Modify</h3>
           <p>
             Your current reservation cannot be modified to this experience due
             to the following conflicts:
@@ -33,7 +33,7 @@ export default function NoEligibleGuests() {
                 }
               />
             )}
-          <h3>No Eligible Guests</h3>
+          <h3 className="font-bold">No Eligible Guests</h3>
           <p>
             No one in your party is currently eligible for this Lightning Lane.
           </p>

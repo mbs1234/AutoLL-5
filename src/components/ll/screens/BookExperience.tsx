@@ -329,7 +329,7 @@ export default function BookExperience({
             <div />
           ) : offer === null && offerFailed ? (
             <div role="status" className="mt-4">
-              <h3>Could not reach Disney</h3>
+              <h3 className="font-bold">Could not reach Disney</h3>
               <p>
                 The request for an offer did not get an answer, so this says
                 nothing about whether a Lightning Lane is available.
