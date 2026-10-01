@@ -32,6 +32,7 @@ import NoEligibleGuests from './BookExperience/NoEligibleGuests';
 import NoGuestsFound from './BookExperience/NoGuestsFound';
 import NoReservationsAvailable from './BookExperience/NoReservationsAvailable';
 import OfferDetails from './BookExperience/OfferDetails';
+import WatchWithAutopilot from './BookExperience/WatchWithAutopilot';
 import BookingDetails from './BookingDetails';
 import RefreshButton from './RefreshButton';
 
@@ -226,6 +227,10 @@ export default function BookExperience({
 
   const noEligible = party?.eligible.length === 0;
   const noGuestsFound = noEligible && party?.ineligible.length === 0;
+  // Handing the ride to Autopilot instead. Only a Multi Pass ride, which is
+  // all Configure can watch, and not while modifying a pass, where the ride is
+  // already held.
+  const watchable = !!experience.flex && !rebooking.current;
 
   return (
     <Screen
@@ -334,7 +339,12 @@ export default function BookExperience({
               </Button>
             </div>
           ) : offer === null ? (
-            <NoReservationsAvailable />
+            <>
+              <NoReservationsAvailable />
+              {watchable && (
+                <WatchWithAutopilot experienceId={experience.id} soldOut />
+              )}
+            </>
           ) : (
             <>
               <OfferDetails offer={offer} onOfferChange={setOffer} />
@@ -352,6 +362,12 @@ export default function BookExperience({
                   )}
                   , given up only once the new one is secured.
                 </p>
+              )}
+              {watchable && !unanswered && (
+                <WatchWithAutopilot
+                  experienceId={experience.id}
+                  soldOut={false}
+                />
               )}
               {unanswered ? (
                 <UnansweredNotice

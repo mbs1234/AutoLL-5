@@ -88,8 +88,6 @@ spinner that blocks every refresh is the providers', not a screen's.
 
 - The timeline: every name cut at 360 px, bars too small to tap, tooltips in
   24-hour time, and no dining ([FUTURE.md](FUTURE.md) §2.1, §2.2, §2.7).
-- "Watch with Autopilot" on the booking screen and on "No Reservations
-  Available".
 - A refresh on the LL tab within reach of a thumb; it is still in the header.
 - A one-tap "Test connection" in Plan Check.
 
@@ -100,7 +98,10 @@ at 360 px went with them: with dry run on, the park chip's ▾ wrapped onto a
 line of its own, and while Autopilot waited after a 429 the footer row ran to
 two lines. The readiness list's backup line now offers **Back up** always, as
 every finished step keeps its button, where slice 3 hid it while the last
-backup was under a week old (owner, 2026-10-01).
+backup was under a week old (owner, 2026-10-01). **Watch with Autopilot** is on
+the booking screen, beside an offer and under "No Reservations Available": it
+puts the ride on Autopilot's list alert-only, with the existing add, and opens
+its card in Configure marked just added, so arming it stays Configure's.
 
 **After the rehearsal's booking morning:** the booking-morning screen. The
 roadmap holds it until that morning has shown what is hard about it, and that

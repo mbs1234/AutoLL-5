@@ -708,6 +708,12 @@ box listing the passes you already hold that day, the offered window as
 **Arrive by: 10:54 AM – 11:54 AM** with a **Change time** button, and **Your
 Party** with an **Edit party** button. The button at the bottom commits.
 
+Above it, **Watch with Autopilot** hands the ride to Autopilot instead. It goes
+on Autopilot's list for this park and day, alert-only, and its card opens in
+Configure, where you choose what Autopilot should do; it watches only while
+Autopilot is on. A ride already on the list offers **Open in Configure**
+instead. Neither shows while you are modifying a pass.
+
 - **Change time** opens a grid of return times by hour. Tick **Show all** to see
   ten-minute slots across the whole day — those are the app's educated guesses,
   not Disney's real inventory, and picking one that does not exist gets you the
@@ -720,10 +726,11 @@ If the offer goes stale between loading and tapping Book, you get a red "Offer
 expired — refreshing…" flash and a new offer is fetched — **check the new time
 before tapping Book again.**
 
-Three dead ends you may land on instead: **No Guests Found** (a network blip —
-Try Again), **No Eligible Guests** (often with an "Eligible at 11:56 AM" note),
-and **No Reservations Available** (not enough slots for the whole party — trim
-it and check again).
+Three screens you may land on instead of an offer: **No Guests Found** (a
+network blip — Try Again), **No Eligible Guests** (often with an "Eligible at
+11:56 AM" note), and **No Reservations Available** (not enough slots for the
+whole party — trim it and check again, or tap **Watch with Autopilot** to have
+Autopilot alert you when it comes back).
 
 ## 17. The Plans tab
 

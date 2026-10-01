@@ -28,7 +28,9 @@ export const UNDO_MS = 8000;
 export default function Configure({
   focus,
 }: {
-  focus?: { kind: 'target'; experienceId: string } | { kind: 'setting' };
+  focus?:
+    | { kind: 'target'; experienceId: string; added?: boolean }
+    | { kind: 'setting' };
 } = {}) {
   const {
     targets,
@@ -74,8 +76,11 @@ export default function Configure({
       safeguardsRef.current?.scrollIntoView?.({ block: 'center' });
     }
   }, [focus]);
-  // The target just added starts unfolded: adding is when it gets set up.
-  const [justAdded, setJustAdded] = useState<string>();
+  // The target just added starts unfolded: adding is when it gets set up. One
+  // added from the booking screen, by Watch with Autopilot, arrives the same.
+  const [justAdded, setJustAdded] = useState(
+    focus?.kind === 'target' && focus.added ? focus.experienceId : undefined
+  );
   const [filterText, setFilterText] = useState('');
 
   // Scoped to the park and date on screen. `targets` is the whole saved list

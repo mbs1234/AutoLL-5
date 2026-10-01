@@ -19,6 +19,7 @@ import { RequestError } from '@/api/client';
 import { LLMP, Offer, OfferError } from '@/api/ll';
 import Button from '@/components/Button';
 import Screen from '@/components/Screen';
+import AutopilotContext from '@/contexts/AutopilotContext';
 import NavContext from '@/contexts/NavContext';
 import { DateTime, ParkTime, parkDate } from '@/datetime';
 import { ping } from '@/ping';
@@ -98,31 +99,46 @@ async function goBack(screenTitle: string) {
   await see.screen(screenTitle);
 }
 
+const addTarget = jest.fn();
+let watched = false;
+
+/** Autopilot's list as the booking screen reads it: one ride, or none. */
+function WithAutopilot({ children }: { children: React.ReactNode }) {
+  const base = use(AutopilotContext);
+  return (
+    <AutopilotContext value={{ ...base, isWatched: () => watched, addTarget }}>
+      {children}
+    </AutopilotContext>
+  );
+}
+
 async function renderComponent({
   screen,
   rebook,
 }: { screen?: React.JSX.Element; rebook?: LLMP } = {}) {
   renderResort(
-    <PlansProvider>
-      <BookingDateProvider>
-        <RebookingProvider
-          value={
-            rebook
-              ? {
-                  current: rebook,
-                  auto: false,
-                  begin: jest.fn(),
-                  end: jest.fn(),
-                }
-              : undefined
-          }
-        >
-          <NavProvider>
-            {screen ?? <BookExperience experience={hm} />}
-          </NavProvider>
-        </RebookingProvider>
-      </BookingDateProvider>
-    </PlansProvider>
+    <WithAutopilot>
+      <PlansProvider>
+        <BookingDateProvider>
+          <RebookingProvider
+            value={
+              rebook
+                ? {
+                    current: rebook,
+                    auto: false,
+                    begin: jest.fn(),
+                    end: jest.fn(),
+                  }
+                : undefined
+            }
+          >
+            <NavProvider>
+              {screen ?? <BookExperience experience={hm} />}
+            </NavProvider>
+          </RebookingProvider>
+        </BookingDateProvider>
+      </PlansProvider>
+    </WithAutopilot>
   );
   if (screen) {
     await waitFor(() => expect(itinerary.plans).toHaveBeenCalled());
@@ -136,6 +152,7 @@ describe('BookExperience', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    watched = false;
     mockOffer(offer);
     itinerary.plans.mockResolvedValue([booking]);
     ll.guests.mockResolvedValue(guests);
@@ -275,6 +292,47 @@ describe('BookExperience', () => {
     // The first offer's 410 is mapped to no message at all. An empty mapping
     // used to fall through to "Network request failed (410 ...)".
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+
+  // A ride sold out for the party was a dead end here: having Autopilot watch
+  // for it meant Today, then Configure, then finding it in the list.
+  it('hands a sold-out ride to Autopilot, and opens its card', async () => {
+    ll.offer.mockRejectedValueOnce(
+      new RequestError({ ok: false, status: 410, data: {} })
+    );
+    await renderComponent();
+    see('No Reservations Available');
+    see(
+      'Autopilot can watch for it while it runs, and alert you when it comes back.'
+    );
+    click('Watch with Autopilot');
+    expect(addTarget).toHaveBeenCalledWith({ experienceId: hm.id });
+    await see.screen('Configure');
+  });
+
+  it('offers Autopilot beside an offer too', async () => {
+    await renderComponent();
+    see('Book Lightning Lane');
+    see('Not the time you want? Autopilot can watch it while it runs.');
+    click('Watch with Autopilot');
+    expect(addTarget).toHaveBeenCalledWith({ experienceId: hm.id });
+    await see.screen('Configure');
+  });
+
+  it('opens the card of a ride already on the list, adding nothing', async () => {
+    watched = true;
+    await renderComponent();
+    see.no('Watch with Autopilot');
+    see("It is on Autopilot's list for this park and day.");
+    click('Open in Configure');
+    expect(addTarget).not.toHaveBeenCalled();
+    await see.screen('Configure');
+  });
+
+  it('does not offer Autopilot while modifying a pass', async () => {
+    await renderComponent({ rebook: booking });
+    expectModifying(booking);
+    see.no('Watch with Autopilot');
   });
 
   // A dropped connection used to read as "No Reservations Available": a
