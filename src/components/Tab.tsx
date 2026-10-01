@@ -11,9 +11,16 @@ export default function Tab({
   title,
   buttons,
   subhead,
+  bottomRow,
   children,
   ref,
-}: ScreenProps) {
+}: ScreenProps & {
+  /**
+   * A tab's own row at the top of the footer, within reach of a thumb, where
+   * the header is not.
+   */
+  bottomRow?: React.ReactNode;
+}) {
   const { tabs, scrollPos, footer } = use(TabsContext);
 
   useLayoutEffect(() => {
@@ -32,6 +39,7 @@ export default function Tab({
       subhead={subhead}
       footer={
         <>
+          {bottomRow}
           {/* Above the tabs, never below them. Below, it appeared only while
               Autopilot ran and only off Today, so the tabs rode 28 px higher
               on every other tab and a thumb aimed at them met this row --
