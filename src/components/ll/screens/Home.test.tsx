@@ -65,7 +65,7 @@ describe('Home', () => {
     click('Select All');
     click('Cancel Reservation');
     click('Yes, cancel');
-    await see.screen('Your Plans');
+    await see.screen('Plans');
   });
 });
 

@@ -18,6 +18,7 @@ import { Time } from '@/components/Time';
 import TopAutopilotContext from '@/contexts/TopAutopilotContext';
 import { LockIcon } from '@/icons/LineIcons';
 
+import { onIPhone } from './onIPhone';
 import {
   BOX_POSITIONS,
   INITIAL,
@@ -118,15 +119,6 @@ function touchPoint(
  * length, so a glance answers "is it still working" without lifting the shield
  * at all -- which is the question being asked most of the time.
  */
-/** iPhone or iPad Safari, including an iPad that says it is a Mac. */
-function onIPhone(): boolean {
-  if (typeof navigator === 'undefined') return false;
-  return (
-    /iP(hone|od|ad)/.test(navigator.userAgent) ||
-    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
-  );
-}
-
 export default function PocketShield({
   onExit,
   wideTouchLearned = false,

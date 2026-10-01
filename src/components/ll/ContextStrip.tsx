@@ -53,42 +53,60 @@ export default function ContextStrip({
         title="Park, day and party"
         onClick={() => setOpen(true)}
       >
-        <ChipText />
-        <span aria-hidden className="text-xs">
-          ▾
-        </span>
+        <ChipText
+          suffix={
+            <span aria-hidden className="text-xs">
+              ▾
+            </span>
+          }
+        />
       </button>
       {open && <ScopeSheet onClose={() => setOpen(false)} />}
     </>
   );
 }
 
-function ChipText() {
+/**
+ * The chip's parts, each kept whole with the dot after it, and the last with
+ * `suffix`. A narrow phone then wraps between parts. Laid out one item at a
+ * time, with dry run on the chip ran past 360 px and its ▾ wrapped onto a
+ * line of its own.
+ */
+function ChipText({ suffix }: { suffix?: React.ReactNode }) {
   const { park } = use(ParkContext);
   const { bookingDate } = use(BookingDateContext);
   const { dryRun } = use(AutopilotContext);
   const partySize = useSavedPartyCount();
   const day =
     bookingDate === parkDate() ? 'Today' : formatDate(bookingDate, 'short');
-  return (
-    <>
-      <span>{park.name}</span>
-      {DOT}
-      <time dateTime={bookingDate}>{day}</time>
-      {DOT}
-      <span>
-        {partySize > 0 ? `Party of ${partySize}` : 'Everyone eligible'}
-      </span>
-      {dryRun && (
-        <>
-          {DOT}
-          <span className="rounded-full bg-yellow-200 px-2 text-yellow-900">
+  const parts = [
+    <span key="park">{park.name}</span>,
+    <time key="day" dateTime={bookingDate}>
+      {day}
+    </time>,
+    <span key="party">
+      {partySize > 0 ? `Party of ${partySize}` : 'Everyone eligible'}
+    </span>,
+    ...(dryRun
+      ? [
+          <span
+            key="dry-run"
+            className="rounded-full bg-yellow-200 px-2 text-yellow-900"
+          >
             Dry run
-          </span>
-        </>
-      )}
-    </>
-  );
+          </span>,
+        ]
+      : []),
+  ];
+  return parts.map((part, index) => (
+    <span
+      key={part.key}
+      className="inline-flex items-center gap-x-1.5 whitespace-nowrap"
+    >
+      {part}
+      {index < parts.length - 1 ? DOT : suffix}
+    </span>
+  ));
 }
 
 /**

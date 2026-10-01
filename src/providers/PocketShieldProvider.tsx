@@ -1,7 +1,12 @@
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
+import Button from '@/components/Button';
 import PocketShield from '@/components/ll/PocketShield';
+import { onIPhone } from '@/components/ll/onIPhone';
 import PocketShieldContext from '@/contexts/PocketShieldContext';
+
+/** How long the reminder to end Guided Access stays, unless dismissed. */
+export const END_GUIDED_ACCESS_MS = 15_000;
 
 /**
  * Owns whether the screen is guarded, and renders the guard.
@@ -27,8 +32,24 @@ export default function PocketShieldProvider({
   // memory only. A wide thumb should not pay the escape cost every time the
   // phone is re-pocketed, while a reload starts from the strict defaults.
   const [wideTouchLearned, setWideTouchLearned] = useState(false);
+  // A web page cannot tell whether Guided Access is on, and an iPhone left in
+  // it all day has no emergency calls and no Crash Detection. Lifting the
+  // shield is the moment to say so: once, briefly, and only on an iPhone.
+  const [endGuidedAccess, setEndGuidedAccess] = useState(false);
+  useEffect(() => {
+    if (!endGuidedAccess) return;
+    const timer = setTimeout(
+      () => setEndGuidedAccess(false),
+      END_GUIDED_ACCESS_MS
+    );
+    return () => clearTimeout(timer);
+  }, [endGuidedAccess]);
+  const shield = useCallback((on: boolean) => {
+    setShielded(on);
+    if (on) setEndGuidedAccess(false);
+  }, []);
   return (
-    <PocketShieldContext value={{ shielded, setShielded }}>
+    <PocketShieldContext value={{ shielded, setShielded: shield }}>
       <div
         className="contents"
         inert={shielded}
@@ -39,10 +60,30 @@ export default function PocketShieldProvider({
       </div>
       {shielded && (
         <PocketShield
-          onExit={() => setShielded(false)}
+          onExit={() => {
+            setShielded(false);
+            if (onIPhone()) setEndGuidedAccess(true);
+          }}
           wideTouchLearned={wideTouchLearned}
           onLearnWideTouch={() => setWideTouchLearned(true)}
         />
+      )}
+      {endGuidedAccess && !shielded && (
+        <div
+          role="status"
+          className="fixed inset-x-3 top-3 z-40 rounded-2xl border border-gray-300 bg-white p-3.5 text-sm text-black shadow-lg"
+        >
+          <p className="my-0">
+            Pocket mode is off. If Guided Access is on, triple-click the side
+            button to end it: emergency calls and Crash Detection do not work
+            during it.
+          </p>
+          <div className="mt-2">
+            <Button type="small" onClick={() => setEndGuidedAccess(false)}>
+              Dismiss
+            </Button>
+          </div>
+        </div>
       )}
     </PocketShieldContext>
   );
