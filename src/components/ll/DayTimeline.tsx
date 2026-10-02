@@ -118,21 +118,21 @@ export default function DayTimeline({
 
   return (
     <section className="mt-4" aria-label="Day timeline">
-      <h3>Day timeline</h3>
-      <p className="text-xs text-gray-600">
+      <h3 className="mt-0 mb-1 font-bold">Day timeline</h3>
+      <p className="my-0 text-sm text-gray-600">
         Your plans for the day, Lightning Lanes in blue and dining and other
         reservations in grey, beside the return windows Autopilot is allowed to
         use. An amber window crosses the protected time around a plan; red means
         the whole window is inside it, or its bounds are reversed.
       </p>
       {timeline.anyTime.length > 0 && (
-        <p className="mt-2 text-xs text-gray-700">
-          <span className="font-semibold">Any time:</span>{' '}
+        <p className="mt-3 mb-0 rounded-2xl border border-gray-300 bg-white p-3.5 text-sm text-gray-700">
+          <span className="font-semibold text-ink">Any time:</span>{' '}
           {timeline.anyTime.map((target, index) => (
             <Fragment key={target.id}>
               {index > 0 && ', '}
               <button
-                className="underline decoration-gray-400 underline-offset-2"
+                className="font-semibold text-ink underline decoration-gray-400 underline-offset-2"
                 onClick={() => onTargetTap?.(target.id)}
               >
                 {target.name}
@@ -143,9 +143,12 @@ export default function DayTimeline({
         </p>
       )}
       {/* Each side's width in proportion to its columns, so that two plans
-          at once do not get half the room one target window does. */}
+          at once do not get half the room one target window does. Each side
+          is a white panel under a quiet label, as the tip board draws its
+          lists; the hours stay on the page beside them, so the bars keep the
+          width 1.8.0 found them at 360 px. */}
       <div
-        className="mt-2 grid gap-x-2 text-xs"
+        className="mt-3 grid gap-x-2 text-xs"
         style={{
           gridTemplateColumns: `3rem ${timeline.lanes[0]?.columns ?? 1}fr ${
             timeline.targets[0]?.columns ?? 1
@@ -153,9 +156,13 @@ export default function DayTimeline({
         }}
       >
         <div />
-        <div className="font-semibold">Plans</div>
-        <div className="font-semibold">Targets</div>
-        <div className="relative h-[480px] text-right text-gray-500">
+        <div className="mb-1.5 px-1 text-[11px] font-bold tracking-wide text-gray-500 uppercase">
+          Plans
+        </div>
+        <div className="mb-1.5 px-1 text-[11px] font-bold tracking-wide text-gray-500 uppercase">
+          Targets
+        </div>
+        <div className="relative h-[480px] text-right text-[11px] text-gray-500">
           {MARKERS.map(time => (
             <span
               key={time.toString()}
@@ -166,7 +173,7 @@ export default function DayTimeline({
             </span>
           ))}
         </div>
-        <div className="relative h-[480px] border-l border-gray-200">
+        <div className="relative h-[480px] overflow-hidden rounded-xl border border-gray-300 bg-white">
           {MARKERS.map(time => (
             <div
               key={time.toString()}
@@ -197,7 +204,7 @@ export default function DayTimeline({
             return (
               <Fragment key={lane.id}>
                 <button
-                  className={`absolute rounded-sm text-left ${
+                  className={`absolute rounded-md text-left ${
                     lane.kind === 'll'
                       ? 'bg-blue-100 text-blue-950'
                       : 'bg-gray-200 text-gray-900'
@@ -209,7 +216,7 @@ export default function DayTimeline({
                   }`}
                 >
                   <HitArea heightPercent={style.height} />
-                  <span className="relative block h-full overflow-hidden px-1">
+                  <span className="relative block h-full overflow-hidden px-1.5">
                     <span
                       className={`font-semibold ${
                         barPx(style.height) >= TWO_LINES_PX
@@ -233,7 +240,7 @@ export default function DayTimeline({
             );
           })}
         </div>
-        <div className="relative h-[480px] border-l border-gray-200">
+        <div className="relative h-[480px] overflow-hidden rounded-xl border border-gray-300 bg-white">
           {MARKERS.map(time => (
             <div
               key={time.toString()}
@@ -258,7 +265,7 @@ export default function DayTimeline({
             return (
               <button
                 key={target.id}
-                className={`absolute rounded-sm border text-left ${
+                className={`absolute rounded-md border text-left ${
                   bad
                     ? 'border-red-500 bg-red-100 text-red-950'
                     : target.clashes.length > 0
@@ -278,7 +285,7 @@ export default function DayTimeline({
                 }`}
               >
                 <HitArea heightPercent={style.height} />
-                <span className="relative block h-full overflow-hidden px-1">
+                <span className="relative block h-full overflow-hidden px-1.5">
                   <span className={`font-semibold ${line}`}>{target.name}</span>
                   <span className={line}>
                     {target.bounded ? (
