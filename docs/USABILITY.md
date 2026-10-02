@@ -92,7 +92,7 @@ waiting for; a chime before a held pass lapses (`alert.ts` is frozen for the
 trip).
 
 **Suggested by the review and not built yet:** none. The last, the timeline,
-came by merge with AutoLL-3 1.8.0; its new look is still to come
+came by merge with AutoLL-3 1.8.0, and its new look with slice 13
 ([NEW-LOOK.md](NEW-LOOK.md)).
 
 **Built since the review:** screen titles that match their tabs ("Times" and

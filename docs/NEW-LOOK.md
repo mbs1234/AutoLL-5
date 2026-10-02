@@ -75,7 +75,7 @@ park. Each slice keeps all of them.
 | 10 | Activity | its headings in bold, as Today's are; the log, the skip counts and the learned drop times each as a card with hairline rules; each log line's time in semibold | merged (#36) |
 | 11 | Booking screens | the return window as the biggest thing on them, in the display face, under a small label, still one element that reads "Arrive by: 10:35 AM – 11:35 AM"; Your Lightning Lanes as a card; their headings in bold; rounder notices and the cancel dialog | merged (#37) |
 | 12 | Settings | the menu rounder, with hairline rules and a shadow; Party Selection's choice as a card of rows; its and Backup and Restore's headings in bold; the picked backup file as a card | merged (#38) |
-| 13 | Timeline | Plans and Targets as white panels under quiet labels, with the hours on the page beside them; rounder bars in the same colours; Any time as a card; the intro at reading size | in review |
+| 13 | Timeline | Plans and Targets as white panels under quiet labels, with the hours on the page beside them; rounder bars in the same colours; Any time as a card; the intro at reading size | merged (#40) |
 
 **One deliberate departure from the mockups.** They put Today's main actions in
 a bar along the bottom. The switch stays in the page instead: a bar there sits
