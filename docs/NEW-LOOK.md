@@ -163,3 +163,6 @@ the merge that brought it:
   AutoLL-3's test of the buttons runs here. The guide takes AutoLL-3's
   rough-edges line, none as of 1.8.2, with this build's link, and its Plan
   Check caption, which this build's own screenshot fits.
+- **AutoLL-3 #94, after 1.8.2.** The Home flake fix, tests only. This build's
+  first Home test ends at its own cancel confirmation and its Plans title, so
+  the new `settled()` follows those.
