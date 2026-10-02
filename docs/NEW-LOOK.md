@@ -75,7 +75,7 @@ park. Each slice keeps all of them.
 | 10 | Activity | its headings in bold, as Today's are; the log, the skip counts and the learned drop times each as a card with hairline rules; each log line's time in semibold | merged (#36) |
 | 11 | Booking screens | the return window as the biggest thing on them, in the display face, under a small label, still one element that reads "Arrive by: 10:35 AM – 11:35 AM"; Your Lightning Lanes as a card; their headings in bold; rounder notices and the cancel dialog | merged (#37) |
 | 12 | Settings | the menu rounder, with hairline rules and a shadow; Party Selection's choice as a card of rows; its and Backup and Restore's headings in bold; the picked backup file as a card | merged (#38) |
-| 13 | Timeline | Plans and Targets as white panels under quiet labels, with the hours on the page beside them; rounder bars in the same colours; Any time as a card; the intro at reading size | in review |
+| 13 | Timeline | Plans and Targets as white panels under quiet labels, with the hours on the page beside them; rounder bars in the same colours; Any time as a card; the intro at reading size | merged (#40) |
 
 **One deliberate departure from the mockups.** They put Today's main actions in
 a bar along the bottom. The switch stays in the page instead: a bar there sits
@@ -158,3 +158,8 @@ the merge that brought it:
   own test standing in for the one that read AutoLL-3's markup. The guide
   takes AutoLL-3's text where its screens are this build's too; it lists no
   rough edges, since this build had fixed Plan Check's two already.
+- **1.8.2.** Nothing to re-make: Plan Check's verb and its buttons on lines of
+  their own were this build's code already, and merged without a change.
+  AutoLL-3's test of the buttons runs here. The guide takes AutoLL-3's
+  rough-edges line, none as of 1.8.2, with this build's link, and its Plan
+  Check caption, which this build's own screenshot fits.

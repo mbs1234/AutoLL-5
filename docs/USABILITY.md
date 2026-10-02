@@ -85,14 +85,14 @@ bar in the park's colour; no awake warning and no Pocket it once a run has
 stopped; a readiness row for attractions this build does not recognise; and
 the timeline's names, dining, tap areas and 12-hour descriptions
 ([FUTURE.md](FUTURE.md) §2.1, §2.2, §2.7). The two Configure fixes of 1.8.1 were
-this build's already.
+this build's already, as are 1.8.2's two in Plan Check.
 
 **Needs the engine, so AutoLL-3 first:** naming the ride the Tier 1 hold is
 waiting for; a chime before a held pass lapses (`alert.ts` is frozen for the
 trip).
 
 **Suggested by the review and not built yet:** none. The last, the timeline,
-came by merge with AutoLL-3 1.8.0; its new look is still to come
+came by merge with AutoLL-3 1.8.0, and its new look with slice 13
 ([NEW-LOOK.md](NEW-LOOK.md)).
 
 **Built since the review:** screen titles that match their tabs ("Times" and
