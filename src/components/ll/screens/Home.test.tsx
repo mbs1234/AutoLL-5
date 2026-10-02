@@ -18,6 +18,7 @@ import {
   screen,
   see,
   setTime,
+  settled,
 } from '@/testing';
 
 import Merlock from '../Merlock';
@@ -75,6 +76,9 @@ describe('Home', () => {
     click('Cancel Reservation');
     click('Yes, cancel');
     await see.screen('Plans');
+    // The cancel also refreshes the plans, which can outlast the screen
+    // change. Left running, it would hold the next test's loads pending.
+    await settled();
   });
 });
 
@@ -112,6 +116,8 @@ describe('Home auto-refresh on return to tab', () => {
     const beforeSecond = fetches();
     revisitTab(120);
     await waitFor(() => expect(fetches()).toBeGreaterThan(beforeSecond));
+    // The refresh this started is still running. See `settled`.
+    await settled();
   });
 });
 
