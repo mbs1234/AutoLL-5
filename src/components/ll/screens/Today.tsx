@@ -344,6 +344,7 @@ export default function Today({ ref }: HomeTabProps) {
     notifications,
     sound: soundStatus,
     windowsConfirmed: confirmedWindows === currentWindows,
+    unknownAttractions: unknown,
     planReviewed: reviewedPlan?.key === currentReview.key,
     planBlockers: currentReview.blockers,
   });
@@ -451,7 +452,9 @@ export default function Today({ ref }: HomeTabProps) {
             shown, and there is a way to hear it on purpose rather than by
             waiting for a real find and wondering. */}
         {(soundStatus !== 'unsupported' ||
-          (enabled && awakeStatus !== 'unsupported')) && (
+          (enabled &&
+            status.mode !== 'stopped' &&
+            awakeStatus !== 'unsupported')) && (
           <div className="mt-3 flex flex-col gap-2 border-t border-gray-200 pt-3">
             {soundStatus !== 'unsupported' && (
               <div className="flex items-center justify-between gap-3">
@@ -480,22 +483,28 @@ export default function Today({ ref }: HomeTabProps) {
                 </Button>
               </div>
             )}
-            {enabled && awakeStatus !== 'unsupported' && (
-              <div className="flex items-center gap-2">
-                <SunIcon className="size-4 text-gray-500" />
-                <p
-                  className={`my-0 text-sm ${
-                    awakeStatus === 'held'
-                      ? 'text-gray-600'
-                      : 'font-semibold text-red-700'
-                  }`}
-                >
-                  {awakeStatus === 'held'
-                    ? 'Screen is being kept awake.'
-                    : 'Screen may sleep, which can slow or pause checks. On an iPhone, Low Power Mode is the usual cause.'}
-                </p>
-              </div>
-            )}
+            {/* Not once stopped: a stop gives the wake lock back on
+                purpose, and with nothing checking, "can slow or pause
+                checks" was an alarm about nothing. Restart takes the lock
+                again, and the line comes back. */}
+            {enabled &&
+              status.mode !== 'stopped' &&
+              awakeStatus !== 'unsupported' && (
+                <div className="flex items-center gap-2">
+                  <SunIcon className="size-4 text-gray-500" />
+                  <p
+                    className={`my-0 text-sm ${
+                      awakeStatus === 'held'
+                        ? 'text-gray-600'
+                        : 'font-semibold text-red-700'
+                    }`}
+                  >
+                    {awakeStatus === 'held'
+                      ? 'Screen is being kept awake.'
+                      : 'Screen may sleep, which can slow or pause checks. On an iPhone, Low Power Mode is the usual cause.'}
+                  </p>
+                </div>
+              )}
           </div>
         )}
         <LatestEvent event={activity} />
@@ -548,7 +557,7 @@ export default function Today({ ref }: HomeTabProps) {
           only time the wake lock holds the screen on and the glass stays live
           in a pocket. */}
       <div className="mt-3 flex gap-2">
-        {enabled && (
+        {enabled && status.mode !== 'stopped' && (
           <Button
             type="full"
             className="flex-1"
@@ -669,6 +678,7 @@ export default function Today({ ref }: HomeTabProps) {
                         else if (
                           item.subject === 'targets' ||
                           item.subject === 'settings' ||
+                          item.subject === 'unknown' ||
                           (item.subject === 'windows' && item.done)
                         ) {
                           goTo(<Configure />);

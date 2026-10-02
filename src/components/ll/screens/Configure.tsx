@@ -1,4 +1,4 @@
-import { use, useEffect, useRef, useState } from 'react';
+import { use, useCallback, useEffect, useRef, useState } from 'react';
 
 import { Experience } from '@/api/ll';
 import { WatchTarget, targetApplies } from '@/autopilot/watchlist';
@@ -76,6 +76,19 @@ export default function Configure({
       safeguardsRef.current?.scrollIntoView?.({ block: 'center' });
     }
   }, [focus]);
+  // A card opened from elsewhere, or just added, is brought into view once a
+  // visit: a card the filter hides and shows again stays where it is, rather
+  // than the screen jumping while the filter is typed in. Kept per card, so a
+  // second ride added still comes into view.
+  const broughtIntoView = useRef(new Set<string>());
+  const bringIntoView = useCallback(
+    (experienceId: string, card: HTMLElement) => {
+      if (broughtIntoView.current.has(experienceId)) return;
+      broughtIntoView.current.add(experienceId);
+      card.scrollIntoView?.({ block: 'start' });
+    },
+    []
+  );
   // The target just added starts unfolded: adding is when it gets set up. One
   // added from the booking screen, by Watch with Autopilot, arrives the same.
   const [justAdded, setJustAdded] = useState(
@@ -307,6 +320,7 @@ export default function Configure({
                   exp.id === justAdded ||
                   (focus?.kind === 'target' && exp.id === focus.experienceId)
                 }
+                bringIntoView={bringIntoView}
                 justAdded={exp.id === justAdded}
                 onRemove={() => {
                   const target = targetFor(exp.id) ?? { experienceId: exp.id };

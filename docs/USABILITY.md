@@ -79,17 +79,21 @@ the park-morning check now names.
 line; a "windows set where wanted" step in the readiness list, which you
 confirm; and a way back into a finished step.
 
+**Brought by AutoLL-3 1.7.0 to 1.8.1:** Pocket mode for a NextLL search, on
+this build's pocket screen; refreshes that do not cover the screen, with a thin
+bar in the park's colour; no awake warning and no Pocket it once a run has
+stopped; a readiness row for attractions this build does not recognise; and
+the timeline's names, dining, tap areas and 12-hour descriptions
+([FUTURE.md](FUTURE.md) §2.1, §2.2, §2.7). The two Configure fixes of 1.8.1 were
+this build's already.
+
 **Needs the engine, so AutoLL-3 first:** naming the ride the Tier 1 hold is
-waiting for; Pocket mode for a NextLL search; a chime before a held pass lapses
-(`alert.ts` is frozen for the trip). Refreshes that do not cover the screen: the
-spinner that blocks every refresh is the providers', not a screen's.
+waiting for; a chime before a held pass lapses (`alert.ts` is frozen for the
+trip).
 
-**Suggested by the review and not built yet**, none of them decided against:
-
-- The timeline: every name cut at 360 px, bars too small to tap, tooltips in
-  24-hour time, and no dining ([FUTURE.md](FUTURE.md) §2.1, §2.2, §2.7). Being
-  made in AutoLL-3 first, as 1.8.0, since the component is shared; it arrives
-  here by merge.
+**Suggested by the review and not built yet:** none. The last, the timeline,
+came by merge with AutoLL-3 1.8.0; its new look is still to come
+([NEW-LOOK.md](NEW-LOOK.md)).
 
 **Built since the review:** screen titles that match their tabs ("Times" and
 "Plans", which read "Times Guide" and "Your Plans"), and a reminder to end

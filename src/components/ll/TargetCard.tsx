@@ -203,6 +203,7 @@ export default function TargetCard({
   target,
   defaultOpen,
   justAdded,
+  bringIntoView,
   onRemove,
 }: {
   experience: Experience;
@@ -211,6 +212,11 @@ export default function TargetCard({
   defaultOpen?: boolean;
   /** Just added: it only alerts until an action is chosen, so say so. */
   justAdded?: boolean;
+  /**
+   * Brings the card into view when it opens unfolded. Configure passes one
+   * that does so once a card each visit; without it the card scrolls itself.
+   */
+  bringIntoView?: (experienceId: string, card: HTMLElement) => void;
   onRemove: () => void;
 }) {
   const {
@@ -247,8 +253,11 @@ export default function TargetCard({
   // put its name out of sight.
   const cardRef = useRef<HTMLDetailsElement>(null);
   useEffect(() => {
-    if (defaultOpen) cardRef.current?.scrollIntoView?.({ block: 'start' });
-  }, [defaultOpen]);
+    const card = cardRef.current;
+    if (!defaultOpen || !card) return;
+    if (bringIntoView) bringIntoView(id, card);
+    else card.scrollIntoView?.({ block: 'start' });
+  }, [defaultOpen, bringIntoView, id]);
   const autoSwap = !!t.autoSwap;
   const paused = !!t.paused;
   const passkey = !!t.passkey;
