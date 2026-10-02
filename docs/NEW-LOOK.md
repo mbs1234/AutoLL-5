@@ -158,3 +158,8 @@ the merge that brought it:
   own test standing in for the one that read AutoLL-3's markup. The guide
   takes AutoLL-3's text where its screens are this build's too; it lists no
   rough edges, since this build had fixed Plan Check's two already.
+- **1.8.2.** Nothing to re-make: Plan Check's verb and its buttons on lines of
+  their own were this build's code already, and merged without a change.
+  AutoLL-3's test of the buttons runs here. The guide takes AutoLL-3's
+  rough-edges line, none as of 1.8.2, with this build's link, and its Plan
+  Check caption, which this build's own screenshot fits.

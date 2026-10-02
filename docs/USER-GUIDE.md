@@ -1120,10 +1120,8 @@ included, stay as they are. Reload the page afterwards.
 **Between trips, open AutoLL-5 at least once a week** as well, or it may start
 empty next time.
 
-**Rough edges, as of 1.8.1.** None known beyond what
-[docs/FUTURE.md](FUTURE.md) lists, with what each would cost to fix. The
-timeline's cut names and small bars went with 1.8.0, and Plan Check's verb and
-inline buttons were fixed here already.
+**Rough edges, as of 1.8.2.** None known beyond what
+[docs/FUTURE.md](FUTURE.md) lists, with what each would cost to fix.
 
 ---
 
