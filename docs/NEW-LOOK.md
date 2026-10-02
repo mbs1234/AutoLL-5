@@ -141,3 +141,20 @@ the merge that brought it:
   backup line still offers **Back up** only once the last backup is a week old,
   as slice 3 chose. (Since changed: it offers it always, as the owner chose on
   2026-10-01; see USABILITY.md.)
+- **1.7.0 to 1.8.1.** A pocketed NextLL search fills the pocket screen's status
+  block, in this build's type, with only the sound and screen chip below it
+  while it runs: the armed and booked counts are the day plan's. NextLL's
+  **Pocket it** is drawn as Today's, in ink with the lock, first in a row
+  beside Done or Stop looking. The refresh bar is the park's colour, since the
+  white AutoLL-3 draws on its coloured header would not show on this build's
+  paper one. Today's awake line and **Pocket it** go once a run has stopped,
+  in the status card and beside the switch where this build has them, and the
+  test of the unrecognised-attraction notice now finds it by its own words, as
+  the readiness list names those attractions too. The timeline arrives whole,
+  still in the foundation's look; its slice is next. This build had both of
+  1.8.1's Configure fixes already. Its card scroll is now once a card each
+  visit, so a card the filter hides and shows again does not move the screen,
+  and AutoLL-3's tests of the undo and the scroll run here, with this build's
+  own test standing in for the one that read AutoLL-3's markup. The guide
+  takes AutoLL-3's text where its screens are this build's too; it lists no
+  rough edges, since this build had fixed Plan Check's two already.

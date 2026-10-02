@@ -10,7 +10,15 @@ import {
 } from '@/__fixtures__/ll';
 import kvdb from '@/kvdb';
 import { HOME_TAB_KEY } from '@/storageNamespace';
-import { click, loading, revisitTab, screen, see, setTime } from '@/testing';
+import {
+  click,
+  loading,
+  refreshing,
+  revisitTab,
+  screen,
+  see,
+  setTime,
+} from '@/testing';
 
 import Merlock from '../Merlock';
 import Home from './Home';
@@ -36,7 +44,8 @@ describe('Home', () => {
     await loading();
 
     revisitTab(60);
-    await loading();
+    // A refresh of the list already on screen: the thin bar, not the spinner.
+    await refreshing();
 
     click('Times');
     expect(kvdb.get(HOME_TAB_KEY)).toBe('Times');

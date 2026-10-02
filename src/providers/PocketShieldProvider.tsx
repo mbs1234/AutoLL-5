@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 import Button from '@/components/Button';
 import PocketShield from '@/components/ll/PocketShield';
 import { onIPhone } from '@/components/ll/onIPhone';
+import { createPocketSearchStore } from '@/components/ll/pocketSearch';
 import PocketShieldContext from '@/contexts/PocketShieldContext';
 
 /** How long the reminder to end Guided Access stays, unless dismissed. */
@@ -48,8 +49,13 @@ export default function PocketShieldProvider({
     setShielded(on);
     if (on) setEndGuidedAccess(false);
   }, []);
+  // What a NextLL search reports about itself. The shield reads it while it
+  // is set; otherwise it describes the day plan's Autopilot.
+  const [search] = useState(createPocketSearchStore);
   return (
-    <PocketShieldContext value={{ shielded, setShielded: shield }}>
+    <PocketShieldContext
+      value={{ shielded, setShielded: shield, showInPocket: search.set }}
+    >
       <div
         className="contents"
         inert={shielded}
@@ -66,6 +72,7 @@ export default function PocketShieldProvider({
           }}
           wideTouchLearned={wideTouchLearned}
           onLearnWideTouch={() => setWideTouchLearned(true)}
+          search={search}
         />
       )}
       {endGuidedAccess && !shielded && (

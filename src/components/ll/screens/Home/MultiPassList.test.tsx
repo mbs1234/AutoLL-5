@@ -25,6 +25,7 @@ import {
   act,
   click,
   loading,
+  refreshing,
   screen,
   see,
   setTime,
@@ -132,7 +133,8 @@ describe('MultiPassList', () => {
 
     setTime('10:00');
     click('Refresh Experiences');
-    await loading();
+    // The list is on screen already, so it refreshes under the thin bar.
+    await refreshing();
     expect(ll.experiences).toHaveBeenCalledTimes(2);
 
     see.no(NEXT_DROP_INFO);
@@ -206,7 +208,7 @@ describe('MultiPassList', () => {
     await loading();
     const row = see(sm.name).closest('li')!;
     click('Refresh Experiences');
-    await loading();
+    await refreshing();
     expect(ll.experiences).toHaveBeenCalledTimes(2);
     expect(row).toBeInTheDocument();
   });
@@ -263,7 +265,9 @@ describe('MultiPassList', () => {
     see('Updated 3 min ago');
     const calls = ll.experiences.mock.calls.length;
     click('Refresh');
-    await loading();
+    // A refresh of a list already on screen shows the thin bar, not the
+    // spinner (1.7.1).
+    await refreshing();
     expect(ll.experiences).toHaveBeenCalledTimes(calls + 1);
     see('Updated just now');
   });

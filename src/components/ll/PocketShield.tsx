@@ -37,9 +37,14 @@ import {
   reportedMajorRadius,
   reportedMinorRadius,
 } from './pocketGuard';
+import { PocketSearch, PocketSearchStore } from './pocketSearch';
 
 /** Compatibility clicks arrive immediately after the touch that created them. */
 const COMPATIBILITY_CLICK_MS = 1_000;
+
+/** With no search store, there is never a search to show. */
+const NO_SEARCH = (): PocketSearch | undefined => undefined;
+const NO_UPDATES = () => () => undefined;
 
 const SOUND_TEXT: Record<AudioStatus, string> = {
   armed: 'Sound on',
@@ -123,12 +128,20 @@ export default function PocketShield({
   onExit,
   wideTouchLearned = false,
   onLearnWideTouch = () => undefined,
+  search: searchStore,
 }: {
   onExit: () => void;
   wideTouchLearned?: boolean;
   onLearnWideTouch?: () => void;
+  /** What a NextLL search reports; while set, it is shown instead. */
+  search?: PocketSearchStore;
 }) {
   const autopilot = use(TopAutopilotContext);
+  const search = useSyncExternalStore(
+    searchStore?.subscribe ?? NO_UPDATES,
+    searchStore?.get ?? NO_SEARCH,
+    searchStore?.get ?? NO_SEARCH
+  );
   const [guard, setGuard] = useState(INITIAL);
   const [wideGuard, setWideGuard] = useState(INITIAL_WIDE_TOUCH);
   const shield = useRef<HTMLDivElement>(null);
@@ -169,7 +182,9 @@ export default function PocketShield({
   const mode = autopilot?.status.mode ?? 'off';
   const stopped = mode === 'stopped';
   const off = mode === 'off';
-  const alarm = stopped || off;
+  // A search stopped for a good reason -- it has what it was asked for -- is
+  // not an alarm, which is why the search says which kind of stop it is.
+  const alarm = search ? search.state === 'stopped' : stopped || off;
   const alertChannelsHealthy =
     soundStatus === 'armed' && awakeStatus === 'held';
   const armed =
@@ -318,7 +333,48 @@ export default function PocketShield({
         </div>
 
         <div className="absolute inset-x-6 top-[37%] -translate-y-1/2">
-          {alarm ? (
+          {/* A pocketed NextLL search says how it stands, in place of the day
+              plan's Autopilot: the shield sits above every tab, and read
+              only the day plan before. */}
+          {search ? (
+            <>
+              {search.state !== 'running' && (
+                <div
+                  className={`font-display text-5xl font-bold ${
+                    search.state === 'done' ? 'text-green-300' : 'text-red-300'
+                  }`}
+                >
+                  {search.state === 'done' ? 'Done' : 'Stopped'}
+                </div>
+              )}
+              <div
+                className={
+                  search.state === 'running'
+                    ? 'font-display text-4xl leading-tight font-bold'
+                    : 'mt-3 text-2xl font-semibold'
+                }
+              >
+                {search.title}
+              </div>
+              {search.lines.map((line, index) => (
+                <p
+                  key={index}
+                  className={`mx-auto mt-2 mb-0 max-w-xs text-lg ${
+                    search.state === 'stopped'
+                      ? 'text-red-100'
+                      : 'text-gray-300'
+                  }`}
+                >
+                  {line}
+                </p>
+              ))}
+              {search.state === 'stopped' && (
+                <p className="mx-auto mt-3 mb-0 max-w-xs text-base text-red-100">
+                  Lift the shield and start it again.
+                </p>
+              )}
+            </>
+          ) : alarm ? (
             <>
               <div className="font-display text-5xl font-bold text-red-300">
                 {stopped ? 'Stopped' : 'Off'}
@@ -377,16 +433,21 @@ export default function PocketShield({
           )}
         </div>
 
-        {!alarm && (
+        {!alarm && (!search || search.state === 'running') && (
           <div className="absolute inset-x-6 top-[63%] -translate-y-1/2">
             <div className="flex flex-wrap justify-center gap-2 text-sm font-semibold">
-              <span className="rounded-full border border-white/15 px-3 py-1.5 text-gray-100">
-                {armed} armed
-                {autopilot?.dryRun ? ' · Dry run' : ''}
-              </span>
-              <span className="rounded-full border border-white/15 px-3 py-1.5 text-gray-100">
-                {autopilot?.bookedCount ?? 0} booked today
-              </span>
+              {/* The day plan's counts, which say nothing about a search. */}
+              {!search && (
+                <>
+                  <span className="rounded-full border border-white/15 px-3 py-1.5 text-gray-100">
+                    {armed} armed
+                    {autopilot?.dryRun ? ' · Dry run' : ''}
+                  </span>
+                  <span className="rounded-full border border-white/15 px-3 py-1.5 text-gray-100">
+                    {autopilot?.bookedCount ?? 0} booked today
+                  </span>
+                </>
+              )}
               <span
                 className={`rounded-full border border-white/15 px-3 py-1.5 ${
                   alertChannelsHealthy
@@ -398,7 +459,7 @@ export default function PocketShield({
                 {SOUND_TEXT[soundStatus]} · {SCREEN_TEXT[awakeStatus]}
               </span>
             </div>
-            {latest && (
+            {!search && latest && (
               <p
                 className={`mx-auto mt-4 mb-0 max-w-xs text-base font-semibold ${LATEST_CLASS[latest.level]}`}
               >
