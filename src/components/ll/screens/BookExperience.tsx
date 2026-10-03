@@ -1,8 +1,13 @@
-import { use, useCallback, useEffect, useState } from 'react';
+import { use, useCallback, useEffect, useRef, useState } from 'react';
 
 import { isLLMP } from '@/api/itinerary';
 import { Guest, LLMP, Offer, OfferError, OfferExperience } from '@/api/ll';
 import { outcomeIsUnknown } from '@/autopilot/autobook';
+import {
+  type ManualMutation,
+  bookingMutation,
+  cancellationMutation,
+} from '@/autopilot/manualMutation';
 import Button from '@/components/Button';
 import FloatingButton from '@/components/FloatingButton';
 import LandLine from '@/components/LandLine';
@@ -19,11 +24,14 @@ import RebookingContext from '@/contexts/RebookingContext';
 import ResortContext from '@/contexts/ResortContext';
 import { parkDate, upcomingTimes } from '@/datetime';
 import useDataLoader from '@/hooks/useDataLoader';
+import useManualMutation from '@/hooks/useManualMutation';
+import { useUnanswered } from '@/hooks/useMutationDoubts';
 import useScreenState from '@/hooks/useScreenState';
 import { ping } from '@/ping';
 
 import BookingDate from '../BookingDate';
 import ExistingBookings from '../ExistingBookings';
+import MutationProtection from '../MutationProtection';
 import NotLoaded from '../NotLoaded';
 import RebookingHeader from '../RebookingHeader';
 import UnansweredNotice from '../UnansweredNotice';
@@ -35,6 +43,12 @@ import OfferDetails from './BookExperience/OfferDetails';
 import WatchWithAutopilot from './BookExperience/WatchWithAutopilot';
 import BookingDetails from './BookingDetails';
 import RefreshButton from './RefreshButton';
+
+/** No offer yet: nothing for the "no answer" state to wait on. */
+const NO_MUTATION: ManualMutation = {
+  keys: [],
+  evidence: { kind: 'book', to: '', reservationIds: [] },
+};
 
 export default function BookExperience({
   experience,
@@ -53,7 +67,25 @@ export default function BookExperience({
   const [party, setParty] = useState<Party>();
   const [offer, setOffer] = useState<Offer | null | undefined>();
   const { loadData, loaderElem } = useDataLoader();
-  const [unanswered, setUnanswered] = useState(false);
+  const [unanswered, setUnanswered] = useUnanswered(
+    offer ? bookingMutation(offer) : NO_MUTATION
+  );
+  const mutate = useManualMutation();
+  // Settled while this screen is open: plans showed the booking, or showed it
+  // did not happen, or the person cleared it. Ask Disney again rather than
+  // offering the same Book: a booking that landed now comes back as held, and
+  // one that did not gets a fresh offer.
+  const wasUnanswered = useRef(false);
+  useEffect(() => {
+    if (unanswered) {
+      wasUnanswered.current = true;
+      return;
+    }
+    if (!wasUnanswered.current) return;
+    wasUnanswered.current = false;
+    setParty(undefined);
+    setOffer(undefined);
+  }, [unanswered]);
   // No offer because the request failed, rather than because Disney had no
   // slots. The two used to share "No Reservations Available", so a dropped
   // connection read as a sold-out ride.
@@ -75,7 +107,9 @@ export default function BookExperience({
     loadData(async flash => {
       let booking: LLMP;
       try {
-        booking = await ll.book(offer, party.selected);
+        booking = await mutate(bookingMutation(offer), control =>
+          ll.book(offer, party.selected, control)
+        );
       } catch (error: any) {
         const status = error?.response?.status;
         if (status === 410) {
@@ -98,15 +132,21 @@ export default function BookExperience({
       let warning: string | undefined;
       if (guestsToCancel.length > 0) {
         try {
-          await ll.cancelBooking(guestsToCancel);
+          await mutate(cancellationMutation(booking, guestsToCancel), control =>
+            ll.cancelBooking(guestsToCancel, control)
+          );
           booking.guests = booking.guests.filter(g => selectedIds.has(g.id));
         } catch (error) {
           // The booking went through, for everyone on the offer. Staying on
           // this screen made it look as though nothing had been booked.
           console.error(error);
-          warning = `Booked for everyone on the offer, but removing ${guestsToCancel
-            .map(g => g.name)
-            .join(', ')} failed. Cancel them here if they should not have it.`;
+          const names = guestsToCancel.map(g => g.name).join(', ');
+          // A removal whose answer was lost may well have happened, and is
+          // protected until plans say so; "failed" sent people to cancel again
+          // and meet that protection.
+          warning = outcomeIsUnknown(error)
+            ? `Booked for everyone on the offer. Removing ${names} may not have gone through: check Plans before cancelling them here.`
+            : `Booked for everyone on the offer, but removing ${names} failed. Cancel them here if they should not have it.`;
         }
       }
       goTo(
@@ -348,6 +388,7 @@ export default function BookExperience({
           ) : (
             <>
               <OfferDetails offer={offer} onOfferChange={setOffer} />
+              <MutationProtection mutation={bookingMutation(offer)} />
               {/* What the commit gives up, said beside it: in modify mode the
                   button books over a pass you hold, and that mode can have
                   been left on from much earlier. */}

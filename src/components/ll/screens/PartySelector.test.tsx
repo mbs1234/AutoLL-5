@@ -42,6 +42,20 @@ describe('PartySelector', () => {
     ).toBeVisible();
   });
 
+  // A saved guest the account no longer returns is invisible in both lists,
+  // and with "whole party only" on every booking would wait for them.
+  it('names saved guests no longer on this account, and saving drops them', async () => {
+    const { eligible } = await ll.guests();
+    kvdb.set(PARTY_IDS_KEY, [eligible[0]!.id, 'stale-id']);
+    await renderComponent();
+    expect(see('Only book for selected guests', 'radio')).toBeChecked();
+    expect(
+      screen.getByText(/1 saved guest is no longer on this account/)
+    ).toBeVisible();
+    await save();
+    expect(getSavedPartyIds()).toEqual([eligible[0]!.id]);
+  });
+
   it('renders party selection screen', async () => {
     const { eligible, ineligible } = await ll.guests();
     const guests = [...eligible, ...ineligible];

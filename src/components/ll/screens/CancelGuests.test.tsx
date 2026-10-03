@@ -1,10 +1,12 @@
 import { booking, ll, mickey, pluto, renderResort } from '@/__fixtures__/ll';
 import { RequestError } from '@/api/client';
-import { click, loading, nav, screen, see } from '@/testing';
+import { click, loading, nav, screen, see, setTime } from '@/testing';
 
 import CancelGuests from './CancelGuests';
 
-jest.useFakeTimers();
+// The fixtures' park day. Protection for a day already past is pruned, so the
+// real date would clear an unresolved change the moment it was raised.
+setTime('09:00');
 
 const { guests } = booking;
 const onCancel = jest.fn();
@@ -15,6 +17,7 @@ function renderComponent() {
 
 describe('CancelGuests', () => {
   beforeEach(() => {
+    localStorage.clear();
     onCancel.mockClear();
     nav.goBack.mockClear();
   });
@@ -24,8 +27,11 @@ describe('CancelGuests', () => {
     click('Select All');
     click('Cancel Reservation');
     click('Yes, cancel');
-    expect(ll.cancelBooking).toHaveBeenLastCalledWith(guests);
     await loading();
+    expect(ll.cancelBooking).toHaveBeenLastCalledWith(
+      guests,
+      expect.objectContaining({ signal: expect.any(AbortSignal) })
+    );
     expect(onCancel).toHaveBeenCalledTimes(1);
   });
 
@@ -35,8 +41,11 @@ describe('CancelGuests', () => {
     click(pluto.name);
     click('Cancel Guests');
     click('Yes, cancel');
-    expect(ll.cancelBooking).toHaveBeenLastCalledWith([guests[0], guests[2]]);
     await loading();
+    expect(ll.cancelBooking).toHaveBeenLastCalledWith(
+      [guests[0], guests[2]],
+      expect.objectContaining({ signal: expect.any(AbortSignal) })
+    );
     expect(onCancel).toHaveBeenCalledTimes(1);
   });
 
@@ -49,7 +58,9 @@ describe('CancelGuests', () => {
     click('Cancel Reservation');
     click('Yes, cancel');
     await loading();
-    see('Network request failed (no response)');
+    see(
+      'Disney did not return a definite result. Check Plans and resolve the protected change before trying again.'
+    );
   });
 
   // It fired on the first tap: a cancel cannot be taken back.
@@ -57,14 +68,20 @@ describe('CancelGuests', () => {
     renderComponent();
     click(mickey.name);
     click('Cancel Guests');
-    expect(ll.cancelBooking).not.toHaveBeenCalledWith([guests[0]]);
+    expect(ll.cancelBooking).not.toHaveBeenCalledWith(
+      [guests[0]],
+      expect.anything()
+    );
     const dialog = screen.getByRole('alertdialog');
     expect(dialog).toHaveTextContent(`Cancel 1 of ${guests.length} guests?`);
     expect(dialog).toHaveTextContent(`${booking.name} at`);
     expect(dialog).toHaveTextContent(mickey.name);
     click('Keep it');
     expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument();
-    expect(ll.cancelBooking).not.toHaveBeenCalledWith([guests[0]]);
+    expect(ll.cancelBooking).not.toHaveBeenCalledWith(
+      [guests[0]],
+      expect.anything()
+    );
   });
 
   // It used to go back and redraw the party without those guests whatever
