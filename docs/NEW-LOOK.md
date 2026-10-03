@@ -171,3 +171,23 @@ the merge that brought it:
   tests, each landed at the end of the test of the same name. Nine of this
   build's own tests that also ended mid-load end with it too, in a commit of
   their own.
+- **1.8.3 and 1.8.4.** The audit's fixes and what 1.8.4 restored, re-made in
+  this build's screens. Today's protection banner takes AutoLL-3's new words in
+  this build's spacing. The booking screen shows the protection panel under the
+  offer, as AutoLL-3 does, then this build's "This replaces your" note and
+  Watch with Autopilot, and keeps "Could not reach Disney". Cancel Guests keeps
+  its own confirmation: AutoLL-3's tests now tap **Yes, cancel**, and this
+  build's test that it asks first reads the call with its new safety control.
+  On Backup and Restore, this build's red **Replace this phone’s plan** takes
+  the new rule, off while a recovery is pending, and the recovery notice is
+  drawn as this build's red panels. Plan Check's missing-guest warning is drawn
+  as its amber cards, and the guide names this build's **Test connection**
+  where AutoLL-3's says Check current party. The protection panel, sign-in and
+  Party Selection took AutoLL-3's changes into this build's versions, keeping
+  the panel's Plans buttons and the sign-in button's look. Activity keeps both
+  new tests, this build's and AutoLL-3's. AutoLL-3's tests of the manual
+  screens tap this build's **Move to …** and **Yes, cancel**. Since the
+  protection panel now shows on the booking screens too, a lost answer there
+  shows two **Open Plans**, the panel's and the notice's; the booking test
+  reads the notice's own, and which one should stay is a question for
+  USABILITY.md.

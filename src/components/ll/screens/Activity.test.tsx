@@ -172,7 +172,12 @@ describe('Activity diagnostics', () => {
     expect(
       screen.getByText(/1 unresolved Lightning Lane change/)
     ).toBeVisible();
-    expect(screen.getByText(OLDER_ENTRY)).toBeVisible();
+    // A move with no reservation ids cannot clear by itself, but it is not
+    // from an older version: that label is only for records with no kind.
+    expect(
+      screen.getByText(/This entry cannot clear automatically\./)
+    ).toBeVisible();
+    expect(screen.queryByText(OLDER_ENTRY)).not.toBeInTheDocument();
     fireEvent.click(screen.getByText('I checked Disney — resolve this'));
     expect(screen.getByText(/Clear this only after checking/)).toBeVisible();
     expect(quarantinedAt(key)).toBeDefined();
@@ -212,6 +217,15 @@ describe('Activity diagnostics', () => {
     await waitFor(() =>
       expect(quarantinedAt(leaseKey(BZ, parkDate()))).toBeUndefined()
     );
+  });
+
+  it('labels only a record with no kind as left by an older version', async () => {
+    await quarantine(leaseKey(BZ, parkDate()), {
+      id: 'legacy-1',
+      to: '11:00:00',
+    });
+    setup();
+    expect(screen.getByText(OLDER_ENTRY)).toBeVisible();
   });
 
   it('names a reservation outside the currently loaded tipboard', async () => {
