@@ -272,6 +272,7 @@ describe('PlanCheck', () => {
     );
     screen.getByText('Choose party').click();
     expect(goTo).toHaveBeenCalledWith(<PartySelector />);
+    await settled();
   });
 
   it("says in plain words why a guest can't book", async () => {
@@ -290,6 +291,7 @@ describe('PlanCheck', () => {
     expect(
       screen.queryByText(/EXPERIENCE_LIMIT_REACHED/)
     ).not.toBeInTheDocument();
+    await settled();
   });
 
   it('shows when an ineligible guest becomes eligible later', async () => {
@@ -328,6 +330,7 @@ describe('PlanCheck', () => {
         )
       );
       expect(screen.getByText(/All 1 guest/)).toBeVisible();
+      await settled();
     });
 
     it('says a refusal in words, with what to do', async () => {
@@ -342,6 +345,7 @@ describe('PlanCheck', () => {
       expect(
         screen.queryByText(/Network request failed/)
       ).not.toBeInTheDocument();
+      await settled();
     });
 
     it('says when Disney asked to slow down', async () => {
@@ -352,6 +356,7 @@ describe('PlanCheck', () => {
           /Disney asked to slow down at .+ \(429\)\. Wait a few minutes/
         )
       );
+      await settled();
     });
 
     it('tells no answer from a refusal', async () => {
@@ -362,6 +367,7 @@ describe('PlanCheck', () => {
           /^No answer at .+\. The request timed out or the signal dropped/
         )
       );
+      await settled();
     });
 
     it('names any other failure with its status', async () => {
@@ -372,6 +378,7 @@ describe('PlanCheck', () => {
           /^Failed at .+ \(500\)\./
         )
       );
+      await settled();
     });
   });
 
@@ -387,6 +394,7 @@ describe('PlanCheck', () => {
     await waitFor(() =>
       expect(screen.getByText(/Wait a few seconds/)).toBeVisible()
     );
+    await settled();
   });
 
   it('does not report a ready plan when the tipboard is empty', () => {

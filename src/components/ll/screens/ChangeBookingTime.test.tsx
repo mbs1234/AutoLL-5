@@ -51,6 +51,7 @@ describe('ChangeBookingTime', () => {
       expect(ll.offer).toHaveBeenCalledTimes(1);
       click('Refresh Times');
       await waitFor(() => expect(ll.offer).toHaveBeenCalledTimes(2));
+      await settled();
     });
 
     it('goes back on Keep current', async () => {
