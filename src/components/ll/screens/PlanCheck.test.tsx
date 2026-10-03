@@ -16,7 +16,7 @@ import ParkContext from '@/contexts/ParkContext';
 import PlansContext from '@/contexts/PlansContext';
 import { ParkTime, modifyDate, parkDate } from '@/datetime';
 import { RateLimitExceeded } from '@/ratelimit';
-import { TODAY } from '@/testing';
+import { TODAY, settled } from '@/testing';
 
 import PartySelector from './PartySelector';
 import PlanCheck from './PlanCheck';
@@ -219,6 +219,8 @@ describe('PlanCheck', () => {
       TODAY,
       expect.objectContaining({ id: mk.id })
     );
+    // The check is still in its minimum load time. See `settled`.
+    await settled();
   });
 
   it('says all guests are eligible only when some guest is', async () => {
@@ -230,6 +232,7 @@ describe('PlanCheck', () => {
     });
     await tapCheck();
     await waitFor(() => expect(screen.getByText(/All 2 guests/)).toBeVisible());
+    await settled();
   });
 
   // A saved party absent from the response comes back stamped NOT_IN_PARTY,
@@ -249,6 +252,7 @@ describe('PlanCheck', () => {
       expect(screen.getByText(/No guests came back eligible/)).toBeVisible()
     );
     expect(screen.queryByText(/generally eligible/)).not.toBeInTheDocument();
+    await settled();
   });
 
   // It used to say "check the party selection on the LL tab", which has no
@@ -268,6 +272,7 @@ describe('PlanCheck', () => {
     );
     screen.getByText('Choose party').click();
     expect(goTo).toHaveBeenCalledWith(<PartySelector />);
+    await settled();
   });
 
   it("says in plain words why a guest can't book", async () => {
@@ -286,6 +291,7 @@ describe('PlanCheck', () => {
     expect(
       screen.queryByText(/EXPERIENCE_LIMIT_REACHED/)
     ).not.toBeInTheDocument();
+    await settled();
   });
 
   it('shows when an ineligible guest becomes eligible later', async () => {
@@ -304,6 +310,7 @@ describe('PlanCheck', () => {
     await waitFor(() =>
       expect(screen.getByText(/eligible from/)).toBeVisible()
     );
+    await settled();
   });
 
   // The one diagnostic was a booking by hand and a banner with a status code,
@@ -323,6 +330,7 @@ describe('PlanCheck', () => {
         )
       );
       expect(screen.getByText(/All 1 guest/)).toBeVisible();
+      await settled();
     });
 
     it('says a refusal in words, with what to do', async () => {
@@ -337,6 +345,7 @@ describe('PlanCheck', () => {
       expect(
         screen.queryByText(/Network request failed/)
       ).not.toBeInTheDocument();
+      await settled();
     });
 
     it('says when Disney asked to slow down', async () => {
@@ -347,6 +356,7 @@ describe('PlanCheck', () => {
           /Disney asked to slow down at .+ \(429\)\. Wait a few minutes/
         )
       );
+      await settled();
     });
 
     it('tells no answer from a refusal', async () => {
@@ -357,6 +367,7 @@ describe('PlanCheck', () => {
           /^No answer at .+\. The request timed out or the signal dropped/
         )
       );
+      await settled();
     });
 
     it('names any other failure with its status', async () => {
@@ -367,6 +378,7 @@ describe('PlanCheck', () => {
           /^Failed at .+ \(500\)\./
         )
       );
+      await settled();
     });
   });
 
@@ -382,6 +394,7 @@ describe('PlanCheck', () => {
     await waitFor(() =>
       expect(screen.getByText(/Wait a few seconds/)).toBeVisible()
     );
+    await settled();
   });
 
   it('does not report a ready plan when the tipboard is empty', () => {
@@ -417,6 +430,7 @@ describe('PlanCheck', () => {
       });
       expect(screen.getByText('Refreshing…')).toBeVisible();
       await act(async () => release());
+      await settled();
     });
 
     it('will not fire a second request while one is in flight', async () => {
@@ -433,6 +447,7 @@ describe('PlanCheck', () => {
       });
       expect(pollExperiences).toHaveBeenCalledTimes(1);
       await act(async () => release());
+      await settled();
     });
 
     // The failure the provider's own toast would have swallowed out of sight.

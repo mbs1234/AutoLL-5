@@ -166,3 +166,8 @@ the merge that brought it:
 - **AutoLL-3 #94, after 1.8.2.** The Home flake fix, tests only. This build's
   first Home test ends at its own cancel confirmation and its Plans title, so
   the new `settled()` follows those.
+- **AutoLL-3 #95.** Ten more tests end with `settled()`, tests only. It merged
+  without a conflict: in this build's own Plan Check and ChangeBookingTime
+  tests, each landed at the end of the test of the same name. Nine of this
+  build's own tests that also ended mid-load end with it too, in a commit of
+  their own.
