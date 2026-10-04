@@ -6,15 +6,18 @@ import {
   DEMOTION_MIN_COVERED_DAYS,
   LEARNED_MIN_DAYS,
 } from '@/autopilot/learned';
-import useQuarantine from '@/autopilot/useQuarantine';
+import type { SettledHow } from '@/autopilot/lease';
+import useQuarantine, { useSettledMutations } from '@/autopilot/useQuarantine';
 import Screen from '@/components/Screen';
 import { Time } from '@/components/Time';
 import ContextStrip from '@/components/ll/ContextStrip';
 import QuarantinePanel from '@/components/ll/QuarantinePanel';
+import { description } from '@/components/ll/protectionDescription';
 import AutopilotContext, { BookingLogEntry } from '@/contexts/AutopilotContext';
 import ExperiencesContext from '@/contexts/ExperiencesContext';
 import ParkContext from '@/contexts/ParkContext';
 import ResortContext from '@/contexts/ResortContext';
+import { DateTime } from '@/datetime';
 
 export const ACTIVITY = 'Activity';
 
@@ -30,6 +33,13 @@ export const ACTIVITY = 'Activity';
 function hasOnlyNegativeEvidence(coveredDays: number, observedDays: number) {
   return coveredDays >= DEMOTION_MIN_COVERED_DAYS && observedDays === 0;
 }
+
+/** Who knew that a protection could end. */
+const SETTLED_BY: Record<SettledHow, string> = {
+  confirmed: "confirmed by Disney's Plans",
+  answered: 'Disney answered',
+  cleared: 'cleared by you',
+};
 
 function unhandledStatus(status: never): never {
   throw new Error(`Unhandled booking-log status: ${String(status)}`);
@@ -141,6 +151,7 @@ export default function Activity() {
   const { park } = use(ParkContext);
   const resort = use(ResortContext);
   const doubts = useQuarantine();
+  const settled = useSettledMutations();
 
   const nameOf = (experienceId: string) =>
     attractionName(experienceId, experiences, resort);
@@ -157,6 +168,27 @@ export default function Activity() {
   return (
     <Screen title={ACTIVITY} theme={park.theme} subhead={<ContextStrip />}>
       <QuarantinePanel doubts={doubts} />
+      {settled.length > 0 && (
+        <>
+          <h3 className="mt-5 mb-2 font-bold">
+            Protection settled today ({settled.length})
+          </h3>
+          <ul className="divide-y divide-gray-200 overflow-hidden rounded-[18px] border border-gray-300 bg-white px-3 text-sm [&>li]:py-2">
+            {[...settled].reverse().map(entry => (
+              <li key={`${entry.key}:${entry.id}`}>
+                <Time
+                  time={DateTime.from(entry.at).time}
+                  className="font-semibold"
+                />{' '}
+                {description(entry, nameOf)}{' '}
+                <span className="text-gray-600">
+                  &mdash; {SETTLED_BY[entry.how]}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
       <h3 className="mt-5 mb-2 font-bold">
         Booking activity ({bookingLog.length})
       </h3>
