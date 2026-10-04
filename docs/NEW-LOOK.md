@@ -205,3 +205,6 @@ the merge that brought it:
   other lists, a white rounded card with each time in bold. The Plans tab's
   warning that a read was incomplete is one of this build's amber cards, above
   the list. Activity keeps both sets of new tests, this build's and AutoLL-3's.
+- **1.9.1.** Nothing to re-make. The protection panel took AutoLL-3's change
+  into this build's version unchanged: the one-tap clear's new note sits just
+  above its quiet button, in the panel's own type, beside its Plans buttons.
