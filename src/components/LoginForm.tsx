@@ -2,7 +2,8 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { AuthData, AuthStatus } from '@/api/auth';
 import { Resort } from '@/api/resort';
-import { PAGES_BASE } from '@/appIdentity';
+import { APP_NAME, PAGES_BASE } from '@/appIdentity';
+import Button from '@/components/Button';
 
 type EventListener = (result: any) => void;
 
@@ -34,6 +35,18 @@ const SCRIPT_TIMEOUT_MS = 15_000;
  * initialization, so this only decides when Retry appears.
  */
 const INIT_TIMEOUT_MS = 30_000;
+const INIT_TIMED_OUT = 'Disney sign-in did not initialize in time';
+/**
+ * Initializations in a row that time out before the card offers a reload.
+ *
+ * Retry joins the initialization already under way rather than start a second
+ * client beside it, so one that never finishes keeps every Retry waiting on it.
+ * Only a reload starts it afresh. One timeout is usually a slow connection,
+ * which Retry does get past; two in a row is the stuck case.
+ */
+const STUCK_AFTER = 2;
+/** A full-width button drawn quietly, when another is the main action. */
+const QUIET = { color: 'bg-white text-ink', border: 'border border-gray-300' };
 const ABANDONED = 'Sign-in attempt abandoned';
 
 /**
@@ -142,7 +155,7 @@ class OneId {
     return waitAtMost<OneIdClient>(
       INIT_TIMEOUT_MS,
       signal,
-      'Disney sign-in did not initialize in time',
+      INIT_TIMED_OUT,
       (resolve, reject) => {
         initialization.then(resolve, reject);
       }
@@ -267,15 +280,20 @@ export default function LoginForm({
   resort,
   onLogin,
   reason,
+  reload = () => location.reload(),
 }: {
   resort: Pick<Resort, 'id'>;
   onLogin: (data: AuthData) => void;
   reason?: AuthStatus;
+  reload?: () => void;
 }) {
   const [state, setState] = useState<'starting' | 'ready' | 'error'>(
     'starting'
   );
   const [error, setError] = useState('');
+  // Initializations in a row that timed out; see `STUCK_AFTER`.
+  const initTimeouts = useRef(0);
+  const [stuck, setStuck] = useState(false);
   const attempt = useRef<AbortController>(undefined);
 
   const beginLogin = useCallback(async () => {
@@ -309,8 +327,15 @@ export default function LoginForm({
         () => setState('ready'),
         signal
       );
-    } catch {
+      initTimeouts.current = 0;
+      setStuck(false);
+    } catch (error) {
       if (signal.aborted) return;
+      initTimeouts.current =
+        error instanceof Error && error.message === INIT_TIMED_OUT
+          ? initTimeouts.current + 1
+          : 0;
+      setStuck(initTimeouts.current >= STUCK_AFTER);
       setState('error');
       setError(
         'Disney sign-in could not start. Check your connection and try again.'
@@ -353,15 +378,34 @@ export default function LoginForm({
           <p>Your saved session could not be read safely.</p>
         )}
         {error && <p role="alert">{error}</p>}
+        {/* Drawn with the app's Button: the class this used no longer exists,
+            so it showed as plain text, and after an error it is the one thing
+            to do here -- in ink, as the main action, unless the setup is
+            stuck. Then reloading is, and this steps back to a quiet button. */}
         {state !== 'starting' && (
-          // A class that no longer exists drew this as plain text. It is the
-          // only thing to do on this screen, so it is drawn as the main action.
-          <button
-            className="min-h-13 w-full rounded-2xl bg-ink px-4 py-3 text-[17px] font-bold text-white"
+          <Button
+            type="full"
+            {...(state === 'error' && stuck ? QUIET : {})}
             onClick={() => void beginLogin()}
           >
             Sign in with Disney
-          </button>
+          </Button>
+        )}
+        {state === 'error' && stuck && (
+          <>
+            <p>
+              Disney’s sign-in has stopped setting up on this page, and trying
+              again only waits for it again. Reloading the page starts it
+              afresh.
+            </p>
+            <Button type="full" onClick={reload}>
+              Reload the page
+            </Button>
+            <p className="text-sm text-gray-600">
+              If you open {APP_NAME} from a bookmark, tap it again once the page
+              has reloaded.
+            </p>
+          </>
         )}
         {state === 'starting' && <p>Opening Disney sign-in…</p>}
       </div>

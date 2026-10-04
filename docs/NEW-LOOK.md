@@ -191,3 +191,10 @@ the merge that brought it:
   shows two **Open Plans**, the panel's and the notice's; the booking test
   reads the notice's own, and which one should stay is a question for
   USABILITY.md.
+- **1.8.5.** AutoLL-3 draws sign-in's retry with the app's `Button` now, which
+  here is this build's ink main action, so the hand-made button this build used
+  for it goes. When the setup is stuck, **Reload the page** is the main action
+  instead, in ink, and the retry steps back to a quiet full-width button. The
+  booking details test taps this build's **Change time** and **Swap ride**. The
+  details screen, the protection panel and the guide took AutoLL-3's changes
+  into this build's versions unchanged.
