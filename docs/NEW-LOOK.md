@@ -198,3 +198,10 @@ the merge that brought it:
   booking details test taps this build's **Change time** and **Swap ride**. The
   details screen, the protection panel and the guide took AutoLL-3's changes
   into this build's versions unchanged.
+- **1.9.0.** The protection panel took AutoLL-3's changes into this build's
+  version, beside its Plans buttons; the one-tap clear for a booking that
+  probably did not go through is a quiet small button, like the panel's others.
+  Activity's new list of protections settled today is drawn like this build's
+  other lists, a white rounded card with each time in bold. The Plans tab's
+  warning that a read was incomplete is one of this build's amber cards, above
+  the list. Activity keeps both sets of new tests, this build's and AutoLL-3's.
